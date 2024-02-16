@@ -3,7 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cmangos-web-api", "cmangos-web-api\cmangos-web-api.csproj", "{10F73E99-C37B-4D62-A765-75BF96A3EA62}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cmangos-web-api", "cmangos-web-api\cmangos-web-api.csproj", "{10F73E99-C37B-4D62-A765-75BF96A3EA62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{41795C89-FC32-4494-A4FB-B7DF5DAB33EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Configs", "Configs\Configs.csproj", "{8648D365-06AC-4472-B9F9-FDFC48F1603E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{2626FC9C-69A8-4EA9-B699-5A62883C9623}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Dto\Data.csproj", "{4EBC927B-6DE2-4B37-8EC8-FAD713647AB4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +23,22 @@ Global
 		{10F73E99-C37B-4D62-A765-75BF96A3EA62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10F73E99-C37B-4D62-A765-75BF96A3EA62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10F73E99-C37B-4D62-A765-75BF96A3EA62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41795C89-FC32-4494-A4FB-B7DF5DAB33EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41795C89-FC32-4494-A4FB-B7DF5DAB33EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41795C89-FC32-4494-A4FB-B7DF5DAB33EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41795C89-FC32-4494-A4FB-B7DF5DAB33EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8648D365-06AC-4472-B9F9-FDFC48F1603E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8648D365-06AC-4472-B9F9-FDFC48F1603E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8648D365-06AC-4472-B9F9-FDFC48F1603E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8648D365-06AC-4472-B9F9-FDFC48F1603E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2626FC9C-69A8-4EA9-B699-5A62883C9623}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2626FC9C-69A8-4EA9-B699-5A62883C9623}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2626FC9C-69A8-4EA9-B699-5A62883C9623}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2626FC9C-69A8-4EA9-B699-5A62883C9623}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4EBC927B-6DE2-4B37-8EC8-FAD713647AB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EBC927B-6DE2-4B37-8EC8-FAD713647AB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EBC927B-6DE2-4B37-8EC8-FAD713647AB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EBC927B-6DE2-4B37-8EC8-FAD713647AB4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

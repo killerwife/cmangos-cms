@@ -15,7 +15,7 @@ namespace Services.Repositories
             _cmsContext = cmsContext;
         }
 
-        public async Task<Account> FindByToken(string reqRefreshToken)
+        public async Task<Account?> FindByToken(string reqRefreshToken)
         {
             var userId = _cmsContext.RefreshToken.Where(p =>p.Token == reqRefreshToken).Select(p => p.UserId).SingleOrDefault();
             return await Get(userId);

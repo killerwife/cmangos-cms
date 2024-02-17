@@ -9,7 +9,8 @@ namespace cmangos_web_api.Services
         Task<ChallengeResponseDto> GenerateChallenge(string email);
         Task<AuthResDto> ValidateProof(byte[] answer, byte[] m1, byte[] crcHash, byte[] pin);
         Task<AuthResDto> ValidatePlainLogin(string name, string password, string? pin);
-        //string CreateToken(List<Claim> claims);
+        string CreateToken(List<Claim> claims);
+        IEnumerable<Claim> DecodeToken(string token);
         //IEnumerable<Claim> DecodeToken(string token);
         //Task<AuthResDto?> RefreshToken(string token, string ipAddress);
         //Task<bool> RevokeToken(string token, string ipAddress);

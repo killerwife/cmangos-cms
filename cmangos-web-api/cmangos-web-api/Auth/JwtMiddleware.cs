@@ -1,8 +1,12 @@
-﻿namespace cmangos_web_api.Helpers
+﻿using cmangos_web_api.Repositories;
+using cmangos_web_api.Services;
+using Microsoft.AspNetCore.Http;
+using Services.Repositories;
+
+namespace cmangos_web_api.Helpers
 {
     public class JwtMiddleware
     {
-        /*
         private readonly RequestDelegate _next;
 
         public JwtMiddleware(RequestDelegate next)
@@ -10,12 +14,12 @@
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IAuthService authService, IUserRepository userRepository)
+        public async Task Invoke(HttpContext context, IAuthService authService, IAccountRepository accountRepository)
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             if (token != null)
-                AttachUserToContext(context, authService, token, userRepository);
+                await AttachUserToContext(context, authService, token, accountRepository);
 
             if (context.Items["User"] != null)
                 context.Response.OnStarting(state =>
@@ -29,7 +33,7 @@
             await _next(context);
         }
 
-        private void AttachUserToContext(HttpContext context, IAuthService authService, string token, IUserRepository userRepository)
+        private async Task AttachUserToContext(HttpContext context, IAuthService authService, string token, IAccountRepository accountRepository)
         {
             try
             {
@@ -39,11 +43,11 @@
                 var userId = claims.SingleOrDefault(p => p.Type == "sub");
                 if (userId == null)
                     return;
-                var user = userRepository.Get(userId.Value);
+                var user = await accountRepository.Get(uint.Parse(userId.Value));
                 if (user == null)
                     return;
                 context.Items["User"] = user;
-                context.Items["Claim"] = userRepository.GetClaims(user.Uuid);
+                context.Items["roles"] = accountRepository.GetRoles(user.id);
             }
             catch (Exception)
             {
@@ -51,6 +55,5 @@
                 // user is not attached to context so request won't have access to secure routes
             }
         }
-        */
     }
 }

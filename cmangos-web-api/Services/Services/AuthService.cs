@@ -7,8 +7,13 @@ using System.Globalization;
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
-using Common.Utilities;
 using System.Runtime.Intrinsics.Arm;
+using OtpNet;
+using Data.Model;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Common;
 
 namespace cmangos_web_api.Services
 {
@@ -79,6 +84,8 @@ namespace cmangos_web_api.Services
                     {
                         Errors = new List<string>() { "Invalid credentials" }
                     };
+                var totp = new Totp(Base32Encoding.ToBytes(account.token), 15);
+                var result = totp.VerifyTotp(pin, out _, VerificationWindow.RfcSpecifiedNetworkDelay);
                 var serverToken = generateToken(account.token);
                 var clientToken = uint.Parse(pin);
                 if (serverToken != clientToken)
@@ -164,7 +171,7 @@ namespace cmangos_web_api.Services
                 challenge[i] = (byte)timestamp;
             }
 
-            var key = Base32.FromBase32String(b32Key);
+            var key = Base32Encoding.ToBytes(b32Key);
             var hmac = new HMACSHA1(key!);
             var hmac_result = hmac.ComputeHash(challenge);
             int offset = hmac_result[19] & 0xF;
@@ -173,161 +180,126 @@ namespace cmangos_web_api.Services
 
             return truncHash % 1000000u;
         }
-        /*
-public string CreateToken(List<Claim> claims)
-{
-  var tokenHandler = new JwtSecurityTokenHandler();
-  RSAParameters rsaParams;
-  using (var rsaProvider = new RSACryptoServiceProvider(Constants.RsaKeyLength))
-  {
-      rsaProvider.ImportFromPem(_options.CurrentValue.JwtPrivate.ToCharArray());
-      rsaParams = rsaProvider.ExportParameters(true);
-      // use the RSAParameters here
-  }
 
-  var tokenDescriptor = new SecurityTokenDescriptor
-  {
-      Subject = new ClaimsIdentity(claims),
-      Expires = DateTime.Now.AddMinutes(5),
-      SigningCredentials = new SigningCredentials(new RsaSecurityKey(rsaParams), SecurityAlgorithms.RsaSha256)
-  };
-  var token = tokenHandler.CreateToken(tokenDescriptor);
-  return tokenHandler.WriteToken(token);
-}
+        public string CreateToken(List<Claim> claims)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            RSAParameters rsaParams;
+            using (var rsaProvider = new RSACryptoServiceProvider(Constants.RsaKeyLength))
+            {
+                rsaProvider.ImportFromPem(_options.CurrentValue.JwtPrivate.ToCharArray());
+                rsaParams = rsaProvider.ExportParameters(true);
+                // use the RSAParameters here
+            }
 
-private List<Claim> GetClaims(User user, List<string>? userClaims, string userName)
-{
-  var claims = new List<Claim>() { new Claim("sub", user.Uuid), new Claim("name", userName) };
-  if (userClaims != null && userClaims.Contains(AuthorizationConstants.Claims.Admin))
-      claims.Add(new Claim("roles", AuthorizationConstants.Claims.Admin));
-  return claims;
-}
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.Now.AddMinutes(5),
+                SigningCredentials = new SigningCredentials(new RsaSecurityKey(rsaParams), SecurityAlgorithms.RsaSha256)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
 
-public async Task<AuthResDto> AuthenticateUser(string userName, string password, string ipAddress)
-{
-  var user = _userRepository.FindByUsername(userName);
-  var response = new AuthResDto();
+        public IEnumerable<Claim> DecodeToken(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            RSAParameters rsaParams;
+            using (var rsaProvider = new RSACryptoServiceProvider(Constants.RsaKeyLength))
+            {
+                rsaProvider.ImportFromPem(_options.CurrentValue.JwtPublic.ToCharArray());
+                rsaParams = rsaProvider.ExportParameters(false);
+                // use the RSAParameters here
+            }
+            tokenHandler.ValidateToken(token, new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new RsaSecurityKey(rsaParams),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
+                ClockSkew = TimeSpan.Zero
+            }, out SecurityToken validatedToken);
 
-  //string hashResult = BCrypt.Net.BCrypt.HashPassword(password);
-  if (user == null)
-  {
-      response.Errors = new List<string>
-      {
-          "User not found."
-      };
-      return response;
-  }
+            var jwtToken = (JwtSecurityToken)validatedToken;
+            return jwtToken.Claims;
+        }
 
-  if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
-  {
-      response.Errors = new List<string>
-      {
-          "Invalid password."
-      };
-      return response;
-  }
-  var userClaims = _userRepository.GetClaims(user.Uuid);
-  var claims = GetClaims(user, userClaims, userName);
-  var jwtToken = CreateToken(claims);
-  var refreshToken = generateRefreshToken(ipAddress);
-  refreshToken.UserUuid = user.Uuid;
+        public async Task<AuthResDto?> RefreshToken(string reqRefreshToken, string ipAddress)
+        {
+            Account user = await _accountRepository.FindByToken(reqRefreshToken);
+            if (user == null) return null;
 
-  await _userRepository.AddToken(refreshToken);
+            var refreshToken = (await _accountRepository.GetTokens(user.id)).Single(x => x.Token == reqRefreshToken);
+            if (!refreshToken.IsActive) return null;
 
-  response.Key = user.Uuid;
-  response.JwtToken = jwtToken;
-  response.RefreshToken = refreshToken.Token;
-  response.ExpiresIn = _options.CurrentValue.JwtExpirationSeconds;
-  return response;
-}
+            var newRefreshToken = generateRefreshToken(ipAddress);
+            refreshToken.Revoked = DateTime.Now;
+            refreshToken.RevokedByIp = ipAddress;
+            refreshToken.ReplacedByToken = newRefreshToken.Token;
 
-public IEnumerable<Claim> DecodeToken(string token)
-{
-  var tokenHandler = new JwtSecurityTokenHandler();
-  RSAParameters rsaParams;
-  using (var rsaProvider = new RSACryptoServiceProvider(Constants.RsaKeyLength))
-  {
-      rsaProvider.ImportFromPem(_options.CurrentValue.JwtPublic.ToCharArray());
-      rsaParams = rsaProvider.ExportParameters(false);
-      // use the RSAParameters here
-  }
-  tokenHandler.ValidateToken(token, new TokenValidationParameters
-  {
-      ValidateIssuerSigningKey = true,
-      IssuerSigningKey = new RsaSecurityKey(rsaParams),
-      ValidateIssuer = false,
-      ValidateAudience = false,
-      // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
-      ClockSkew = TimeSpan.Zero
-  }, out SecurityToken validatedToken);
+            newRefreshToken.UserId = user.id;
+            await _accountRepository.UpdateToken(refreshToken);
+            await _accountRepository.RevokeAndAddToken(newRefreshToken);
 
-  var jwtToken = (JwtSecurityToken)validatedToken;
-  return jwtToken.Claims;
-}
+            var claims = GetClaims(user);
+            var jwtToken = CreateToken(claims);
 
-public async Task<AuthResDto?> RefreshToken(string reqRefreshToken, string ipAddress)
-{
-  var user = _userRepository.FindByToken(reqRefreshToken);
-  if (user == null) return null;
+            return new AuthResDto()
+            {
+                Id = user.id,
+                JwtToken = jwtToken,
+                ExpiresIn = _options.CurrentValue.RefreshExpirationSeconds,
+                RefreshToken = newRefreshToken.Token
+            };
+        }
 
-  var refreshToken = _userRepository.GetTokens(user.Uuid).Single(x => x.Token == reqRefreshToken);
-  if (!refreshToken.IsActive) return null;
+        public async Task<bool> RevokeToken(string reqRefreshToken, string ipAddress)
+        {
+            var user = await _accountRepository.FindByToken(reqRefreshToken);
+            if (user == null) return false;
 
-  var newRefreshToken = generateRefreshToken(ipAddress);
-  refreshToken.Revoked = DateTime.Now;
-  refreshToken.RevokedByIp = ipAddress;
-  refreshToken.ReplacedByToken = newRefreshToken.Token;
+            var refreshToken = (await _accountRepository.GetTokens(user.id)).Single(x => x.Token == reqRefreshToken);
+            if (!refreshToken.IsActive) return false;
 
-  newRefreshToken.UserUuid = user.Uuid;
-  await _userRepository.UpdateToken(refreshToken);
-  await _userRepository.RevokeAndAddToken(newRefreshToken);
+            refreshToken.Revoked = DateTime.Now;
+            refreshToken.RevokedByIp = ipAddress;
 
-  var userClaims = _userRepository.GetClaims(user.Uuid);
-  var claims = GetClaims(user, userClaims, user.Name);
-  var jwtToken = CreateToken(claims);
+            await _accountRepository.UpdateToken(refreshToken);
+            await _accountRepository.RevokeTokens(user.id);
 
-  return new AuthResDto()
-  {
-      Key = user.Uuid,
-      JwtToken = jwtToken,
-      ExpiresIn = _options.CurrentValue.RefreshExpirationSeconds,
-      RefreshToken = newRefreshToken.Token
-  };
-}
+            return true;
+        }
 
-public async Task<bool> RevokeToken(string reqRefreshToken, string ipAddress)
-{
-  var user = _userRepository.FindByToken(reqRefreshToken);
-  if (user == null) return false;
+        private RefreshToken generateRefreshToken(string ipAddress)
+        {
+            string refreshToken = "";
+            var randomNumber = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+                refreshToken = Convert.ToBase64String(randomNumber);
+            }
+            return new RefreshToken
+            {
+                Token = refreshToken,
+                Expires = DateTime.Now.AddDays(7),
+                Created = DateTime.Now,
+                CreatedByIp = ipAddress
+            };
+        }
 
-  var refreshToken = _userRepository.GetTokens(user.Uuid).Single(x => x.Token == reqRefreshToken);
-  if (!refreshToken.IsActive) return false;
-
-  refreshToken.Revoked = DateTime.Now;
-  refreshToken.RevokedByIp = ipAddress;
-
-  await _userRepository.UpdateToken(refreshToken);
-  await _userRepository.RevokeTokens(user.Uuid);
-
-  return true;
-}
-
-private RefreshToken generateRefreshToken(string ipAddress)
-{
-  string refreshToken = "";
-  var randomNumber = new byte[32];
-  using (var rng = RandomNumberGenerator.Create())
-  {
-      rng.GetBytes(randomNumber);
-      refreshToken = Convert.ToBase64String(randomNumber);
-  }
-  return new RefreshToken
-  {
-      Token = refreshToken,
-      Expires = DateTime.Now.AddDays(7),
-      Created = DateTime.Now,
-      CreatedByIp = ipAddress
-  };
-}*/
+        private List<Claim> GetClaims(Account user)
+        {
+            var claims = new List<Claim>() { new Claim(JwtRegisteredClaimNames.Sub, user.id.ToString()), new Claim("name", user.username) };
+            var roles = user.GetRoles();
+            if (roles != null)
+            {
+                foreach (var role in roles)
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+            return claims;
+        }
     }
 }

@@ -5,7 +5,7 @@ namespace Data.Dto
     public class AuthResDto
     {
         [DataMember(Name = "client_id")]
-        public string Key { get; set; } = string.Empty;
+        public uint Id { get; set; }
         [DataMember(Name = "access_token")]
         public string JwtToken { get; set; } = string.Empty;
         [DataMember(Name = "expires_in")]

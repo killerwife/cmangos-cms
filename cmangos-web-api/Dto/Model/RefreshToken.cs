@@ -6,7 +6,7 @@ namespace Data.Model
     {
         [Key]
         public int Id { get; set; }
-        public string UserUuid { get; set; } = string.Empty;
+        public uint UserId { get; set; }
         public string Token { get; set; } = string.Empty;
         public DateTime Expires { get; set; }
         public bool IsExpired => DateTime.Now >= Expires;

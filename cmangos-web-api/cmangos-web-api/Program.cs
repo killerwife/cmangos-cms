@@ -1,3 +1,4 @@
+using cmangos_web_api.Helpers;
 using cmangos_web_api.Repositories;
 using cmangos_web_api.Services;
 using Services.Repositories;
@@ -21,7 +22,7 @@ builder.Services.AddCors(options =>
     );
 });
 
-builder.Services.AddDbContext<CmangosDbContext>();
+builder.Services.AddDbContext<RealmdDbContext>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
@@ -36,7 +37,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<JwtMiddleware>();
 
 app.MapControllers();
 

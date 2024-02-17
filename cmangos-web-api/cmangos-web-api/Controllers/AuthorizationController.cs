@@ -2,7 +2,9 @@
 using Data.Dto;
 using Data.Dto.PlainAuth;
 using Data.Dto.Srp6;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OtpNet;
 
 namespace cmangos_web_api.Controllers
 {
@@ -34,6 +36,34 @@ namespace cmangos_web_api.Controllers
             if (result.Errors != null)
                 return BadRequest(result.Errors);
             return Ok(result);
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterDto register)
+        {
+            return Ok();
+        }
+
+        [HttpGet("verifyemail/{token}")]
+        public async Task<IActionResult> VerifyEmail([FromRoute] string token)
+        {
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpGet("generatetokensecret")]
+        public IActionResult GenerateTokenSecret()
+        {
+            var key = KeyGeneration.GenerateRandomKey(20);
+            var base32String = Base32Encoding.ToString(key);
+            return Ok(base32String);
+        }
+
+        [Authorize]
+        [HttpGet("addauthenticator")]
+        public async Task<IActionResult> AddToken([FromBody] AddGoogleAuthenticatorDto token)
+        {
+            return Ok();
         }
     }
 }

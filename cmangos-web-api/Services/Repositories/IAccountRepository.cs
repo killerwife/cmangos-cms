@@ -18,5 +18,6 @@ namespace cmangos_web_api.Repositories
         Task<bool> AddPendingAuthenticator(uint userId, string token);
         Task<bool> QualifyPendingToken(AccountExtension ext);
         Task<bool> VerifyPendingEmail(string token);
+        Task<Account?> Create(Account account, string email, string confirmationToken);
     }
 }

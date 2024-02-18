@@ -12,6 +12,7 @@ namespace Data.Model
         public string? s { get; set; } = string.Empty;
         public string lockedIp { get; set; } = string.Empty;
         public string? email { get; set; } = string.Empty;
+        public DateTime joindate { get; set; } = DateTime.UtcNow;
         public string? token { get; set; } = string.Empty;
         public int locked { get; set; }
 

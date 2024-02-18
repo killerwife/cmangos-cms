@@ -1,8 +1,9 @@
 ﻿using Data.Dto;
 using Data.Dto.Srp6;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-namespace cmangos_web_api.Services
+namespace Services.Services
 {
     public interface IAuthService
     {
@@ -18,5 +19,6 @@ namespace cmangos_web_api.Services
         Task<bool> AddAuthenticator(string token);
 
         Task<bool> VerifyEmail(string token);
+        Task<IActionResult?> CreateAccount(string username, string password, string email, string url);
     }
 }

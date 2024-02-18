@@ -1,10 +1,9 @@
 using cmangos_web_api.Configs;
 using cmangos_web_api.Helpers;
 using cmangos_web_api.Repositories;
-using cmangos_web_api.Services;
+using Services.Services;
 using Data.Config;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.OpenApi.Models;
 using Services.Repositories;
 using System.Reflection;
@@ -66,6 +65,7 @@ builder.Services.AddDbContext<CmsDbContext>(options => options.UseMySql(connecti
                 .EnableDetailedErrors());
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
 

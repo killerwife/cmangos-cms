@@ -13,6 +13,6 @@ namespace Common
 
     public enum Operation
     {
-        SendEmail = 0,
+        SendConfirmationEmail = 0,
     }
 }

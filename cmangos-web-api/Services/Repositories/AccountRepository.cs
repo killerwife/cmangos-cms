@@ -122,5 +122,23 @@ namespace Services.Repositories
             var result2 = await _cmsContext.SaveChangesAsync();
             return result > 0 && result2 > 0;
         }
+
+        public async Task<Account?> Create(Account account, string email, string confirmationToken)
+        {
+            if (_cmsContext.AccountsExt.Where(p => p.PendingEmailToken == confirmationToken).SingleOrDefault() != null)
+                return null;
+
+            _dbContext.Add(account);
+            await _dbContext.SaveChangesAsync();
+            var ext = new AccountExtension()
+            {
+                Id = account.id,
+                PendingEmail = email,
+                PendingEmailToken = confirmationToken
+            };
+            _cmsContext.Add(ext);
+            await _cmsContext.SaveChangesAsync();
+            return account;
+        }
     }
 }

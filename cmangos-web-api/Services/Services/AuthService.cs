@@ -14,14 +14,16 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Common;
 using cmangos_web_api.Auth;
+using Microsoft.AspNetCore.Mvc;
 
-namespace cmangos_web_api.Services
+namespace Services.Services
 {
     public class AuthService : IAuthService
     {
         private readonly IOptionsMonitor<AuthConfig> _options;
         private IAccountRepository _accountRepository;
         private IUserProvider _userProvider;
+        private IEmailService _emailService;
 
         private static readonly RandomNumberGenerator rngCsp = RandomNumberGenerator.Create();
 
@@ -341,6 +343,35 @@ namespace cmangos_web_api.Services
         {
             bool result = await _accountRepository.VerifyPendingEmail(token);
             return result;
+        }
+
+        public async Task<IActionResult?> CreateAccount(string username, string password, string email, string url)
+        {
+            byte[] salt = new byte[32];
+            rngCsp.GetBytes(salt);
+            BigInteger saltInteger = new BigInteger(salt);
+            byte[] verifier = CalculateSRP6Verifier(username.ToUpper(), password.ToUpper(), salt);
+            BigInteger verifierInteger = new BigInteger(verifier);
+            Guid g;
+            var accountDraft = new Account
+            {
+                email = null,
+                username = username,
+                gmlevel = 0,
+                s = saltInteger.ToString("X"),
+                v = verifierInteger.ToString("X")
+            };
+            Account? newAccount;
+            bool result = false;
+            do
+            {
+                g = Guid.NewGuid();
+                newAccount = await _accountRepository.Create(accountDraft, email, g.ToString());
+            }
+            while (newAccount == null);
+
+            var emailResult = await _emailService.SendToken(username, email, g.ToString(), url, "en-GB", Operation.SendConfirmationEmail);
+            return emailResult;
         }
     }
 }

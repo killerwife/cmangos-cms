@@ -1,10 +1,11 @@
-﻿using cmangos_web_api.Services;
+﻿using Services.Services;
 using Data.Dto;
 using Data.Dto.PlainAuth;
 using Data.Dto.Srp6;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OtpNet;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace cmangos_web_api.Controllers
 {
@@ -41,8 +42,8 @@ namespace cmangos_web_api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto register)
         {
-
-            return Ok();
+            IActionResult? result = await _authService.CreateAccount(register.Username, register.Password, register.Email, HttpContext.Request.GetEncodedUrl());
+            return result == null ? Ok() : result;
         }
 
         [HttpGet("verifyemail/{token}")]
@@ -51,6 +52,21 @@ namespace cmangos_web_api.Controllers
             bool result = await _authService.VerifyEmail(token);
             // TODO: Add redirect configurable to frontend
             return result ? Ok() : BadRequest();
+        }
+
+        [Authorize]
+        [HttpGet("resendVerificationEmail")]
+        public async Task<IActionResult> ResendVerificationEmail()
+        {
+            // TODO
+            return Ok();
+        }
+
+        [HttpPost("forgotPassword")]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            // TODO
+            return Ok();
         }
 
         [Authorize]

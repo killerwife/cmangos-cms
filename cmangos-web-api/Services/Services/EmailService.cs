@@ -30,7 +30,7 @@ namespace Services.Services
                 var builder = new BodyBuilder();
                 switch (operation)
                 {
-                    case Operation.SendEmail:
+                    case Operation.SendConfirmationEmail:
                         message.Subject = "Email verification";
                         builder.TextBody = "Please click to verify your email: " + caleeUrl + "/verifyemail/" + verificationToken;
                         message.Body = builder.ToMessageBody();

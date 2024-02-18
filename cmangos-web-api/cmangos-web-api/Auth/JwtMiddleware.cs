@@ -1,7 +1,5 @@
 ﻿using cmangos_web_api.Repositories;
-using cmangos_web_api.Services;
-using Microsoft.AspNetCore.Http;
-using Services.Repositories;
+using Services.Services;
 using System.Security.Claims;
 
 namespace cmangos_web_api.Helpers

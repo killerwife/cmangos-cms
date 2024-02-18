@@ -5,7 +5,11 @@ using cmangos_web_api.Services;
 using Data.Config;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.OpenApi.Models;
 using Services.Repositories;
+using System.Reflection;
+using System.Security.Claims;
+using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +18,29 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    var info = new OpenApiInfo
+    {
+        Version = "v1.0",
+        Contact = new OpenApiContact()
+        {
+            Name = "cMaNGOS",
+            Url = new Uri("https://cmangos.net"),
+            Email = ""
+        },
+        Title = "cMaNGOS CMS API v1.0",
+        TermsOfService = new Uri("https://example.com/terms")
+    };
+    options.SwaggerDoc("v1", info);
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "Common.xml"));
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "Data.xml"));
+    options.IncludeXmlCommentsFromInheritDocs();
+    options.AddEnumsWithValuesFixFilters();
+    options.EnableAnnotations();
+});
 
 // Allow cors any origin
 builder.Services.AddCors(options =>
@@ -28,6 +54,8 @@ builder.Services.AddCors(options =>
 
 builder.Services.Configure<AuthConfig>(builder.Configuration.GetSection("AuthConfig"));
 builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection("EmailConfig"));
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ClaimsPrincipal>(s => s.GetService<IHttpContextAccessor>()?.HttpContext?.User!);
 builder.Services.AddDbContext<RealmdDbContext>();
 var connectionStringCms = builder.Configuration.GetValue<string>("ConnectionStrings:Cms");
 builder.Services.AddDbContext<CmsDbContext>(options => options.UseMySql(connectionStringCms, ServerVersion.AutoDetect(connectionStringCms))

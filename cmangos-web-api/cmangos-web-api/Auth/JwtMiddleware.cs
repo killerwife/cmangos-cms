@@ -2,6 +2,7 @@
 using cmangos_web_api.Services;
 using Microsoft.AspNetCore.Http;
 using Services.Repositories;
+using System.Security.Claims;
 
 namespace cmangos_web_api.Helpers
 {
@@ -46,6 +47,7 @@ namespace cmangos_web_api.Helpers
                 var roles = claims.SingleOrDefault(p => p.Type == "role");
                 if (roles == null)
                     return;
+                context.Items["User"] = new ClaimsPrincipal(new ClaimsIdentity(claims));
                 context.Items["userId"] = userId.Value;
                 context.Items["roles"] = roles.Value;
             }

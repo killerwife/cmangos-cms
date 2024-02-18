@@ -16,5 +16,7 @@ namespace cmangos_web_api.Services
 
         Task<string?> AddPendingAuthenticator();
         Task<bool> AddAuthenticator(string token);
+
+        Task<bool> VerifyEmail(string token);
     }
 }

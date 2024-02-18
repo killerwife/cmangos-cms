@@ -41,13 +41,16 @@ namespace cmangos_web_api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto register)
         {
+
             return Ok();
         }
 
         [HttpGet("verifyemail/{token}")]
         public async Task<IActionResult> VerifyEmail([FromRoute] string token)
         {
-            return Ok();
+            bool result = await _authService.VerifyEmail(token);
+            // TODO: Add redirect configurable to frontend
+            return result ? Ok() : BadRequest();
         }
 
         [Authorize]

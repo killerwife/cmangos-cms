@@ -103,5 +103,24 @@ namespace Services.Repositories
             var result = await _dbContext.SaveChangesAsync();
             return result > 0;
         }
+
+        public async Task<bool> VerifyPendingEmail(string token)
+        {
+            var ext = _cmsContext.AccountsExt.Where(p => p.PendingEmailToken == token).SingleOrDefault();
+            if (ext == null || ext.PendingEmail == null)
+                return false;
+
+            var user = await Get(ext.Id);
+            user!.email = ext.PendingEmail;
+            user.locked = 0;
+            ext.PendingEmail = null;
+            ext.PendingEmailToken = null;
+
+            _dbContext.Update(user);
+            var result = await _dbContext.SaveChangesAsync();
+            _cmsContext.Update(ext);
+            var result2 = await _cmsContext.SaveChangesAsync();
+            return result > 0 && result2 > 0;
+        }
     }
 }

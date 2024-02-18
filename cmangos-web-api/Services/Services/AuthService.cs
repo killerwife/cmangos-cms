@@ -336,5 +336,11 @@ namespace cmangos_web_api.Services
                 return false;
             return await _accountRepository.QualifyPendingToken(ext);
         }
+
+        public async Task<bool> VerifyEmail(string token)
+        {
+            bool result = await _accountRepository.VerifyPendingEmail(token);
+            return result;
+        }
     }
 }

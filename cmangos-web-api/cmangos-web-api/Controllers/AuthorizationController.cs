@@ -52,11 +52,12 @@ namespace cmangos_web_api.Controllers
 
         [Authorize]
         [HttpGet("generatetokensecret")]
-        public IActionResult GenerateTokenSecret()
+        public async Task<ActionResult<string>> GenerateTokenSecret()
         {
-            var key = KeyGeneration.GenerateRandomKey(20);
-            var base32String = Base32Encoding.ToString(key);
-            return Ok(base32String);
+            var tokenSecret = await _authService.AddPendingAuthenticator();
+            if (tokenSecret == null)
+                return BadRequest();
+            return Ok(tokenSecret);
         }
 
         [Authorize]

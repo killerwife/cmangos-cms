@@ -52,6 +52,15 @@ namespace Services.Repositories
             return _cmsContext.RefreshToken.Where(p => p.UserId == userId).ToList();
         }
 
+        public async Task<bool> AddPendingAuthenticator(uint userId, string token)
+        {
+            var ext = await GetExt(userId);
+            ext.PendingToken = token;
+            _cmsContext.Update(ext);
+            var result = await _cmsContext.SaveChangesAsync();
+            return result > 0;
+        }
+
         public async Task<bool> QualifyPendingToken(AccountExtension ext)
         {
             var user = await Get(ext.Id);

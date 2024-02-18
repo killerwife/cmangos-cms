@@ -15,6 +15,7 @@ namespace cmangos_web_api.Repositories
         Task<bool> UpdateToken(RefreshToken token);
         Task<bool> RevokeAndAddToken(RefreshToken token);
         Task<bool> RevokeTokens(uint userId);
+        Task<bool> AddPendingAuthenticator(uint userId, string token);
         Task<bool> QualifyPendingToken(AccountExtension ext);
     }
 }

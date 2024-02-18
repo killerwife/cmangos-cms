@@ -314,6 +314,16 @@ namespace cmangos_web_api.Services
             return serverToken == clientToken;
         }
 
+        public async Task<string?> AddPendingAuthenticator()
+        {
+            var key = KeyGeneration.GenerateRandomKey(20);
+            var base32String = Base32Encoding.ToString(key);
+            var result = await _accountRepository.AddPendingAuthenticator(_userProvider.CurrentUser!.Id, base32String);
+            if (result == false)
+                return null;
+            return base32String;
+        }
+
         public async Task<bool> AddAuthenticator(string pin)
         {
             var ext = await _accountRepository.GetExt(_userProvider.CurrentUser!.Id);

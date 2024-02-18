@@ -14,6 +14,7 @@ namespace cmangos_web_api.Services
         Task<AuthResDto?> RefreshToken(string token, string ipAddress);
         Task<bool> RevokeToken(string token, string ipAddress);
 
+        Task<string?> AddPendingAuthenticator();
         Task<bool> AddAuthenticator(string token);
     }
 }

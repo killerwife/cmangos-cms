@@ -21,12 +21,13 @@ namespace cmangos_web_api.Auth
 
             var id = _principal?.Claims?.Where(x => x.Type == "sub").FirstOrDefault()?.Value;
             var roles = _principal?.Claims?.Where(x => x.Type == "role").Select(p => p.Value);
+            var name = _principal?.Claims?.Where(x => x.Type == "name").FirstOrDefault()?.Value;
 
             bool parseResult = uint.TryParse(id, out uint userId);
-            if (parseResult == false || roles == null)
+            if (parseResult == false || roles == null || name == null)
                 return null;
 
-            var result = new UserInfo(userId, roles.ToArray());
+            var result = new UserInfo(userId, roles.ToArray(), name);
             return result;
         }
     }

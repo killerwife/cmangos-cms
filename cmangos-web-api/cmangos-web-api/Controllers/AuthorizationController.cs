@@ -55,15 +55,23 @@ namespace cmangos_web_api.Controllers
         }
 
         [Authorize]
-        [HttpGet("resendVerificationEmail")]
+        [HttpGet("resendverificationemail")]
         public async Task<IActionResult> ResendVerificationEmail()
+        {
+            await _authService.ResendValidationEmail(HttpContext.Request.GetEncodedUrl());
+            return Ok();
+        }
+
+        [HttpPost("forgotpassword")]
+        public async Task<IActionResult> ForgotPassword(string email)
         {
             // TODO
             return Ok();
         }
 
-        [HttpPost("forgotPassword")]
-        public async Task<IActionResult> ForgotPassword(string email)
+        [Authorize]
+        [HttpPost("changepassword")]
+        public async Task<IActionResult> ChangePassword()
         {
             // TODO
             return Ok();

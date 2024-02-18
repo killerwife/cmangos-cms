@@ -15,6 +15,7 @@ using System.Security.Claims;
 using Common;
 using cmangos_web_api.Auth;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace Services.Services
 {
@@ -371,6 +372,16 @@ namespace Services.Services
             while (newAccount == null);
 
             var emailResult = await _emailService.SendToken(username, email, g.ToString(), url, "en-GB", Operation.SendConfirmationEmail);
+            return emailResult;
+        }
+
+        public async Task<IActionResult?> ResendValidationEmail(string url)
+        {
+            var data = await _accountRepository.GetEmailValidationData(_userProvider.CurrentUser!.Id);
+            if (data == null || data.Value.validationToken == null) { return new BadRequestObjectResult("No pending email change."); }
+            if (data.Value.lastSentTime < DateTime.UtcNow.AddMinutes(-2)) { return new BadRequestObjectResult("New request too soon"); }
+
+            var emailResult = await _emailService.SendToken(_userProvider.CurrentUser.Name, data.Value.email!, g.ToString(), url, "en-GB", Operation.SendConfirmationEmail);
             return emailResult;
         }
     }

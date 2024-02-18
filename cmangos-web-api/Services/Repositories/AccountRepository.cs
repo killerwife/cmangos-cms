@@ -1,5 +1,6 @@
 ﻿using cmangos_web_api.Repositories;
 using Data.Model;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Services.Repositories
@@ -115,6 +116,7 @@ namespace Services.Repositories
             user.locked = 0;
             ext.PendingEmail = null;
             ext.PendingEmailToken = null;
+            ext.PendingEmailTokenSent = null;
 
             _dbContext.Update(user);
             var result = await _dbContext.SaveChangesAsync();
@@ -134,11 +136,21 @@ namespace Services.Repositories
             {
                 Id = account.id,
                 PendingEmail = email,
-                PendingEmailToken = confirmationToken
+                PendingEmailToken = confirmationToken,
+                PendingEmailTokenSent = DateTime.UtcNow,
             };
             _cmsContext.Add(ext);
             await _cmsContext.SaveChangesAsync();
             return account;
+        }
+
+        public async Task<(DateTime? lastSentTime, string? validationToken, string? email)?> GetEmailValidationData(uint userId)
+        {
+            var ext = await GetExt(userId);
+            if (ext == null)
+                return null;
+
+            return (ext.PendingEmailTokenSent, ext.PendingToken, ext.PendingEmail);
         }
     }
 }

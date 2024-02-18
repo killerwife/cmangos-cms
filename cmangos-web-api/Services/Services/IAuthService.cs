@@ -20,5 +20,6 @@ namespace Services.Services
 
         Task<bool> VerifyEmail(string token);
         Task<IActionResult?> CreateAccount(string username, string password, string email, string url);
+        Task<IActionResult?> ResendValidationEmail(string url);
     }
 }

@@ -19,5 +19,6 @@ namespace cmangos_web_api.Repositories
         Task<bool> QualifyPendingToken(AccountExtension ext);
         Task<bool> VerifyPendingEmail(string token);
         Task<Account?> Create(Account account, string email, string confirmationToken);
+        Task<(DateTime? lastSentTime, string? validationToken, string? email)?> GetEmailValidationData(uint userId);
     }
 }

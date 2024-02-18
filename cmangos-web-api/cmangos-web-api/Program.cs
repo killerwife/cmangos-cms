@@ -36,7 +36,9 @@ builder.Services.AddSwaggerGen(options =>
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "Common.xml"));
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "Configs.xml"));
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "Data.xml"));
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "Services.xml"));
     options.IncludeXmlCommentsFromInheritDocs();
     options.AddEnumsWithValuesFixFilters();
     options.EnableAnnotations();

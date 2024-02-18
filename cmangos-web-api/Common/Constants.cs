@@ -10,4 +10,9 @@ namespace Common
     {
         public const int RsaKeyLength = 2048;
     }
+
+    public enum Operation
+    {
+        SendEmail = 0,
+    }
 }

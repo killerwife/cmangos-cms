@@ -7,13 +7,13 @@ using System.Globalization;
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
-using System.Runtime.Intrinsics.Arm;
 using OtpNet;
 using Data.Model;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Common;
+using cmangos_web_api.Auth;
 
 namespace cmangos_web_api.Services
 {
@@ -21,6 +21,7 @@ namespace cmangos_web_api.Services
     {
         private readonly IOptionsMonitor<AuthConfig> _options;
         private IAccountRepository _accountRepository;
+        private IUserProvider _userProvider;
 
         private static readonly RandomNumberGenerator rngCsp = RandomNumberGenerator.Create();
 
@@ -29,10 +30,11 @@ namespace cmangos_web_api.Services
         // trailing 0 to force unsigned
         private static readonly BigInteger N = BigInteger.Parse("0894B645E89E1535BBDAD5B8B290650530801B18EBFBF5E8FAB3C82872A3E9BB7", NumberStyles.AllowHexSpecifier);
 
-        public AuthService(IOptionsMonitor<AuthConfig> options, IAccountRepository accountRepository)
+        public AuthService(IOptionsMonitor<AuthConfig> options, IAccountRepository accountRepository, IUserProvider userProvider)
         {
             _options = options;
             _accountRepository = accountRepository;
+            _userProvider = userProvider;
         }
 
         public async Task<ChallengeResponseDto> GenerateChallenge(string userName)
@@ -84,20 +86,21 @@ namespace cmangos_web_api.Services
                     {
                         Errors = new List<string>() { "Invalid credentials" }
                     };
-                var totp = new Totp(Base32Encoding.ToBytes(account.token), 15);
-                var result = totp.VerifyTotp(pin, out _, VerificationWindow.RfcSpecifiedNetworkDelay);
-                var serverToken = generateToken(account.token);
-                var clientToken = uint.Parse(pin);
-                if (serverToken != clientToken)
+                var result = validateToken(account.token, pin);
+                if (result == false)
                     return new AuthResDto
                     {
                         Errors = new List<string>() { "Invalid credentials" }
                     };
             }
 
+            var claims = GetClaims(account);
+            var newRefreshToken = generateRefreshToken("");
+            await _accountRepository.RevokeAndAddToken(newRefreshToken);
             return new AuthResDto
             {
-
+                JwtToken = CreateToken(claims),
+                RefreshToken = newRefreshToken.Token
             };
         }
 
@@ -195,35 +198,35 @@ namespace cmangos_web_api.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddMinutes(5),
+                Expires = DateTime.UtcNow.AddSeconds(_options.CurrentValue.JwtExpirationSeconds),
                 SigningCredentials = new SigningCredentials(new RsaSecurityKey(rsaParams), SecurityAlgorithms.RsaSha256)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
 
-        public IEnumerable<Claim> DecodeToken(string token)
+        public IEnumerable<Claim> DecodeToken(string jwt)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            RSAParameters rsaParams;
-            using (var rsaProvider = new RSACryptoServiceProvider(Constants.RsaKeyLength))
-            {
-                rsaProvider.ImportFromPem(_options.CurrentValue.JwtPublic.ToCharArray());
-                rsaParams = rsaProvider.ExportParameters(false);
-                // use the RSAParameters here
-            }
-            tokenHandler.ValidateToken(token, new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new RsaSecurityKey(rsaParams),
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
-                ClockSkew = TimeSpan.Zero
-            }, out SecurityToken validatedToken);
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwt);
+            //RSAParameters rsaParams;
+            //using (var rsaProvider = new RSACryptoServiceProvider(Constants.RsaKeyLength))
+            //{
+            //    rsaProvider.ImportFromPem(_options.CurrentValue.JwtPublic.ToCharArray());
+            //    rsaParams = rsaProvider.ExportParameters(false);
+            //    // use the RSAParameters here
+            //}
+            //tokenHandler.ValidateToken(token, new TokenValidationParameters
+            //{
+            //    ValidateIssuerSigningKey = true,
+            //    IssuerSigningKey = new RsaSecurityKey(rsaParams),
+            //    ValidateIssuer = false,
+            //    ValidateAudience = false,
+            //    // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
+            //    ClockSkew = TimeSpan.Zero
+            //}, out SecurityToken validatedToken);
 
-            var jwtToken = (JwtSecurityToken)validatedToken;
-            return jwtToken.Claims;
+            return token.Claims;
         }
 
         public async Task<AuthResDto?> RefreshToken(string reqRefreshToken, string ipAddress)
@@ -235,7 +238,7 @@ namespace cmangos_web_api.Services
             if (!refreshToken.IsActive) return null;
 
             var newRefreshToken = generateRefreshToken(ipAddress);
-            refreshToken.Revoked = DateTime.Now;
+            refreshToken.Revoked = DateTime.UtcNow;
             refreshToken.RevokedByIp = ipAddress;
             refreshToken.ReplacedByToken = newRefreshToken.Token;
 
@@ -263,7 +266,7 @@ namespace cmangos_web_api.Services
             var refreshToken = (await _accountRepository.GetTokens(user.id)).Single(x => x.Token == reqRefreshToken);
             if (!refreshToken.IsActive) return false;
 
-            refreshToken.Revoked = DateTime.Now;
+            refreshToken.Revoked = DateTime.UtcNow;
             refreshToken.RevokedByIp = ipAddress;
 
             await _accountRepository.UpdateToken(refreshToken);
@@ -284,8 +287,8 @@ namespace cmangos_web_api.Services
             return new RefreshToken
             {
                 Token = refreshToken,
-                Expires = DateTime.Now.AddDays(7),
-                Created = DateTime.Now,
+                Expires = DateTime.UtcNow.AddSeconds(_options.CurrentValue.RefreshExpirationSeconds),
+                Created = DateTime.UtcNow,
                 CreatedByIp = ipAddress
             };
         }
@@ -300,6 +303,28 @@ namespace cmangos_web_api.Services
                     claims.Add(new Claim(ClaimTypes.Role, role));
             }
             return claims;
+        }
+
+        private bool validateToken(string token, string pin)
+        {
+            var totp = new Totp(Base32Encoding.ToBytes(token), 15);
+            var result = totp.VerifyTotp(pin, out _, VerificationWindow.RfcSpecifiedNetworkDelay);
+            var serverToken = generateToken(token);
+            var clientToken = uint.Parse(pin);
+            return serverToken == clientToken;
+        }
+
+        public async Task<bool> AddAuthenticator(string pin)
+        {
+            var ext = await _accountRepository.GetExt(_userProvider.CurrentUser!.Id);
+            if (ext == null)
+                return false;
+            if (ext.PendingToken == null)
+                return false;
+            bool result = validateToken(ext.PendingToken, pin);
+            if (result == false)
+                return false;
+            return await _accountRepository.QualifyPendingToken(ext);
         }
     }
 }

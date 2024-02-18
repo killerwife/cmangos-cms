@@ -43,11 +43,11 @@ namespace cmangos_web_api.Helpers
                 var userId = claims.SingleOrDefault(p => p.Type == "sub");
                 if (userId == null)
                     return;
-                var user = await accountRepository.Get(uint.Parse(userId.Value));
-                if (user == null)
+                var roles = claims.SingleOrDefault(p => p.Type == "role");
+                if (roles == null)
                     return;
-                context.Items["User"] = user;
-                context.Items["roles"] = accountRepository.GetRoles(user.id);
+                context.Items["userId"] = userId.Value;
+                context.Items["roles"] = roles.Value;
             }
             catch (Exception)
             {

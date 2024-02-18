@@ -584,3 +584,4 @@ FodyWeavers.xsd
 
 .scannerwork/*
 .sonarqube/*
+cmangos-web-api/cmangos-web-api/appsettings.Development.json

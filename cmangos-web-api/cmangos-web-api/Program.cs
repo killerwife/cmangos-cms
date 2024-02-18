@@ -1,7 +1,10 @@
+using cmangos_web_api.Configs;
 using cmangos_web_api.Helpers;
 using cmangos_web_api.Repositories;
 using cmangos_web_api.Services;
+using Data.Config;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Services.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +26,8 @@ builder.Services.AddCors(options =>
     );
 });
 
+builder.Services.Configure<AuthConfig>(builder.Configuration.GetSection("AuthConfig"));
+builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection("EmailConfig"));
 builder.Services.AddDbContext<RealmdDbContext>();
 var connectionStringCms = builder.Configuration.GetValue<string>("ConnectionStrings:Cms");
 builder.Services.AddDbContext<CmsDbContext>(options => options.UseMySql(connectionStringCms, ServerVersion.AutoDetect(connectionStringCms))

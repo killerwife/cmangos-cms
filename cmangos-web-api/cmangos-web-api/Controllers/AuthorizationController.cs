@@ -63,6 +63,7 @@ namespace cmangos_web_api.Controllers
         [HttpGet("addauthenticator")]
         public async Task<IActionResult> AddToken([FromBody] AddGoogleAuthenticatorDto token)
         {
+            await _authService.AddAuthenticator(token.Token);
             return Ok();
         }
     }

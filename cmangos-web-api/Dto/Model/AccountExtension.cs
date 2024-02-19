@@ -11,5 +11,6 @@
         public DateTime? TokenChanged { get; set; }
         public DateTime? PasswordRecoverySent { get; set; }
         public string? PasswordRecoveryToken {  get; set; }
+        public DateTime? PasswordChanged { get; set; }
     }
 }

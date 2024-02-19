@@ -15,7 +15,6 @@ using System.Security.Claims;
 using Common;
 using cmangos_web_api.Auth;
 using Microsoft.AspNetCore.Mvc;
-using System;
 
 namespace Services.Services
 {
@@ -363,7 +362,6 @@ namespace Services.Services
                 v = verifierInteger.ToString("X")
             };
             Account? newAccount;
-            bool result = false;
             do
             {
                 g = Guid.NewGuid();
@@ -383,6 +381,59 @@ namespace Services.Services
 
             var emailResult = await _emailService.SendToken(_userProvider.CurrentUser.Name, data.Value.email!, g.ToString(), url, "en-GB", Operation.SendConfirmationEmail);
             return emailResult;
+        }
+
+        public async Task<PasswordRecoveryTokenResult> ForgotPassword(string email, string url)
+        {
+            var user = await _accountRepository.FindByEmail(email);
+            if (user == null)
+                return PasswordRecoveryTokenResult.NotFound;
+
+            PasswordRecoveryTokenResult result;
+            Guid g;
+            do
+            {
+                g = Guid.NewGuid();
+                result = await _accountRepository.SetPasswordRecoveryToken(user, g.ToString());
+            }
+            while (result == PasswordRecoveryTokenResult.Collision);
+            if (result == PasswordRecoveryTokenResult.TooSoon)
+                return result;
+
+            var emailResult = await _emailService.SendToken(_userProvider.CurrentUser.Name, user.email!, g.ToString(), url, "en-GB", Operation.SendConfirmationEmail);
+            return PasswordRecoveryTokenResult.Success;
+        }
+
+        public async Task<bool> ChangePassword(string password, string newPassword)
+        {
+            var user = await _accountRepository.Get(_userProvider.CurrentUser!.Id);
+            if (user == null)
+                return false;
+
+            var oldSalt = BigInteger.Parse(user.s, NumberStyles.AllowHexSpecifier);
+            var oldVerifier = BigInteger.Parse(user.v, NumberStyles.AllowHexSpecifier);
+            if (!VerifySRP6Login(user.username, password, oldSalt.ToByteArray(), oldVerifier.ToByteArray()))
+                return false;
+
+            byte[] salt = new byte[32];
+            rngCsp.GetBytes(salt);
+            BigInteger saltInteger = new BigInteger(salt);
+            byte[] verifier = CalculateSRP6Verifier(user.username.ToUpper(), newPassword.ToUpper(), salt);
+            BigInteger verifierInteger = new BigInteger(verifier);
+            var result = await _accountRepository.ChangePassword(user, null, saltInteger.ToString("X"), verifierInteger.ToString("X"));
+            return result;
+        }
+
+        public async Task<bool> PasswordRecovery(string newPassword, string token)
+        {
+            var data = await _accountRepository.FindByPasswordRecoveryToken(token);
+            byte[] salt = new byte[32];
+            rngCsp.GetBytes(salt);
+            BigInteger saltInteger = new BigInteger(salt);
+            byte[] verifier = CalculateSRP6Verifier(data.Item2.username.ToUpper(), newPassword.ToUpper(), salt);
+            BigInteger verifierInteger = new BigInteger(verifier);
+            var result = await _accountRepository.ChangePassword(data.Item2, data.Item1, saltInteger.ToString("X"), verifierInteger.ToString("X"));
+            return result;
         }
     }
 }

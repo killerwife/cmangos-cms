@@ -14,5 +14,6 @@ namespace Common
     public enum Operation
     {
         SendConfirmationEmail = 0,
+        SendPasswordRecovery = 1,
     }
 }

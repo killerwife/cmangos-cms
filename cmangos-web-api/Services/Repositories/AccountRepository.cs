@@ -138,6 +138,7 @@ namespace Services.Repositories
                 PendingEmail = email,
                 PendingEmailToken = confirmationToken,
                 PendingEmailTokenSent = DateTime.UtcNow,
+                PasswordChanged = DateTime.UtcNow,
             };
             _cmsContext.Add(ext);
             await _cmsContext.SaveChangesAsync();
@@ -151,6 +152,53 @@ namespace Services.Repositories
                 return null;
 
             return (ext.PendingEmailTokenSent, ext.PendingToken, ext.PendingEmail);
+        }
+
+        public async Task<bool> ChangePassword(Account account, AccountExtension? ext, string salt, string verifier)
+        {
+            account.s = salt;
+            account.v = verifier;
+            if (ext == null)
+                ext = await GetExt(account.id);
+
+            ext!.PasswordChanged = DateTime.UtcNow;
+            ext.PasswordRecoveryToken = null;
+            _dbContext.Update(account);
+            var result = await _dbContext.SaveChangesAsync();
+            _cmsContext.Update(ext);
+            var result2 = await _cmsContext.SaveChangesAsync();
+            return result > 0 && result2 > 0;
+        }
+
+        public async Task<Account?> FindByEmail(string email)
+        {
+            return _dbContext.Accounts.Where(p => p.email == email).SingleOrDefault();
+        }
+
+        public async Task<PasswordRecoveryTokenResult> SetPasswordRecoveryToken(Account user, string token)
+        {
+            if (_cmsContext.AccountsExt.Where(p => p.PasswordRecoveryToken == token).SingleOrDefault() != null)
+                return PasswordRecoveryTokenResult.Collision;
+
+            var ext = await GetExt(user.id);
+            if (ext.PasswordRecoverySent > DateTime.UtcNow.AddMinutes(-2))
+                return PasswordRecoveryTokenResult.TooSoon;
+
+            ext.PasswordRecoverySent = DateTime.UtcNow;
+            ext.PasswordRecoveryToken = token;
+
+            _cmsContext.Update(ext);
+            await _cmsContext.SaveChangesAsync();
+            return PasswordRecoveryTokenResult.Success;
+        }
+
+        public async Task<(AccountExtension?, Account?)> FindByPasswordRecoveryToken(string token)
+        {
+            var ext = _cmsContext.AccountsExt.Where(p => p.PasswordRecoveryToken == token).SingleOrDefault();
+            if (ext == null)
+                return (null, null);
+
+            return (ext, await Get(ext.Id));
         }
     }
 }

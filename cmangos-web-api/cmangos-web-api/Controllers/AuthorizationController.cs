@@ -58,23 +58,30 @@ namespace cmangos_web_api.Controllers
         [HttpGet("resendverificationemail")]
         public async Task<IActionResult> ResendVerificationEmail()
         {
-            await _authService.ResendValidationEmail(HttpContext.Request.GetEncodedUrl());
-            return Ok();
+            var result = await _authService.ResendValidationEmail(HttpContext.Request.GetEncodedUrl());
+            return result == null ? Ok() : result;
         }
 
         [HttpPost("forgotpassword")]
         public async Task<IActionResult> ForgotPassword(string email)
         {
-            // TODO
-            return Ok();
+            var result = await _authService.ForgotPassword(email, HttpContext.Request.GetEncodedUrl());
+            return result == Repositories.PasswordRecoveryTokenResult.Success ? Ok() : BadRequest();
+        }
+
+        [HttpPost("passwordrecovery")]
+        public async Task<IActionResult> PasswordRecovery([FromBody] PasswordRecoveryDto passwordRecovery)
+        {
+            var result = await _authService.PasswordRecovery(passwordRecovery.NewPassword, passwordRecovery.Token);
+            return result == true ? Ok() : BadRequest();
         }
 
         [Authorize]
         [HttpPost("changepassword")]
-        public async Task<IActionResult> ChangePassword()
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changePassword)
         {
-            // TODO
-            return Ok();
+            var result = await _authService.ChangePassword(changePassword.Password, changePassword.NewPassword);
+            return result ? Ok() : BadRequest();
         }
 
         [Authorize]

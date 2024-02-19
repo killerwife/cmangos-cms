@@ -1,4 +1,5 @@
-﻿using Data.Dto;
+﻿using cmangos_web_api.Repositories;
+using Data.Dto;
 using Data.Dto.Srp6;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -21,5 +22,9 @@ namespace Services.Services
         Task<bool> VerifyEmail(string token);
         Task<IActionResult?> CreateAccount(string username, string password, string email, string url);
         Task<IActionResult?> ResendValidationEmail(string url);
+
+        Task<PasswordRecoveryTokenResult> ForgotPassword(string email, string url);
+        Task<bool> ChangePassword(string password, string newPassword);
+        Task<bool> PasswordRecovery(string newPassword, string token);
     }
 }

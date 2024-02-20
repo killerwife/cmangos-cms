@@ -47,7 +47,7 @@ namespace cmangos_web_api.Controllers
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name=""></param>
+        /// <param name="register"></param>
         /// <response code="200"></response>
         /// <response code="400"></response>
         [HttpPost("srp6/registerChallenge")]
@@ -60,7 +60,7 @@ namespace cmangos_web_api.Controllers
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name=""></param>
+        /// <param name="register"></param>
         /// <response code="200"></response>
         /// <response code="400"></response>
         [HttpPost("srp6/register")]
@@ -143,7 +143,7 @@ namespace cmangos_web_api.Controllers
         /// <summary>
         /// Sends email with password reset token to associated user and stores token
         /// </summary>
-        /// <param name=""></param>
+        /// <param name="email">Email paired with account for password recovery</param>
         /// <response code="200">Email was successfully sent</response>
         /// <response code="400">User associated with email does not exist or request came too soon</response>
         [HttpPost("forgotpassword")]
@@ -169,7 +169,7 @@ namespace cmangos_web_api.Controllers
         /// <summary>
         /// Changes password for user
         /// </summary>
-        /// <param name=""></param>
+        /// <param name="changePassword">Old and new password for validation and change</param>
         /// <response code="200">Change success</response>
         /// <response code="400">Change password failed - old password invalid</response>
         [Authorize]
@@ -183,7 +183,6 @@ namespace cmangos_web_api.Controllers
         /// <summary>
         /// Generates secret for 2fa token and sends it to client
         /// </summary>
-        /// <param name=""></param>
         /// <response code="200">Pending secret successfully added and returned</response>
         /// <response code="400">Save was not successful</response>
         [Authorize]
@@ -199,7 +198,7 @@ namespace cmangos_web_api.Controllers
         /// <summary>
         /// Validates token against pending secret
         /// </summary>
-        /// <param name=""></param>
+        /// <param name="token">Token for validation against secret</param>
         /// <response code="200">Token was validated against pending secret and set as main</response>
         /// <response code="400">Token validation was not successful against pending secret</response>
         [Authorize]

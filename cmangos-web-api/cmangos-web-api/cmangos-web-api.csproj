@@ -7,6 +7,7 @@
     <RootNamespace>cmangos_web_api</RootNamespace>
     <UserSecretsId>83136bea-0665-4c41-b0aa-d0b0a48b8244</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

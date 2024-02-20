@@ -9,6 +9,7 @@ using Services.Repositories;
 using System.Reflection;
 using System.Security.Claims;
 using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;
+using cmangos_web_api.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,6 +67,7 @@ builder.Services.AddDbContext<CmsDbContext>(options => options.UseMySql(connecti
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IUserProvider, UserProvider>();
 
 var app = builder.Build();
 

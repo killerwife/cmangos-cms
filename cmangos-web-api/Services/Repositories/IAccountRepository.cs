@@ -31,6 +31,6 @@ namespace cmangos_web_api.Repositories
         Task<(DateTime? lastSentTime, string? validationToken, string? email)?> GetEmailValidationData(uint userId);
         Task<bool> ChangePassword(Account account, AccountExtension? ext, string salt, string verifier);
         Task<PasswordRecoveryTokenResult> SetPasswordRecoveryToken(Account user, string v);
-        Task<(AccountExtension?, Account?)> FindByPasswordRecoveryToken(string token);
+        Task<(AccountExtension? ext, Account? account)> FindByPasswordRecoveryToken(string token);
     }
 }

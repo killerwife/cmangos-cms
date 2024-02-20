@@ -32,11 +32,12 @@ namespace Services.Services
         // trailing 0 to force unsigned
         private static readonly BigInteger N = BigInteger.Parse("0894B645E89E1535BBDAD5B8B290650530801B18EBFBF5E8FAB3C82872A3E9BB7", NumberStyles.AllowHexSpecifier);
 
-        public AuthService(IOptionsMonitor<AuthConfig> options, IAccountRepository accountRepository, IUserProvider userProvider)
+        public AuthService(IOptionsMonitor<AuthConfig> options, IAccountRepository accountRepository, IUserProvider userProvider, IEmailService emailService)
         {
             _options = options;
             _accountRepository = accountRepository;
             _userProvider = userProvider;
+            _emailService = emailService;
         }
 
         public async Task<ChallengeResponseDto> GenerateChallenge(string userName)
@@ -71,10 +72,8 @@ namespace Services.Services
                     Errors = new List<string>() { "Invalid credentials" }
                 };
 
-            var salt = BigInteger.Parse(account.s, NumberStyles.AllowHexSpecifier);
-            var verifier = BigInteger.Parse(account.v, NumberStyles.AllowHexSpecifier);
-            var saltHex = salt.ToString("X");
-            var verifierHex = verifier.ToString("X");
+            var salt = BigInteger.Parse(account.s!, NumberStyles.AllowHexSpecifier);
+            var verifier = BigInteger.Parse(account.v!, NumberStyles.AllowHexSpecifier);
             if (!VerifySRP6Login(name, password, salt.ToByteArray(), verifier.ToByteArray()))
                 return new AuthResDto
                 {
@@ -211,33 +210,41 @@ namespace Services.Services
         {
             var handler = new JwtSecurityTokenHandler();
             var token = handler.ReadJwtToken(jwt);
-            //RSAParameters rsaParams;
-            //using (var rsaProvider = new RSACryptoServiceProvider(Constants.RsaKeyLength))
-            //{
-            //    rsaProvider.ImportFromPem(_options.CurrentValue.JwtPublic.ToCharArray());
-            //    rsaParams = rsaProvider.ExportParameters(false);
-            //    // use the RSAParameters here
-            //}
-            //tokenHandler.ValidateToken(token, new TokenValidationParameters
-            //{
-            //    ValidateIssuerSigningKey = true,
-            //    IssuerSigningKey = new RsaSecurityKey(rsaParams),
-            //    ValidateIssuer = false,
-            //    ValidateAudience = false,
-            //    // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
-            //    ClockSkew = TimeSpan.Zero
-            //}, out SecurityToken validatedToken);
+            RSAParameters rsaParams;
+            using (var rsaProvider = new RSACryptoServiceProvider(Constants.RsaKeyLength))
+            {
+                rsaProvider.ImportFromPem(_options.CurrentValue.JwtPublic.ToCharArray());
+                rsaParams = rsaProvider.ExportParameters(false);
+                // use the RSAParameters here
+            }
+            handler.ValidateToken(jwt, new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new RsaSecurityKey(rsaParams),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
+                ClockSkew = TimeSpan.Zero
+            }, out SecurityToken validatedToken);
 
             return token.Claims;
         }
 
-        public async Task<AuthResDto?> RefreshToken(string reqRefreshToken, string ipAddress)
+        public async Task<AuthResDto> RefreshToken(string reqRefreshToken, string ipAddress)
         {
-            Account user = await _accountRepository.FindByToken(reqRefreshToken);
-            if (user == null) return null;
+            Account? user = await _accountRepository.FindByToken(reqRefreshToken);
+            if (user == null)
+                return new AuthResDto
+                {
+                    Errors = new List<string>() { "Invalid token" }
+                };
 
             var refreshToken = (await _accountRepository.GetTokens(user.id)).Single(x => x.Token == reqRefreshToken);
-            if (!refreshToken.IsActive) return null;
+            if (!refreshToken.IsActive)
+                return new AuthResDto
+                {
+                    Errors = new List<string>() { "Invalid token" }
+                };
 
             var newRefreshToken = generateRefreshToken(ipAddress);
             refreshToken.Revoked = DateTime.UtcNow;
@@ -400,7 +407,7 @@ namespace Services.Services
             if (result == PasswordRecoveryTokenResult.TooSoon)
                 return result;
 
-            var emailResult = await _emailService.SendToken(_userProvider.CurrentUser.Name, user.email!, g.ToString(), url, "en-GB", Operation.SendConfirmationEmail);
+            var emailResult = await _emailService.SendToken(_userProvider.CurrentUser!.Name, user.email!, g.ToString(), url, "en-GB", Operation.SendConfirmationEmail);
             return PasswordRecoveryTokenResult.Success;
         }
 
@@ -410,8 +417,8 @@ namespace Services.Services
             if (user == null)
                 return false;
 
-            var oldSalt = BigInteger.Parse(user.s, NumberStyles.AllowHexSpecifier);
-            var oldVerifier = BigInteger.Parse(user.v, NumberStyles.AllowHexSpecifier);
+            var oldSalt = BigInteger.Parse(user.s!, NumberStyles.AllowHexSpecifier);
+            var oldVerifier = BigInteger.Parse(user.v!, NumberStyles.AllowHexSpecifier);
             if (!VerifySRP6Login(user.username, password, oldSalt.ToByteArray(), oldVerifier.ToByteArray()))
                 return false;
 
@@ -427,12 +434,14 @@ namespace Services.Services
         public async Task<bool> PasswordRecovery(string newPassword, string token)
         {
             var data = await _accountRepository.FindByPasswordRecoveryToken(token);
+            if (data.ext == null)
+                return false;
             byte[] salt = new byte[32];
             rngCsp.GetBytes(salt);
             BigInteger saltInteger = new BigInteger(salt);
-            byte[] verifier = CalculateSRP6Verifier(data.Item2.username.ToUpper(), newPassword.ToUpper(), salt);
+            byte[] verifier = CalculateSRP6Verifier(data.account!.username.ToUpper(), newPassword.ToUpper(), salt);
             BigInteger verifierInteger = new BigInteger(verifier);
-            var result = await _accountRepository.ChangePassword(data.Item2, data.Item1, saltInteger.ToString("X"), verifierInteger.ToString("X"));
+            var result = await _accountRepository.ChangePassword(data.account, data.ext, saltInteger.ToString("X"), verifierInteger.ToString("X"));
             return result;
         }
     }

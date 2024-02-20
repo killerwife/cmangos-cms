@@ -56,7 +56,7 @@ namespace Services.Repositories
         public async Task<bool> AddPendingAuthenticator(uint userId, string token)
         {
             var ext = await GetExt(userId);
-            ext.PendingToken = token;
+            ext!.PendingToken = token;
             _cmsContext.Update(ext);
             var result = await _cmsContext.SaveChangesAsync();
             return result > 0;
@@ -65,7 +65,7 @@ namespace Services.Repositories
         public async Task<bool> QualifyPendingToken(AccountExtension ext)
         {
             var user = await Get(ext.Id);
-            user.token = ext.PendingToken;
+            user!.token = ext.PendingToken;
             ext.PendingToken = null;
             _dbContext.Update(user);
             var result = await _dbContext.SaveChangesAsync();
@@ -181,7 +181,7 @@ namespace Services.Repositories
                 return PasswordRecoveryTokenResult.Collision;
 
             var ext = await GetExt(user.id);
-            if (ext.PasswordRecoverySent > DateTime.UtcNow.AddMinutes(-2))
+            if (ext!.PasswordRecoverySent > DateTime.UtcNow.AddMinutes(-2))
                 return PasswordRecoveryTokenResult.TooSoon;
 
             ext.PasswordRecoverySent = DateTime.UtcNow;
@@ -192,7 +192,7 @@ namespace Services.Repositories
             return PasswordRecoveryTokenResult.Success;
         }
 
-        public async Task<(AccountExtension?, Account?)> FindByPasswordRecoveryToken(string token)
+        public async Task<(AccountExtension? ext, Account? account)> FindByPasswordRecoveryToken(string token)
         {
             var ext = _cmsContext.AccountsExt.Where(p => p.PasswordRecoveryToken == token).SingleOrDefault();
             if (ext == null)

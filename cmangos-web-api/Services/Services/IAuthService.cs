@@ -13,7 +13,7 @@ namespace Services.Services
         Task<AuthResDto> ValidatePlainLogin(string name, string password, string? pin);
         string CreateToken(List<Claim> claims);
         IEnumerable<Claim> DecodeToken(string token);
-        Task<AuthResDto?> RefreshToken(string token, string ipAddress);
+        Task<AuthResDto> RefreshToken(string token, string ipAddress);
         Task<bool> RevokeToken(string token, string ipAddress);
 
         Task<string?> AddPendingAuthenticator();

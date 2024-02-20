@@ -18,21 +18,21 @@ namespace cmangos_web_api.Helpers
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             if (token != null)
-                await AttachUserToContext(context, authService, token, accountRepository);
+                AttachUserToContext(context, authService, token, accountRepository);
 
             if (context.Items["User"] != null)
                 context.Response.OnStarting(state =>
                 {
                     var httpContext = (HttpContext)state;
                     httpContext.Response.Headers.Remove("Cache-Control");
-                    httpContext.Response.Headers.Add("Cache-Control", "no-cache, no-store");
+                    httpContext.Response.Headers.Append("Cache-Control", "no-cache, no-store");
                     return Task.CompletedTask;
                 }, context);
 
             await _next(context);
         }
 
-        private async Task AttachUserToContext(HttpContext context, IAuthService authService, string token, IAccountRepository accountRepository)
+        private void AttachUserToContext(HttpContext context, IAuthService authService, string token, IAccountRepository accountRepository)
         {
             try
             {

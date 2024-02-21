@@ -1,5 +1,6 @@
 ﻿using cmangos_web_api.Repositories;
 using Services.Services;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace cmangos_web_api.Helpers
@@ -13,12 +14,12 @@ namespace cmangos_web_api.Helpers
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IAuthService authService, IAccountRepository accountRepository)
+        public async Task Invoke(HttpContext context)
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             if (token != null)
-                AttachUserToContext(context, authService, token, accountRepository);
+                AttachUserToContext(context, token);
 
             if (context.Items["User"] != null)
                 context.Response.OnStarting(state =>
@@ -32,22 +33,21 @@ namespace cmangos_web_api.Helpers
             await _next(context);
         }
 
-        private void AttachUserToContext(HttpContext context, IAuthService authService, string token, IAccountRepository accountRepository)
+        private void AttachUserToContext(HttpContext context, string token)
         {
             try
             {
-                var claims = authService.DecodeToken(token);
+                var handler = new JwtSecurityTokenHandler();
+                var jwt = handler.ReadJwtToken(token);
+                var claims = jwt.Claims;
                 if (claims == null)
                     return;
                 var userId = claims.SingleOrDefault(p => p.Type == "sub");
                 if (userId == null)
                     return;
-                var roles = claims.SingleOrDefault(p => p.Type == "role");
-                if (roles == null)
-                    return;
-                context.Items["User"] = new ClaimsPrincipal(new ClaimsIdentity(claims));
+                var principal = new ClaimsPrincipal(new ClaimsIdentity(claims));
+                context.User = principal;
                 context.Items["userId"] = userId.Value;
-                context.Items["roles"] = roles.Value;
             }
             catch (Exception)
             {

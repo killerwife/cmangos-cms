@@ -2,10 +2,10 @@
 using Data.Dto;
 using Data.Dto.PlainAuth;
 using Data.Dto.Srp6;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OtpNet;
 using Microsoft.AspNetCore.Http.Extensions;
+using cmangos_web_api.Helpers;
 
 namespace cmangos_web_api.Controllers
 {

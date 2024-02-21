@@ -97,6 +97,7 @@ namespace Services.Services
 
             var claims = GetClaims(account);
             var newRefreshToken = generateRefreshToken("");
+            newRefreshToken.UserId = account.id;
             await _accountRepository.RevokeAndAddToken(newRefreshToken);
             return new AuthResDto
             {
@@ -260,7 +261,7 @@ namespace Services.Services
 
             return new AuthResDto()
             {
-                Id = user.id,
+                UserId = user.id,
                 JwtToken = jwtToken,
                 ExpiresIn = _options.CurrentValue.RefreshExpirationSeconds,
                 RefreshToken = newRefreshToken.Token
@@ -354,6 +355,8 @@ namespace Services.Services
 
         public async Task<IActionResult?> CreateAccount(string username, string password, string email, string url)
         {
+            if (await _accountRepository.FindByEmail(email) != null)
+                return new BadRequestObjectResult("Account with given email already exists");
             byte[] salt = new byte[32];
             rngCsp.GetBytes(salt);
             BigInteger saltInteger = new BigInteger(salt);
@@ -384,7 +387,7 @@ namespace Services.Services
         {
             var data = await _accountRepository.GetEmailValidationData(_userProvider.CurrentUser!.Id);
             if (data == null || data.Value.validationToken == null) { return new BadRequestObjectResult("No pending email change."); }
-            if (data.Value.lastSentTime < DateTime.UtcNow.AddMinutes(-2)) { return new BadRequestObjectResult("New request too soon"); }
+            if (data.Value.lastSentTime > DateTime.UtcNow.AddMinutes(-2)) { return new BadRequestObjectResult("New request too soon"); }
 
             var emailResult = await _emailService.SendToken(_userProvider.CurrentUser.Name, data.Value.email!, g.ToString(), url, "en-GB", Operation.SendConfirmationEmail);
             return emailResult;

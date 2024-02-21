@@ -19,6 +19,7 @@ namespace Data.Model
         public List<string> GetRoles()
         {
             var roles = new List<string>();
+            roles.Add("role_user");
             if (gmlevel >= 1)
                 roles.Add("role_moderator");
             if (gmlevel >= 2)

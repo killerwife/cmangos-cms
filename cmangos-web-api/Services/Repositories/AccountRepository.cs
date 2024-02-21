@@ -57,7 +57,7 @@ namespace Services.Repositories
         {
             var ext = await GetExt(userId);
             ext!.PendingToken = token;
-            _cmsContext.Update(ext);
+            _cmsContext.AccountsExt.Update(ext);
             var result = await _cmsContext.SaveChangesAsync();
             return result > 0;
         }
@@ -67,9 +67,9 @@ namespace Services.Repositories
             var user = await Get(ext.Id);
             user!.token = ext.PendingToken;
             ext.PendingToken = null;
-            _dbContext.Update(user);
+            _dbContext.Accounts.Update(user);
             var result = await _dbContext.SaveChangesAsync();
-            _cmsContext.Update(ext);
+            _cmsContext.AccountsExt.Update(ext);
             var result2 = await _cmsContext.SaveChangesAsync();
             return result > 0 && result2 > 0;
         }
@@ -84,7 +84,9 @@ namespace Services.Repositories
 
         public async Task<bool> RevokeTokens(uint userId)
         {
-            return _cmsContext.Database.ExecuteSql($"UPDATE refresh_token SET Expires={DateTime.UtcNow} WHERE UserId={userId}") > 0; 
+            var result = _cmsContext.Database.ExecuteSql($"DELETE FROM refresh_token WHERE UserId={userId} AND Expires <= NOW() - INTERVAL 1 DAY");
+            await _cmsContext.SaveChangesAsync();
+            return result > 0; 
         }
 
         public async Task<bool> SetAuthenticatorToken(uint userId, string token)
@@ -100,7 +102,7 @@ namespace Services.Repositories
 
         public async Task<bool> UpdateToken(RefreshToken token)
         {
-            _cmsContext.RefreshToken.Add(token);
+            _cmsContext.RefreshToken.Update(token);
             var result = await _dbContext.SaveChangesAsync();
             return result > 0;
         }
@@ -118,9 +120,9 @@ namespace Services.Repositories
             ext.PendingEmailToken = null;
             ext.PendingEmailTokenSent = null;
 
-            _dbContext.Update(user);
+            _dbContext.Accounts.Update(user);
             var result = await _dbContext.SaveChangesAsync();
-            _cmsContext.Update(ext);
+            _cmsContext.AccountsExt.Update(ext);
             var result2 = await _cmsContext.SaveChangesAsync();
             return result > 0 && result2 > 0;
         }
@@ -163,9 +165,9 @@ namespace Services.Repositories
 
             ext!.PasswordChanged = DateTime.UtcNow;
             ext.PasswordRecoveryToken = null;
-            _dbContext.Update(account);
+            _dbContext.Accounts.Update(account);
             var result = await _dbContext.SaveChangesAsync();
-            _cmsContext.Update(ext);
+            _cmsContext.AccountsExt.Update(ext);
             var result2 = await _cmsContext.SaveChangesAsync();
             return result > 0 && result2 > 0;
         }
@@ -187,7 +189,7 @@ namespace Services.Repositories
             ext.PasswordRecoverySent = DateTime.UtcNow;
             ext.PasswordRecoveryToken = token;
 
-            _cmsContext.Update(ext);
+            _cmsContext.AccountsExt.Update(ext);
             await _cmsContext.SaveChangesAsync();
             return PasswordRecoveryTokenResult.Success;
         }

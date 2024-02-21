@@ -24,7 +24,7 @@ namespace Services.Services
             try
             {                
                 var message = new MimeMessage();
-                message.From.Add(new MailboxAddress(_emailConfig.CurrentValue.Email, _emailConfig.CurrentValue.Email));
+                message.From.Add(new MailboxAddress(_emailConfig.CurrentValue.SenderAlias, _emailConfig.CurrentValue.SenderEmail));
                 message.To.Add(new MailboxAddress(username, email));
 
                 var builder = new BodyBuilder();

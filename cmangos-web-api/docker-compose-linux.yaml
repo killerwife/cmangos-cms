@@ -1,0 +1,29 @@
+version: "3"
+services:
+
+  cmangos-web-api:
+    image: cmangos-web-api:latest-linux
+    restart: always
+    ports:
+      - "7080:80"
+      - "7443:443"
+    environment:
+      - "ASPNETCORE_URLS=https://+;http://+"
+      - "ASPNETCORE_HTTPS_PORT=443"
+      - "ASPNETCORE_Kestrel__Certificates__Default__Path=/app/cmangos-web-api.pfx"
+      - "ASPNETCORE_Kestrel__Certificates__Default__Password=TODO"
+      - "ASPNETCORE_ENVIRONMENT=development"
+      - ConnectionStrings:Realmd="server=TODO; database=tbcrealmd; user=mangos; password=mangos"
+      - ConnectionStrings:Cms="server=TODO; database=tbccms; user=mangos; password=mangos"
+      - AuthConfig:JwtPrivate="TODO PEM PRIVATE"
+      - AuthConfig:JwtPublic="TODO PEM PUBLIC"
+      - EmailConfig:Host=""
+      - EmailConfig:Port=""
+      - EmailConfig:RequireSsl=""
+      - EmailConfig:Email=""
+      - EmailConfig:Password=""
+      - EmailConfig:SenderEmail=""
+      - EmailConfig:SenderAlias=""
+    volumes:
+      - "./cmangos-web-api/cmangos-web-api.pfx:/app/cmangos-web-api.pfx"
+      - "./cmangos-web-api/logs/:/app/logs/"

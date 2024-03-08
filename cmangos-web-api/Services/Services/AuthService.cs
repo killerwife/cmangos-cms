@@ -263,7 +263,7 @@ namespace Services.Services
             {
                 UserId = user.id,
                 JwtToken = jwtToken,
-                ExpiresIn = _options.CurrentValue.RefreshExpirationSeconds,
+                ExpiresIn = DateTime.UtcNow.AddSeconds(_options.CurrentValue.RefreshExpirationSeconds),
                 RefreshToken = newRefreshToken.Token
             };
         }

@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Security.Claims;
 using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;
 using cmangos_web_api.Auth;
+using Configs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,6 +57,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.Configure<AuthConfig>(builder.Configuration.GetSection("AuthConfig"));
 builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection("EmailConfig"));
+builder.Services.Configure<WebsiteConfig>(builder.Configuration.GetSection("WebsiteConfig"));
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ClaimsPrincipal>(s => s.GetService<IHttpContextAccessor>()?.HttpContext?.User!);
 builder.Services.AddDbContext<RealmdDbContext>();

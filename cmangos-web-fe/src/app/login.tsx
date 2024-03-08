@@ -1,7 +1,19 @@
 import { redirect } from 'next/navigation'
 import { useState } from 'react'
+import { cookies } from "next/headers";
 
-const authRequest = (callback: any, username: string, password: string, token: string) => {
+export interface plainLoginResult {
+    JwtToken: string,
+    ExpiresIn: string, // datetime
+    RefreshToken: string,
+    Errors: any // list of strings
+}
+
+const authRequest = (callback: Function, failureCallback: Function, username: string, password: string, token: string) => {
+    const parseError = (r: plainLoginResult) => {
+        return r.Errors.join(', ');
+    }
+
     fetch('http://localhost:3080/plain/authorize', {
         method: 'POST',
         headers: {
@@ -9,8 +21,16 @@ const authRequest = (callback: any, username: string, password: string, token: s
         },
         body: JSON.stringify({ name: username, password: password, token: token }),
     })
-        .then((r) => r.json())
-        .then((r) => {
+        .then(async (response) => {
+            if (response.status == 400) {
+                failureCallback(parseError((await response.json()) as plainLoginResult))
+                throw new Error('Failed to login');
+            }
+            return response.json()
+        })
+        .then((r: plainLoginResult) => {
+            cookies().set("access-token", r.JwtToken);
+            cookies().set("refresh-token", r.RefreshToken);
             callback(r)
         })
 }
@@ -21,9 +41,14 @@ export default function Login({ redirectUrl }: {redirectUrl: string}) {
     const [token, setToken] = useState('')
     const [usernameError, setUsernameError] = useState('')
     const [passwordError, setPasswordError] = useState('')
+    const [loginError, setLoginError] = useState('')
+
+    const loginFailed = (error: string) => {
+        setLoginError(error)
+    }
 
     const onButtonClick = () => {
-        setUsername('')
+        setUsernameError('')
         setPasswordError('')
 
         if ('' === username) {
@@ -36,7 +61,7 @@ export default function Login({ redirectUrl }: {redirectUrl: string}) {
             return
         }
 
-        authRequest(() => { redirect(redirectUrl) }, username, password, token)
+        authRequest(() => { redirect(redirectUrl) }, loginFailed, username, password, token)
     }
 
     return (
@@ -45,6 +70,7 @@ export default function Login({ redirectUrl }: {redirectUrl: string}) {
                 <div>Login</div>
             </div>
             <br />
+            <label className="errorLabel">{loginError}</label>
             <div className={'inputContainer'}>
                 <input
                     value={username}

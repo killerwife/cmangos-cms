@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { cookies } from "next/headers";
 
 const changePasswordRequest = (callback: Function, failureCallback: Function, oldPassword: string, newPassword: string) => {
-    fetch('http://localhost:3080/changepassword', {
+    fetch('https://localhost:7191/changepassword', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

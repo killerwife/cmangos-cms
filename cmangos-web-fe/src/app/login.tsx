@@ -1,4 +1,6 @@
-import { redirect } from 'next/navigation'
+'use client'
+
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { cookies } from "next/headers";
 
@@ -14,7 +16,7 @@ const authRequest = (callback: Function, failureCallback: Function, username: st
         return r.Errors.join(', ');
     }
 
-    fetch('http://localhost:3080/plain/authorize', {
+    fetch('https://localhost:7191/plain/authorize', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -35,13 +37,14 @@ const authRequest = (callback: Function, failureCallback: Function, username: st
         })
 }
 
-export default function Login({ redirectUrl }: {redirectUrl: string}) {
+export default function Login() {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [token, setToken] = useState('')
     const [usernameError, setUsernameError] = useState('')
     const [passwordError, setPasswordError] = useState('')
     const [loginError, setLoginError] = useState('')
+    const router = useRouter()
 
     const loginFailed = (error: string) => {
         setLoginError(error)
@@ -61,48 +64,50 @@ export default function Login({ redirectUrl }: {redirectUrl: string}) {
             return
         }
 
-        authRequest(() => { redirect(redirectUrl) }, loginFailed, username, password, token)
+        authRequest(() => { router.push('/') }, loginFailed, username, password, token)
     }
 
     return (
-        <div className={'mainContainer'}>
-            <div className={'titleContainer'}>
-                <div>Login</div>
+        <main>
+            <div className={'mainContainer'}>
+                <div className={'titleContainer'}>
+                    <div>Login</div>
+                </div>
+                <br />
+                <label className="errorLabel">{loginError}</label>
+                <div className={'inputContainer'}>
+                    <input
+                        value={username}
+                        placeholder="Enter username"
+                        onChange={(ev) => setUsername(ev.target.value)}
+                        className={'inputBox'}
+                    />
+                    <label className="errorLabel">{usernameError}</label>
+                </div>
+                <br />
+                <div className={'inputContainer'}>
+                    <input
+                        value={password}
+                        placeholder="Enter password"
+                        onChange={(ev) => setPassword(ev.target.value)}
+                        className={'inputBox'}
+                    />
+                    <label className="errorLabel">{passwordError}</label>
+                </div>
+                <br />
+                <div className={'inputContainer'}>
+                    <input
+                        value={token}
+                        placeholder="Enter token if applicable"
+                        onChange={(ev) => setToken(ev.target.value)}
+                        className={'inputBox'}
+                    />
+                </div>
+                <br />
+                <div className={'inputContainer'}>
+                    <input className={'inputButton'} type="button" onClick={onButtonClick} value={'Log in'} />
+                </div>
             </div>
-            <br />
-            <label className="errorLabel">{loginError}</label>
-            <div className={'inputContainer'}>
-                <input
-                    value={username}
-                    placeholder="Enter username"
-                    onChange={(ev) => setUsername(ev.target.value)}
-                    className={'inputBox'}
-                />
-                <label className="errorLabel">{usernameError}</label>
-            </div>
-            <br />
-            <div className={'inputContainer'}>
-                <input
-                    value={password}
-                    placeholder="Enter password"
-                    onChange={(ev) => setPassword(ev.target.value)}
-                    className={'inputBox'}
-                />
-                <label className="errorLabel">{passwordError}</label>
-            </div>
-            <br />
-            <div className={'inputContainer'}>
-                <input
-                    value={token}
-                    placeholder="Enter token if applicable"
-                    onChange={(ev) => setToken(ev.target.value)}
-                    className={'inputBox'}
-                />
-            </div>
-            <br />
-            <div className={'inputContainer'}>
-                <input className={'inputButton'} type="button" onClick={onButtonClick} value={'Log in'} />
-            </div>
-        </div>
+        </main>
     );
 }

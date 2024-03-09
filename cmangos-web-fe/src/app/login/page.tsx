@@ -2,18 +2,18 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { cookies } from "next/headers";
+import { useCookies } from 'react-cookie';
 
 export interface plainLoginResult {
-    JwtToken: string,
-    ExpiresIn: string, // datetime
-    RefreshToken: string,
-    Errors: any // list of strings
+    jwtToken: string,
+    expiresIn: string, // datetime
+    refreshToken: string,
+    errors: any // list of strings
 }
 
-const authRequest = (callback: Function, failureCallback: Function, username: string, password: string, token: string) => {
+const authRequest = (callback: Function, failureCallback: Function, username: string, password: string, token: string, cookies: any, setCookie: any) => {
     const parseError = (r: plainLoginResult) => {
-        return r.Errors.join(', ');
+        return r.errors.join(', ');
     }
 
     fetch('https://localhost:7191/plain/authorize', {
@@ -28,11 +28,11 @@ const authRequest = (callback: Function, failureCallback: Function, username: st
                 failureCallback(parseError((await response.json()) as plainLoginResult))
                 throw new Error('Failed to login');
             }
-            return response.json()
+            return await response.json()
         })
         .then((r: plainLoginResult) => {
-            cookies().set("access-token", r.JwtToken);
-            cookies().set("refresh-token", r.RefreshToken);
+            setCookie('access-token', r.jwtToken, { secure: true, sameSite: 'none' })
+            setCookie('refresh-token', r.refreshToken, { secure: true, sameSite: 'none' })
             callback(r)
         })
 }
@@ -45,6 +45,7 @@ export default function Login() {
     const [passwordError, setPasswordError] = useState('')
     const [loginError, setLoginError] = useState('')
     const router = useRouter()
+    const [cookies, setCookie] = useCookies();
 
     const loginFailed = (error: string) => {
         setLoginError(error)
@@ -64,7 +65,7 @@ export default function Login() {
             return
         }
 
-        authRequest(() => { router.push('/') }, loginFailed, username, password, token)
+        authRequest(() => { router.push('/') }, loginFailed, username, password, token, cookies, setCookie)
     }
 
     return (

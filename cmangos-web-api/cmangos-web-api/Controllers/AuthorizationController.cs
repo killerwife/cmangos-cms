@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using OtpNet;
 using Microsoft.AspNetCore.Http.Extensions;
 using cmangos_web_api.Helpers;
+using Org.BouncyCastle.Asn1.Ocsp;
 
 namespace cmangos_web_api.Controllers
 {
@@ -109,7 +110,7 @@ namespace cmangos_web_api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto register)
         {
-            IActionResult? result = await _authService.CreateAccount(register.Username, register.Password, register.Email, HttpContext.Request.GetEncodedUrl());
+            IActionResult? result = await _authService.CreateAccount(register.Username, register.Password, register.Email, $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}");
             return result == null ? Ok() : result;
         }
 
@@ -123,6 +124,8 @@ namespace cmangos_web_api.Controllers
         public async Task<IActionResult> VerifyEmail([FromRoute] string token)
         {
             bool result = await _authService.VerifyEmail(token);
+            if (result == true)
+                Redirect("http://localhost:3000/emailVerified");
             // TODO: Add redirect configurable to frontend
             return result ? Ok() : BadRequest();
         }
@@ -136,7 +139,7 @@ namespace cmangos_web_api.Controllers
         [HttpGet("resendverificationemail")]
         public async Task<IActionResult> ResendVerificationEmail()
         {
-            var result = await _authService.ResendValidationEmail(HttpContext.Request.GetEncodedUrl());
+            var result = await _authService.ResendValidationEmail($"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}");
             return result == null ? Ok() : result;
         }
 
@@ -149,7 +152,7 @@ namespace cmangos_web_api.Controllers
         [HttpPost("forgotpassword")]
         public async Task<IActionResult> ForgotPassword(string email)
         {
-            var result = await _authService.ForgotPassword(email, HttpContext.Request.GetEncodedUrl());
+            var result = await _authService.ForgotPassword(email, $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}");
             return result == Repositories.PasswordRecoveryTokenResult.Success ? Ok() : BadRequest();
         }
 

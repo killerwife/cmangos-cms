@@ -31,3 +31,8 @@ body {
     text-wrap: balance;
   }
 }
+
+.inputBox {
+    background-color: #595F5A;
+    color: white;
+}

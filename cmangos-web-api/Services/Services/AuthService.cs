@@ -102,7 +102,8 @@ namespace Services.Services
             return new AuthResDto
             {
                 JwtToken = CreateToken(claims),
-                RefreshToken = newRefreshToken.Token
+                RefreshToken = newRefreshToken.Token,
+                ExpiresIn = DateTime.UtcNow.AddSeconds(_options.CurrentValue.RefreshExpirationSeconds)
             };
         }
 

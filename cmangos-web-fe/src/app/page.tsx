@@ -9,9 +9,9 @@ const LogoutRequest = () => {
 
 export default function Page() {
     const router = useRouter()
-    const cookies = useCookies(['access-token'])
+    const [cookies] = useCookies(['access-token'])
 
-    if (cookies != null) {
+    if (cookies['access-token'] != null) {
         return (
             <main className="flex min-h-screen flex-col items-center justify-between p-24">
                 <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">

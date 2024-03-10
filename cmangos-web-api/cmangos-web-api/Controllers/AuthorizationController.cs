@@ -102,6 +102,19 @@ namespace cmangos_web_api.Controllers
         }
 
         /// <summary>
+        /// Revokes refresh token
+        /// </summary>
+        /// <param name="refreshToken">Refresh token to be revoked</param>
+        /// <response code="200">Token successfully revoked</response>
+        /// <response code="400">Could not revoke token</response>
+        [HttpPost("revoke/token")]
+        public async Task<ActionResult<AuthResDto>> RevokeToken([FromBody] RefreshTokenRequestDto refreshToken)
+        {
+            var result = await _authService.RevokeToken(refreshToken.RefreshToken, HttpContext.Connection.RemoteIpAddress!.ToString());
+            return result == true ? Ok() : BadRequest();
+        }
+
+        /// <summary>
         /// Registers new user using provided credentials
         /// </summary>
         /// <param name="register">Username, password and email for registration</param>

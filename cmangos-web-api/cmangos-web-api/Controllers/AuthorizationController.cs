@@ -163,7 +163,7 @@ namespace cmangos_web_api.Controllers
         /// <response code="200">Email was successfully sent</response>
         /// <response code="400">User associated with email does not exist or request came too soon</response>
         [HttpPost("forgotpassword")]
-        public async Task<IActionResult> ForgotPassword(string email)
+        public async Task<IActionResult> ForgotPassword([FromBody] string email)
         {
             var result = await _authService.ForgotPassword(email, $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}");
             return result == Repositories.PasswordRecoveryTokenResult.Success ? Ok() : BadRequest();

@@ -30,11 +30,11 @@ const authRequest = (callback: Function, failureCallback: Function, username: st
             }
             return await response.json()
         })
-        .then((r: plainLoginResult) => {
-            setCookie('access-token', r.jwtToken, { secure: true, sameSite: 'none' })
-            setCookie('refresh-token', r.refreshToken, { secure: true, sameSite: 'none' })
-            callback(r)
-        })
+            .then((r: plainLoginResult) => {
+                setCookie('access-token', r.jwtToken, { secure: true, sameSite: 'none' })
+                setCookie('refresh-token', r.refreshToken, { secure: true, sameSite: 'none' })
+                callback(r)
+            })
 }
 
 export default function Login() {
@@ -66,6 +66,10 @@ export default function Login() {
         }
 
         authRequest(() => { router.push('/') }, loginFailed, username, password, token, cookies, setCookie)
+    }
+
+    const onForgotPassword = () => {
+        router.push('/forgotpassword')
     }
 
     return (
@@ -107,6 +111,9 @@ export default function Login() {
                 <br />
                 <div className={'inputContainer'}>
                     <input className={'inputButton'} type="button" onClick={onButtonClick} value={'Log in'} />
+                </div>
+                <div className={'inputContainer'}>
+                    <input className={'inputButton'} type="button" onClick={onForgotPassword} value={'Forgot password'} />
                 </div>
             </div>
         </main>

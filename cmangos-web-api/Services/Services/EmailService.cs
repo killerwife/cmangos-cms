@@ -1,4 +1,5 @@
 ﻿using Common;
+using Configs;
 using Data.Config;
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Mvc;
@@ -12,11 +13,13 @@ namespace Services.Services
     {
         private readonly ILogger<EmailService> _logger;
         private IOptionsMonitor<EmailConfig> _emailConfig;
+        private IOptionsMonitor<WebsiteConfig> _websiteConfig;
 
-        public EmailService(ILogger<EmailService> logger, IOptionsMonitor<EmailConfig> emailConfig)
+        public EmailService(ILogger<EmailService> logger, IOptionsMonitor<EmailConfig> emailConfig, IOptionsMonitor<WebsiteConfig> websiteConfig)
         {
             _logger = logger;
             _emailConfig = emailConfig;
+            _websiteConfig = websiteConfig;
         }
 
         public async Task<IActionResult?> SendToken(string username, string email, string verificationToken, string caleeUrl, string locale, Operation operation)
@@ -33,6 +36,11 @@ namespace Services.Services
                     case Operation.SendConfirmationEmail:
                         message.Subject = "Email verification";
                         builder.TextBody = "Please click to verify your email: " + caleeUrl + "/verifyemail/" + verificationToken;
+                        message.Body = builder.ToMessageBody();
+                        break;
+                    case Operation.SendPasswordRecovery:
+                        message.Subject = "Password recovery";
+                        builder.TextBody = "Please click to recover your password: " + _websiteConfig.CurrentValue.PasswordRecoveryUrl + "?token=" + verificationToken;
                         message.Body = builder.ToMessageBody();
                         break;
                     default: break;

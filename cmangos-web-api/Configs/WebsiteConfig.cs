@@ -3,5 +3,6 @@
     public class WebsiteConfig
     {
         public string VerifyEmailUrl { get; set; } = string.Empty;
+        public string PasswordRecoveryUrl { get; set; } = string.Empty;
     }
 }

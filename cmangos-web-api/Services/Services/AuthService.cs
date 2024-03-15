@@ -411,7 +411,7 @@ namespace Services.Services
             if (result == PasswordRecoveryTokenResult.TooSoon)
                 return result;
 
-            var emailResult = await _emailService.SendToken(_userProvider.CurrentUser!.Name, user.email!, g.ToString(), url, "en-GB", Operation.SendConfirmationEmail);
+            var emailResult = await _emailService.SendToken(_userProvider.CurrentUser!.Name, user.email!, g.ToString(), url, "en-GB", Operation.SendPasswordRecovery);
             return PasswordRecoveryTokenResult.Success;
         }
 

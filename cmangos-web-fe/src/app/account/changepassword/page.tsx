@@ -1,12 +1,14 @@
-import { useState } from 'react'
-import { cookies } from "next/headers";
+'use client'
 
-const changePasswordRequest = (callback: Function, failureCallback: Function, oldPassword: string, newPassword: string) => {
+import { useState } from 'react'
+import { useCookies } from 'react-cookie';
+
+const changePasswordRequest = (callback: Function, failureCallback: Function, oldPassword: string, newPassword: string, accessToken: string) => {
     fetch('https://localhost:7191/changepassword', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer: ' + cookies().get('access-token')?.value
+            'Authorization': 'Bearer: ' + accessToken
         },
         body: JSON.stringify({ password: oldPassword, newPassword: newPassword }),
     })
@@ -30,6 +32,8 @@ export default function ChangePassword() {
     const [oldError, setOldError] = useState('')
     const [newError, setNewError] = useState('')
     const [globalError, setGlobalError] = useState('')
+
+    const [cookies] = useCookies(['access-token'])
 
     const onPasswordChange = () => {
         setOldPassword("");
@@ -62,7 +66,16 @@ export default function ChangePassword() {
             return
         }
 
-        changePasswordRequest(() => { onPasswordChange() }, () => { onChangeFailure() }, oldPassword, newPassword)
+        changePasswordRequest(() => { onPasswordChange() }, () => { onChangeFailure() }, oldPassword, newPassword, cookies['access-token'])
+    }
+
+    if (cookies['access-token'] == null) {
+        return {
+            redirect: {
+                destination: '/login',
+                permanent: false,
+            },
+        }
     }
 
     return (

@@ -3,10 +3,8 @@ using Data.Dto;
 using Data.Dto.PlainAuth;
 using Data.Dto.Srp6;
 using Microsoft.AspNetCore.Mvc;
-using OtpNet;
-using Microsoft.AspNetCore.Http.Extensions;
 using cmangos_web_api.Helpers;
-using Org.BouncyCastle.Asn1.Ocsp;
+using Data.Dto.User;
 
 namespace cmangos_web_api.Controllers
 {
@@ -218,11 +216,37 @@ namespace cmangos_web_api.Controllers
         /// <response code="200">Token was validated against pending secret and set as main</response>
         /// <response code="400">Token validation was not successful against pending secret</response>
         [Authorize]
-        [HttpGet("addauthenticator")]
+        [HttpPost("addauthenticator")]
         public async Task<IActionResult> AddToken([FromBody] AddGoogleAuthenticatorDto token)
         {
             bool result = await _authService.AddAuthenticator(token.Token);
             return result ? Ok() : BadRequest();
+        }
+
+        /// <summary>
+        /// Removes authenticator from account
+        /// </summary>
+        /// <param name="token">Token for validation against secret</param>
+        /// <response code="200">Token was validated against pending secret and removed from account</response>
+        /// <response code="400">Authenticator removal was not successful</response>
+        [Authorize]
+        [HttpPost("removeauthenticator")]
+        public async Task<IActionResult> RemoveToken([FromBody] AddGoogleAuthenticatorDto token)
+        {
+            bool result = await _authService.RemoveAuthenticator(token.Token);
+            return result ? Ok() : BadRequest();
+        }
+
+        /// <summary>
+        /// Requests user information
+        /// </summary>
+        /// <response code="200">User information</response>
+        /// <response code="401">Unauthorized</response>
+        [Authorize]
+        [HttpGet("userinfo")]
+        public async Task<ActionResult<UserInfoDto>> GetUserInfo()
+        {
+            return Ok(await _authService.GetUserInfo());
         }
     }
 }

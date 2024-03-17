@@ -1,6 +1,7 @@
 ﻿using cmangos_web_api.Repositories;
 using Data.Dto;
 using Data.Dto.Srp6;
+using Data.Dto.User;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -26,5 +27,7 @@ namespace Services.Services
         Task<PasswordRecoveryTokenResult> ForgotPassword(string email, string url);
         Task<bool> ChangePassword(string password, string newPassword);
         Task<bool> PasswordRecovery(string newPassword, string token);
+        Task<UserInfoDto> GetUserInfo();
+        Task<bool> RemoveAuthenticator(string token);
     }
 }

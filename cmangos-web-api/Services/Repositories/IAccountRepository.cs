@@ -25,12 +25,14 @@ namespace cmangos_web_api.Repositories
         Task<bool> RevokeAndAddToken(RefreshToken token);
         Task<bool> RevokeTokens(uint userId);
         Task<bool> AddPendingAuthenticator(uint userId, string token);
-        Task<bool> QualifyPendingToken(AccountExtension ext);
+        Task<bool> QualifyPendingAuthenticator(AccountExtension ext);
         Task<bool> VerifyPendingEmail(string token);
         Task<Account?> Create(Account account, string email, string confirmationToken);
+        Task CreateExtIfNotExists(uint userId);
         Task<(DateTime? lastSentTime, string? validationToken, string? email)?> GetEmailValidationData(uint userId);
         Task<bool> ChangePassword(Account account, AccountExtension? ext, string salt, string verifier);
         Task<PasswordRecoveryTokenResult> SetPasswordRecoveryToken(Account user, string v);
         Task<(AccountExtension? ext, Account? account)> FindByPasswordRecoveryToken(string token);
+        Task<bool> RemoveAuthenticator(uint userId);
     }
 }

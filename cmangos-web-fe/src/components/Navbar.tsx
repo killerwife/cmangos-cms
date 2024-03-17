@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useCookies } from 'react-cookie';
+import { useRouter } from 'next/navigation'
 
 export default function Navbar() {
     const [cookies, setCookie, removeCookie] = useCookies(['access-token', 'refresh-token'])
+    const router = useRouter()
 
     const LogoutRequest = () => {
         fetch('https://localhost:7191/revoke/token', {
@@ -15,8 +17,16 @@ export default function Navbar() {
             body: JSON.stringify({ refreshToken: cookies['refresh-token'] }),
         })
             .then(async (response) => {
+                if (response.status == 401) {
+                    router.push('/login')
+                    throw new Error('Unauthorized');
+                }
+                else if (response.status == 400) {
+                    throw new Error('Token could not be revoked');
+                }
                 removeCookie('access-token', { secure: true, sameSite: 'none' })
                 removeCookie('refresh-token', { secure: true, sameSite: 'none' })
+                router.push('/')
             })
     }
 

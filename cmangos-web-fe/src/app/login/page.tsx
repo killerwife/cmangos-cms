@@ -21,7 +21,7 @@ const authRequest = (callback: Function, failureCallback: Function, username: st
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: username, password: password, token: token }),
+        body: JSON.stringify({ name: username, password: password, pin: token }),
     })
         .then(async (response) => {
             if (response.status == 400) {

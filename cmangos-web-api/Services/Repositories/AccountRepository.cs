@@ -62,7 +62,7 @@ namespace Services.Repositories
             return result > 0;
         }
 
-        public async Task<bool> QualifyPendingToken(AccountExtension ext)
+        public async Task<bool> QualifyPendingAuthenticator(AccountExtension ext)
         {
             var user = await Get(ext.Id);
             user!.token = ext.PendingToken;
@@ -85,7 +85,6 @@ namespace Services.Repositories
         public async Task<bool> RevokeTokens(uint userId)
         {
             var result = _cmsContext.Database.ExecuteSql($"DELETE FROM refresh_token WHERE UserId={userId} AND Expires <= NOW() - INTERVAL 1 DAY");
-            await _cmsContext.SaveChangesAsync();
             return result > 0; 
         }
 
@@ -201,6 +200,27 @@ namespace Services.Repositories
                 return (null, null);
 
             return (ext, await Get(ext.Id));
+        }
+
+        public async Task CreateExtIfNotExists(uint userId)
+        {
+            var ext = await GetExt(userId);
+            if (ext == null)
+            {
+                _cmsContext.Add(new AccountExtension
+                {
+                    Id = userId,
+                    EmailChanged = DateTime.UtcNow,
+                    PasswordChanged = DateTime.UtcNow
+                });
+                await _cmsContext.SaveChangesAsync();
+            }
+        }
+
+        public async Task<bool> RemoveAuthenticator(uint userId)
+        {
+            var result = await _dbContext.Database.ExecuteSqlAsync($"UPDATE account SET Token=NULL WHERE id = {userId}");
+            return result > 0;
         }
     }
 }

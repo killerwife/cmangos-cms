@@ -15,6 +15,9 @@ using System.Security.Claims;
 using Common;
 using cmangos_web_api.Auth;
 using Microsoft.AspNetCore.Mvc;
+using Data.Dto.User;
+using static System.Net.Mime.MediaTypeNames;
+using System.Net.NetworkInformation;
 
 namespace Services.Services
 {
@@ -82,7 +85,7 @@ namespace Services.Services
 
             if (!string.IsNullOrEmpty(account.token))
             {
-                if (pin == null)
+                if (string.IsNullOrEmpty(pin))
                     return new AuthResDto
                     {
                         Errors = new List<string>() { "Invalid credentials" }
@@ -99,6 +102,7 @@ namespace Services.Services
             var newRefreshToken = generateRefreshToken("");
             newRefreshToken.UserId = account.id;
             await _accountRepository.RevokeAndAddToken(newRefreshToken);
+            await _accountRepository.CreateExtIfNotExists(account.id);
             return new AuthResDto
             {
                 JwtToken = CreateToken(claims),
@@ -335,19 +339,6 @@ namespace Services.Services
             return base32String;
         }
 
-        public async Task<bool> AddAuthenticator(string pin)
-        {
-            var ext = await _accountRepository.GetExt(_userProvider.CurrentUser!.Id);
-            if (ext == null)
-                return false;
-            if (ext.PendingToken == null)
-                return false;
-            bool result = validateToken(ext.PendingToken, pin);
-            if (result == false)
-                return false;
-            return await _accountRepository.QualifyPendingToken(ext);
-        }
-
         public async Task<bool> VerifyEmail(string token)
         {
             bool result = await _accountRepository.VerifyPendingEmail(token);
@@ -447,6 +438,40 @@ namespace Services.Services
             BigInteger verifierInteger = new BigInteger(verifier);
             var result = await _accountRepository.ChangePassword(data.account, data.ext, saltInteger.ToString("X"), verifierInteger.ToString("X"));
             return result;
+        }
+
+        public async Task<UserInfoDto> GetUserInfo()
+        {
+            var user = await _accountRepository.Get(_userProvider.CurrentUser!.Id);
+            return new UserInfoDto()
+            {
+                Email = user!.email!,
+                HasAuthenticator = !string.IsNullOrEmpty(user.token)
+            };
+        }
+
+        public async Task<bool> AddAuthenticator(string pin)
+        {
+            var ext = await _accountRepository.GetExt(_userProvider.CurrentUser!.Id);
+            if (ext == null)
+                return false;
+            if (ext.PendingToken == null)
+                return false;
+            bool result = validateToken(ext.PendingToken, pin);
+            if (result == false)
+                return false;
+            return await _accountRepository.QualifyPendingAuthenticator(ext);
+        }
+
+        public async Task<bool> RemoveAuthenticator(string token)
+        {
+            var user = await _accountRepository.Get(_userProvider.CurrentUser!.Id);
+            if (user == null) return false;
+            if (user.token == null) return false;
+            bool result = validateToken(user.token, token);
+            if (result == false)
+                return false;
+            return await _accountRepository.RemoveAuthenticator(user.id);
         }
     }
 }

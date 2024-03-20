@@ -1,16 +1,17 @@
 ﻿using Data.Model;
+using Data.Model.World;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Services.Repositories
 {
-    public class RealmdDbContext : DbContext
+    public class WorldDbContext : DbContext
     {
         protected readonly IConfiguration Configuration;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public RealmdDbContext(IConfiguration configuration)
+        public WorldDbContext(IConfiguration configuration)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             Configuration = configuration;
@@ -18,8 +19,10 @@ namespace Services.Repositories
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            var connectionString = Configuration.GetConnectionString("Realmd");
-            var serverVersion = new MySqlServerVersion(ServerVersion.AutoDetect(connectionString));
+            // in memory database used for simplicity, change to a real db for production applications
+            //options.UseInMemoryDatabase("TestDb");
+            var connectionString = Configuration.GetConnectionString("World");
+            var serverVersion = new MySqlServerVersion(new Version(8, 0, 35));
             options.UseMySql(connectionString, serverVersion)
                 .LogTo(Console.WriteLine, LogLevel.Information)
                 .EnableSensitiveDataLogging()
@@ -29,10 +32,9 @@ namespace Services.Repositories
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.Entity<Account>(x => x.ToTable("account"));
+            builder.Entity<GameObject>(x => x.ToTable("gameobject"));
         }
 
-
-        public DbSet<Account> Accounts { get; set; }
+        public DbSet<GameObject> GameObjects { get; set; }
     }
 }

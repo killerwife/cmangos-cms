@@ -11,6 +11,8 @@ using System.Security.Claims;
 using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;
 using cmangos_web_api.Auth;
 using Configs;
+using Services.Repositories.World;
+using DBFileReaderLib;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,15 +63,18 @@ builder.Services.Configure<WebsiteConfig>(builder.Configuration.GetSection("Webs
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ClaimsPrincipal>(s => s.GetService<IHttpContextAccessor>()?.HttpContext?.User!);
 builder.Services.AddDbContext<RealmdDbContext>();
+builder.Services.AddDbContext<WorldDbContext>();
 var connectionStringCms = builder.Configuration.GetValue<string>("ConnectionStrings:Cms");
 builder.Services.AddDbContext<CmsDbContext>(options => options.UseMySql(connectionStringCms, ServerVersion.AutoDetect(connectionStringCms))
-                .LogTo(Console.WriteLine, LogLevel.Debug)
+                .LogTo(Console.WriteLine, LogLevel.Information)
                 .EnableSensitiveDataLogging()
                 .EnableDetailedErrors());
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserProvider, UserProvider>();
+builder.Services.AddScoped<IWorldRepository, WorldRepository>();
+builder.Services.AddSingleton<DBCRepository>();
 
 var app = builder.Build();
 
@@ -94,5 +99,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseCors("CorsPolicy");
+
+var dbcRepo = app.Services.GetRequiredService<DBCRepository>();
+dbcRepo.Load();
 
 app.Run();

@@ -21,10 +21,10 @@ namespace cmangos_web_api.Controllers
         /// Returns gameobject xyz for zone with given entry
         /// </summary>
         /// <response code="200">Gameobject information</response>
-        [HttpGet("gameobject/{zone}/{entry}")]
-        public async Task<ActionResult<GameObjectListDto>> GetUserInfo([Required][FromRoute] int zone, [Required][FromRoute] uint entry)
+        [HttpGet("gameobject/{mapId}/{zone}/{entry}")]
+        public async Task<ActionResult<GameObjectListDto>> GetUserInfo([Required][FromRoute] int mapId, [Required][FromRoute] int zone, [Required][FromRoute] uint entry)
         {
-            var data = await _worldRepository.GetGameObjectsForZoneAndEntry(zone, entry);
+            var data = await _worldRepository.GetGameObjectsForZoneAndEntry(mapId, zone, entry);
             if (data == null)
                 return BadRequest();
             var result = new GameObjectListDto();

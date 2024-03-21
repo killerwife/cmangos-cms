@@ -60,6 +60,7 @@ builder.Services.AddCors(options =>
 builder.Services.Configure<AuthConfig>(builder.Configuration.GetSection("AuthConfig"));
 builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection("EmailConfig"));
 builder.Services.Configure<WebsiteConfig>(builder.Configuration.GetSection("WebsiteConfig"));
+builder.Services.Configure<DbcConfig>(builder.Configuration.GetSection("DbcConfig"));
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ClaimsPrincipal>(s => s.GetService<IHttpContextAccessor>()?.HttpContext?.User!);
 builder.Services.AddDbContext<RealmdDbContext>();

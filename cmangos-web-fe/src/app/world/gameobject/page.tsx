@@ -23,12 +23,13 @@ export default function ZoneDisplay() {
     const searchParams = useSearchParams()
     const zone = searchParams.get('zone')
     const entry = searchParams.get('entry')
+    const map = searchParams.get('map')
     const [gameObjects, setGameObjects] = useState<gameobjectList>({} as gameobjectList)
     const [isLoading, setIsLoading] = useState<boolean>(true)
 
     useEffect(() => {
         const loadGos = async () => {
-            let gameobjects = await fetch('https://localhost:7191/world/gameobject/' + zone + '/' + entry, {
+            let gameobjects = await fetch('https://localhost:7191/world/gameobject/' + map + '/' + zone + '/' + entry, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -59,15 +60,18 @@ export default function ZoneDisplay() {
     }    
 
     return (
-        <div style={{ position: 'relative', top: 0, left: 0, margin: 0 }}>
-            <img src={"/" + zone + ".jpg"} alt="pin" style={{ position: 'relative', top: 0, left: 0, margin: 0, padding: 0, objectFit: 'contain', height: '100%', width: '100%' }}></img>
-            {
-                gameObjects.items.map((gameobject) => {
-                    return (
-                        <img src={"/pin-yellow.png"} alt="pin" title={'' + gameobject.guid} style={{ margin: 0, padding: 0, transform: 'translate(-50%, -50%)', position: 'absolute', top: (Math.abs((gameobject.x - gameObjects.top) / (gameObjects.bottom - gameObjects.top) * 100)) + '%', left: (100 - Math.abs((gameobject.y - gameObjects.left) / (gameObjects.right - gameObjects.left) * 100)) + '%' }} />
-                    );
-                })
-            }
+        <div>
+            <h1>Map: {map} Zone: {zone} Object: {entry} Count: {gameObjects.count} </h1>
+            <div style={{ position: 'relative', top: 0, left: 0, margin: 0 }}>                
+                <img src={"/" + zone + ".jpg"} alt="pin" style={{ position: 'relative', top: 0, left: 0, margin: 0, padding: 0, objectFit: 'contain', height: '100%', width: '100%' }}></img>
+                {
+                    gameObjects.items.map((gameobject) => {
+                        return (
+                            <img src={"/pin-yellow.png"} alt="pin" title={'' + gameobject.guid} style={{ margin: 0, padding: 0, transform: 'translate(-50%, -50%)', position: 'absolute', top: (Math.abs((gameobject.x - gameObjects.top) / (gameObjects.bottom - gameObjects.top) * 100)) + '%', left: (100 - Math.abs((gameobject.y - gameObjects.left) / (gameObjects.right - gameObjects.left) * 100)) + '%' }} />
+                        );
+                    })
+                }
+            </div>
         </div>
     );
 }

@@ -62,12 +62,12 @@ export default function ZoneDisplay() {
     return (
         <div>
             <h1>Map: {map} Zone: {zone} Object: {entry} Count: {gameObjects.count} </h1>
-            <div style={{ position: 'relative', top: 0, left: 0, margin: 0 }}>                
-                <img src={"/" + zone + ".jpg"} alt="pin" style={{ position: 'relative', top: 0, left: 0, margin: 0, padding: 0, objectFit: 'contain', height: '100%', width: '100%' }}></img>
+            <div style={{ position: 'relative', top: 0, left: 0, margin: 0, display: 'inline-block' }}>
+                <img src={"/" + zone + ".jpg"} alt="pin" style={{ display:'block', position: 'relative', top: 0, left: 0, margin: 0, padding: 0, objectFit: 'contain', height: '100%', width: '100%', maxHeight:"100vh" }}></img>
                 {
                     gameObjects.items.map((gameobject) => {
                         return (
-                            <img src={"/pin-yellow.png"} alt="pin" title={'' + gameobject.guid} style={{ margin: 0, padding: 0, transform: 'translate(-50%, -50%)', position: 'absolute', top: (Math.abs((gameobject.x - gameObjects.top) / (gameObjects.bottom - gameObjects.top) * 100)) + '%', left: (100 - Math.abs((gameobject.y - gameObjects.left) / (gameObjects.right - gameObjects.left) * 100)) + '%' }} />
+                            <img src={"/pin-yellow.png"} alt="pin" title={'' + gameobject.guid} style={{ width: '1%', minWidth: '11px', margin: 0, padding: 0, transform: 'translate(-50%, -50%)', position: 'absolute', top: (Math.abs((gameobject.x - gameObjects.top) / (gameObjects.bottom - gameObjects.top) * 100)) + '%', left: (100 - Math.abs((gameobject.y - gameObjects.left) / (gameObjects.right - gameObjects.left) * 100)) + '%' }} />
                         );
                     })
                 }

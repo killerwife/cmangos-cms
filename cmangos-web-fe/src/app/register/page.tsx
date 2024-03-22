@@ -1,21 +1,23 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { env } from 'next-runtime-env';
+import { ReCAPTCHA } from 'react-google-recaptcha';
+import React from 'react';
 
 const RegisterQuery = () => {
     const [registrationError, setRegistrationError] = useState('')
     const router = useRouter()
     const NEXT_PUBLIC_FOO = env('NEXT_PUBLIC_FOO');
 
-    const onRegisterClick = async (username: string, email: string, password: string) => {
+    const onRegisterClick = async (username: string, email: string, password: string, recaptcha: string | null) => {
         fetch(NEXT_PUBLIC_FOO + '/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ username: username, password: password, email: email }),
+            body: JSON.stringify({ username: username, password: password, email: email, reCaptchaResponse: recaptcha }),
         })
         .then(async (response) => {
             if (response.status == 400) {
@@ -30,6 +32,7 @@ const RegisterQuery = () => {
 }
 
 export default function Register() {
+    const recaptcha = useRef<ReCAPTCHA>(null)
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -37,6 +40,7 @@ export default function Register() {
     const [usernameError, setUsernameError] = useState('')
     const [passwordError, setPasswordError] = useState('')
     const { registrationError, setRegistrationError, onRegisterClick } = RegisterQuery();
+    const siteKey = env('NEXT_PUBLIC_RECAPTCHA_SITE_KEY')
 
     const onButtonClick = () => {
         if ('' === username) {
@@ -59,7 +63,7 @@ export default function Register() {
             return
         }
 
-        onRegisterClick(username, email, password)
+        onRegisterClick(username, email, password, recaptcha.current!.getValue())
     }
 
     return (
@@ -108,6 +112,7 @@ export default function Register() {
                     <label className="errorLabel">{passwordError}</label>
                 </div>
                 <br />
+                <ReCAPTCHA ref={recaptcha} sitekey={siteKey === undefined ? "" : siteKey} />
                 <div className={'inputContainer'}>
                     <input className={'inputButton'} type="button" onClick={onButtonClick} value={'Register'} />
                 </div>

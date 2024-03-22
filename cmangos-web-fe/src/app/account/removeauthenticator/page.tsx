@@ -3,12 +3,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation'
 import { useCookies } from 'react-cookie';
+import { env } from 'next-runtime-env';
 
 export default function AuthenticatorRemoval() {
     const [totp, setTotp] = useState('')
     const [totpError, setTotpError] = useState('')
     const [cookies] = useCookies(['access-token'])
     const router = useRouter()
+    const NEXT_PUBLIC_FOO = env('NEXT_PUBLIC_FOO');
 
     const onAuthenticatorRemove = () => {
         if (totp == '') {
@@ -16,7 +18,7 @@ export default function AuthenticatorRemoval() {
             return
         }
 
-        fetch('https://localhost:7191/removeauthenticator', {
+        fetch(NEXT_PUBLIC_FOO + '/removeauthenticator', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

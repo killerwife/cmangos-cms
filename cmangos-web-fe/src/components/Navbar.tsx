@@ -3,13 +3,23 @@
 import Link from "next/link";
 import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/navigation'
+import { env } from 'next-runtime-env';
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
     const [cookies, setCookie, removeCookie] = useCookies(['access-token', 'refresh-token'])
+    const [initial, setInitial] = useState(true)
+    const [loggedIn, setLoggedIn] = useState(false)
     const router = useRouter()
+    const NEXT_PUBLIC_FOO = env('NEXT_PUBLIC_FOO');
+
+    useEffect(() => {
+        setInitial(false)
+        setLoggedIn(cookies['access-token'] != null)
+    }, [])
 
     const LogoutRequest = () => {
-        fetch('https://localhost:7191/revoke/token', {
+        fetch(NEXT_PUBLIC_FOO + '/revoke/token', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -30,7 +40,15 @@ export default function Navbar() {
             })
     }
 
-    if (cookies['access-token'] != null) {
+    if (initial) {
+        return (
+            <span className="flex justify-between">
+                <h1 className="text-xl">Navigation Bar</h1>
+            </span>
+        );
+    }
+
+    if (loggedIn) {
         return (
             <span className="flex justify-between">
                 <h1 className="text-xl">Navigation Bar</h1>

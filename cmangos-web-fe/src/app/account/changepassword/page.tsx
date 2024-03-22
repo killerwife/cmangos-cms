@@ -2,9 +2,11 @@
 
 import { useState } from 'react'
 import { useCookies } from 'react-cookie';
+import { env } from 'next-runtime-env';
 
 const changePasswordRequest = (callback: Function, failureCallback: Function, oldPassword: string, newPassword: string, accessToken: string) => {
-    fetch('https://localhost:7191/changepassword', {
+    const NEXT_PUBLIC_FOO = env('NEXT_PUBLIC_FOO');
+    fetch(NEXT_PUBLIC_FOO + '/changepassword', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

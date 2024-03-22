@@ -2,11 +2,13 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { env } from 'next-runtime-env';
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState('')
     const [emailError, setEmailError] = useState('')
     const router = useRouter()
+    const NEXT_PUBLIC_FOO = env('NEXT_PUBLIC_FOO');
 
     const onButtonClick = () => {
         if ('' === email) {
@@ -14,7 +16,7 @@ export default function ForgotPassword() {
             return
         }
 
-        fetch('https://localhost:7191/forgotpassword', {
+        fetch(NEXT_PUBLIC_FOO + '/forgotpassword', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

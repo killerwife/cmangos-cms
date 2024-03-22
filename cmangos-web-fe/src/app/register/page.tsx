@@ -2,13 +2,15 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { env } from 'next-runtime-env';
 
 const RegisterQuery = () => {
     const [registrationError, setRegistrationError] = useState('')
     const router = useRouter()
+    const NEXT_PUBLIC_FOO = env('NEXT_PUBLIC_FOO');
 
     const onRegisterClick = async (username: string, email: string, password: string) => {
-        fetch('https://localhost:7191/register', {
+        fetch(NEXT_PUBLIC_FOO + '/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

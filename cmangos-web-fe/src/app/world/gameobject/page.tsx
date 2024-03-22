@@ -2,6 +2,7 @@
 
 import { useSearchParams } from 'next/navigation'
 import { useState, useEffect } from 'react';
+import { env } from 'next-runtime-env';
 
 export interface gameobject {
     x: number,
@@ -26,10 +27,11 @@ export default function ZoneDisplay() {
     const map = searchParams.get('map')
     const [gameObjects, setGameObjects] = useState<gameobjectList>({} as gameobjectList)
     const [isLoading, setIsLoading] = useState<boolean>(true)
+    const NEXT_PUBLIC_FOO = env('NEXT_PUBLIC_FOO');
 
     useEffect(() => {
         const loadGos = async () => {
-            let gameobjects = await fetch('https://localhost:7191/world/gameobject/' + map + '/' + zone + '/' + entry, {
+            let gameobjects = await fetch(NEXT_PUBLIC_FOO + '/world/gameobject/' + map + '/' + zone + '/' + entry, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

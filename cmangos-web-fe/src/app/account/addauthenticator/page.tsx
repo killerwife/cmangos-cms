@@ -5,6 +5,7 @@ import { useCookies } from 'react-cookie';
 import { useState, useEffect } from 'react';
 import QRCode from "react-qr-code";
 import { jwtDecode } from 'jwt-decode'
+import { env } from 'next-runtime-env';
 
 export interface JwtCmangos {
     sub: string,
@@ -12,7 +13,8 @@ export interface JwtCmangos {
 }
 
 const fetchAuthenticatorKey = async (accessToken: string, failureCallback: Function) => {
-    var result = await fetch('https://localhost:7191/generatetokensecret', {
+    const NEXT_PUBLIC_FOO = env('NEXT_PUBLIC_FOO');
+    var result = await fetch(NEXT_PUBLIC_FOO + '/generatetokensecret', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -45,6 +47,7 @@ export default function AuthenticatorAdd() {
     const [sub, setSub] = useState('')
     const [totpError, setTotpError] = useState('')
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    const NEXT_PUBLIC_FOO = env('NEXT_PUBLIC_FOO');
 
     const getSub = () => {
         let token = jwtDecode<JwtCmangos>(cookies['access-token'])
@@ -74,7 +77,7 @@ export default function AuthenticatorAdd() {
             return
         }
 
-        fetch('https://localhost:7191/addauthenticator', {
+        fetch(NEXT_PUBLIC_FOO + '/addauthenticator', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

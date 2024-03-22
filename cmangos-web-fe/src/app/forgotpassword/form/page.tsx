@@ -2,6 +2,7 @@
 
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { env } from 'next-runtime-env';
 
 export default function RecoverPassword() {
     const searchParams = useSearchParams()
@@ -9,6 +10,7 @@ export default function RecoverPassword() {
     const [password2, setPassword2] = useState('')
     const [passwordError, setPasswordError] = useState('')
     const router = useRouter()
+    const NEXT_PUBLIC_FOO = env('NEXT_PUBLIC_FOO');
 
     const onButtonClick = () => {
         if ('' === password) {
@@ -26,7 +28,7 @@ export default function RecoverPassword() {
             return
         }
 
-        fetch('https://localhost:7191/passwordrecovery', {
+        fetch(NEXT_PUBLIC_FOO + '/passwordrecovery', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

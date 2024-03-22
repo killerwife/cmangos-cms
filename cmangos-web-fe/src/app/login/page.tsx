@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useCookies } from 'react-cookie';
+import { env } from 'next-runtime-env';
 
 export interface plainLoginResult {
     jwtToken: string,
@@ -16,7 +17,9 @@ const authRequest = (callback: Function, failureCallback: Function, username: st
         return r.errors.join(', ');
     }
 
-    fetch('https://localhost:7191/plain/authorize', {
+    const NEXT_PUBLIC_FOO = env('NEXT_PUBLIC_FOO');
+
+    fetch(NEXT_PUBLIC_FOO + '/plain/authorize', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

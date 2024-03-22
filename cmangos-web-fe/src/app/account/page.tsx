@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useCookies } from 'react-cookie';
 import { useState, useEffect } from 'react';
 import Link from "next/link";
+import { env } from 'next-runtime-env';
 
 export interface userInfo {
     email: string,
@@ -11,7 +12,8 @@ export interface userInfo {
 }
 
 const getUserInfo = async (accessToken: string, failureCallback: Function) => {
-    var result = await fetch('https://localhost:7191/userinfo', {
+    const NEXT_PUBLIC_FOO = env('NEXT_PUBLIC_FOO');
+    var result = await fetch(NEXT_PUBLIC_FOO + '/userinfo', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

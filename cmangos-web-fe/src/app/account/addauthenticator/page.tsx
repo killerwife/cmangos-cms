@@ -13,8 +13,8 @@ export interface JwtCmangos {
 }
 
 const fetchAuthenticatorKey = async (accessToken: string, failureCallback: Function) => {
-    const NEXT_PUBLIC_FOO = env('NEXT_PUBLIC_FOO');
-    var result = await fetch(NEXT_PUBLIC_FOO + '/generatetokensecret', {
+    const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
+    var result = await fetch(NEXT_PUBLIC_API + '/generatetokensecret', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ export default function AuthenticatorAdd() {
     const [sub, setSub] = useState('')
     const [totpError, setTotpError] = useState('')
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    const NEXT_PUBLIC_FOO = env('NEXT_PUBLIC_FOO');
+    const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
 
     const getSub = () => {
         let token = jwtDecode<JwtCmangos>(cookies['access-token'])
@@ -77,7 +77,7 @@ export default function AuthenticatorAdd() {
             return
         }
 
-        fetch(NEXT_PUBLIC_FOO + '/addauthenticator', {
+        fetch(NEXT_PUBLIC_API + '/addauthenticator', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

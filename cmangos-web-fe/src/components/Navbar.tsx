@@ -11,7 +11,7 @@ export default function Navbar() {
     const [initial, setInitial] = useState(true)
     const [loggedIn, setLoggedIn] = useState(false)
     const router = useRouter()
-    const NEXT_PUBLIC_FOO = env('NEXT_PUBLIC_FOO');
+    const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
 
     useEffect(() => {
         setInitial(false)
@@ -19,7 +19,7 @@ export default function Navbar() {
     }, [])
 
     const LogoutRequest = () => {
-        fetch(NEXT_PUBLIC_FOO + '/revoke/token', {
+        fetch(NEXT_PUBLIC_API + '/revoke/token', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -10,7 +10,7 @@ export default function RecoverPassword() {
     const [password2, setPassword2] = useState('')
     const [passwordError, setPasswordError] = useState('')
     const router = useRouter()
-    const NEXT_PUBLIC_FOO = env('NEXT_PUBLIC_FOO');
+    const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
 
     const onButtonClick = () => {
         if ('' === password) {
@@ -28,7 +28,7 @@ export default function RecoverPassword() {
             return
         }
 
-        fetch(NEXT_PUBLIC_FOO + '/passwordrecovery', {
+        fetch(NEXT_PUBLIC_API + '/passwordrecovery', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

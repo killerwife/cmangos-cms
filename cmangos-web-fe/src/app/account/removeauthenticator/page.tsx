@@ -10,7 +10,7 @@ export default function AuthenticatorRemoval() {
     const [totpError, setTotpError] = useState('')
     const [cookies] = useCookies(['access-token'])
     const router = useRouter()
-    const NEXT_PUBLIC_FOO = env('NEXT_PUBLIC_FOO');
+    const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
 
     const onAuthenticatorRemove = () => {
         if (totp == '') {
@@ -18,7 +18,7 @@ export default function AuthenticatorRemoval() {
             return
         }
 
-        fetch(NEXT_PUBLIC_FOO + '/removeauthenticator', {
+        fetch(NEXT_PUBLIC_API + '/removeauthenticator', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

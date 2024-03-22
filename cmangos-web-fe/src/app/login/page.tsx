@@ -17,9 +17,9 @@ const authRequest = (callback: Function, failureCallback: Function, username: st
         return r.errors.join(', ');
     }
 
-    const NEXT_PUBLIC_FOO = env('NEXT_PUBLIC_FOO');
+    const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
 
-    fetch(NEXT_PUBLIC_FOO + '/plain/authorize', {
+    fetch(NEXT_PUBLIC_API + '/plain/authorize', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

@@ -9,10 +9,10 @@ import React from 'react';
 const RegisterQuery = () => {
     const [registrationError, setRegistrationError] = useState('')
     const router = useRouter()
-    const NEXT_PUBLIC_FOO = env('NEXT_PUBLIC_FOO');
+    const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
 
     const onRegisterClick = async (username: string, email: string, password: string, recaptcha: string | null) => {
-        fetch(NEXT_PUBLIC_FOO + '/register', {
+        fetch(NEXT_PUBLIC_API + '/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

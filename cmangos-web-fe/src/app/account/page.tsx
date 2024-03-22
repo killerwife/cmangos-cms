@@ -12,8 +12,8 @@ export interface userInfo {
 }
 
 const getUserInfo = async (accessToken: string, failureCallback: Function) => {
-    const NEXT_PUBLIC_FOO = env('NEXT_PUBLIC_FOO');
-    var result = await fetch(NEXT_PUBLIC_FOO + '/userinfo', {
+    const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
+    var result = await fetch(NEXT_PUBLIC_API + '/userinfo', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

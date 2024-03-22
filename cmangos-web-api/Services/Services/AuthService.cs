@@ -348,7 +348,7 @@ namespace Services.Services
         public async Task<IActionResult?> CreateAccount(string username, string password, string email, string url)
         {
             if (await _accountRepository.FindByEmail(email) != null)
-                return new BadRequestObjectResult("Account with given email already exists");
+                return new ConflictObjectResult("Account with given email already exists");
             byte[] salt = new byte[32];
             rngCsp.GetBytes(salt);
             BigInteger saltInteger = new BigInteger(salt);

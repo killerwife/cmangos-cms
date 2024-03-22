@@ -5,16 +5,21 @@ using Data.Dto.Srp6;
 using Microsoft.AspNetCore.Mvc;
 using cmangos_web_api.Helpers;
 using Data.Dto.User;
+using Microsoft.Extensions.Options;
+using Configs;
+using cmangos_web_api.ReCaptcha;
 
 namespace cmangos_web_api.Controllers
 {
     public class AuthorizationController : ControllerBase
     {
         private IAuthService _authService;
+        private IOptionsMonitor<WebsiteConfig> _websiteOptions;
 
-        public AuthorizationController(IAuthService authService)
+        public AuthorizationController(IAuthService authService, IOptionsMonitor<WebsiteConfig> websiteOptions)
         {
             _authService = authService;
+            _websiteOptions = websiteOptions;
         }
 
         /// <summary>
@@ -118,9 +123,16 @@ namespace cmangos_web_api.Controllers
         /// <param name="register">Username, password and email for registration</param>
         /// <response code="200">Registration success and verification email sent</response>
         /// <response code="400">Registration failed</response>
+        /// <response code="409">Conflicting username</response>
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto register)
         {
+            if (!string.IsNullOrEmpty(_websiteOptions.CurrentValue.ReCaptchaSecret))
+            {
+                var success = ReCaptchaHelper.ReCaptchaPassed(register.ReCaptchaResponse);
+                if (success == false)
+                    return BadRequest("Recaptcha failed");
+            }
             IActionResult? result = await _authService.CreateAccount(register.Username, register.Password, register.Email, $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}");
             return result == null ? Ok() : result;
         }
@@ -136,8 +148,7 @@ namespace cmangos_web_api.Controllers
         {
             bool result = await _authService.VerifyEmail(token);
             if (result == true)
-                Redirect("http://localhost:3000/emailVerified");
-            // TODO: Add redirect configurable to frontend
+                Redirect(_websiteOptions.CurrentValue.VerifyEmailUrl);
             return result ? Ok() : BadRequest();
         }
 

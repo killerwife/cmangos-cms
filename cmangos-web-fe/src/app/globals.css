@@ -36,3 +36,7 @@ body {
     background-color: #595F5A;
     color: white;
 }
+
+.map-point-img:hover {
+    background: #0000ff;
+}

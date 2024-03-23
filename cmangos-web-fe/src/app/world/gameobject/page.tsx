@@ -1,14 +1,15 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, MouseEventHandler } from 'react';
 import { env } from 'next-runtime-env';
 
 export interface gameobject {
     x: number,
     y: number,
     z: number,
-    guid: number
+    guid: number,
+    spawnGroupId: number
 }
 
 export interface gameobjectList {
@@ -54,6 +55,12 @@ export default function ZoneDisplay() {
         loadGos();
     }, [])
 
+    const onPointHover = (event: React.MouseEvent<HTMLImageElement, MouseEvent>, spawnGroupId: number) => {
+        
+        event.currentTarget.style
+        
+    }
+
     if (isLoading) {
         return (
             <div style={{ backgroundImage: "url(/" + zone + ".jpg)", backgroundSize: 'auto', backgroundRepeat: "no-repeat" }}>
@@ -69,7 +76,7 @@ export default function ZoneDisplay() {
                 {
                     gameObjects.items.map(gameobject => {
                         return (
-                            <img src={"/pin-yellow.png"} key={gameobject.guid} alt="pin" title={'' + gameobject.guid} style={{ width: '1%', minWidth: '11px', margin: 0, padding: 0, transform: 'translate(-50%, -50%)', position: 'absolute', top: (Math.abs((gameobject.x - gameObjects.top) / (gameObjects.bottom - gameObjects.top) * 100)) + '%', left: (100 - Math.abs((gameobject.y - gameObjects.left) / (gameObjects.right - gameObjects.left) * 100)) + '%' }} />
+                            <img src={"/pin-yellow.png"} key={gameobject.guid} className={'map-point-img, ' + gameobject.spawnGroupId} onMouseOver={(e) => { onPointHover(e, gameobject.spawnGroupId) }} alt="pin" title={'' + gameobject.guid} style={{ width: '1%', minWidth: '11px', margin: 0, padding: 0, transform: 'translate(-50%, -50%)', position: 'absolute', top: (Math.abs((gameobject.x - gameObjects.top) / (gameObjects.bottom - gameObjects.top) * 100)) + '%', left: (100 - Math.abs((gameobject.y - gameObjects.left) / (gameObjects.right - gameObjects.left) * 100)) + '%' }} />
                         );
                     })
                 }

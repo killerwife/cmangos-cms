@@ -41,6 +41,7 @@ namespace cmangos_web_api.Controllers
                     Y = (float)gameObject.position_y,
                     Z = (float)gameObject.position_z,
                     Guid = gameObject.guid,
+                    SpawnGroupId = gameObject.spawn_group_id
                 });
             }
             return Ok(result);

@@ -96,6 +96,7 @@ export default function Login() {
                 <div className={'inputContainer'}>
                     <input
                         value={password}
+                        type='password'
                         placeholder="Enter password"
                         onChange={(ev) => setPassword(ev.target.value)}
                         className={'inputBox'}

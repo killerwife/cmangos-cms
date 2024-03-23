@@ -96,6 +96,7 @@ export default function Register() {
                 <div className={'inputContainer'}>
                     <input
                         value={password}
+                        type='password'
                         placeholder="Enter password"
                         onChange={(ev) => setPassword(ev.target.value)}
                         className={'inputBox'}
@@ -105,6 +106,7 @@ export default function Register() {
                 <div className={'inputContainer'}>
                     <input
                         value={password2}
+                        type='password'
                         placeholder="Enter password again"
                         onChange={(ev) => setPassword2(ev.target.value)}
                         className={'inputBox'}

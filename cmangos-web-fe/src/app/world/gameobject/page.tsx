@@ -22,13 +22,14 @@ export interface gameobjectList {
 }
 
 export default function ZoneDisplay() {
-    const searchParams = useSearchParams()
-    const zone = searchParams.get('zone')
-    const entry = searchParams.get('entry')
-    const map = searchParams.get('map')
-    const [gameObjects, setGameObjects] = useState<gameobjectList>({} as gameobjectList)
-    const [isLoading, setIsLoading] = useState<boolean>(true)
+    const searchParams = useSearchParams();
+    const zone = searchParams.get('zone');
+    const entry = searchParams.get('entry');
+    const map = searchParams.get('map');
+    const [gameObjects, setGameObjects] = useState<gameobjectList>({} as gameobjectList);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
+    const [selectedGroupId, setSelectedGroupId] = useState<number>(-1);
 
     useEffect(() => {
         const loadGos = async () => {
@@ -55,10 +56,11 @@ export default function ZoneDisplay() {
         loadGos();
     }, [])
 
-    const onPointHover = (event: React.MouseEvent<HTMLImageElement, MouseEvent>, spawnGroupId: number) => {
-        
-        event.currentTarget.style
-        
+    const onPointHover = (event: React.MouseEvent<HTMLImageElement, MouseEvent>, spawnGroupId: number, apply: boolean) => {
+        if (apply && spawnGroupId !== 0)
+            setSelectedGroupId(spawnGroupId);
+        else
+            setSelectedGroupId(-1);
     }
 
     if (isLoading) {
@@ -76,7 +78,7 @@ export default function ZoneDisplay() {
                 {
                     gameObjects.items.map(gameobject => {
                         return (
-                            <img src={"/pin-yellow.png"} key={gameobject.guid} className={'map-point-img, ' + gameobject.spawnGroupId} onMouseOver={(e) => { onPointHover(e, gameobject.spawnGroupId) }} alt="pin" title={'' + gameobject.guid} style={{ width: '1%', minWidth: '11px', margin: 0, padding: 0, transform: 'translate(-50%, -50%)', position: 'absolute', top: (Math.abs((gameobject.x - gameObjects.top) / (gameObjects.bottom - gameObjects.top) * 100)) + '%', left: (100 - Math.abs((gameobject.y - gameObjects.left) / (gameObjects.right - gameObjects.left) * 100)) + '%' }} />
+                            <img src={selectedGroupId === gameobject.spawnGroupId ? "/pin-blue.png" : "/pin-yellow.png"} key={gameobject.guid} className={'map-point-img, ' + gameobject.spawnGroupId} onMouseOver={(e) => { onPointHover(e, gameobject.spawnGroupId, true); }} onMouseOut={(e) => { onPointHover(e, gameobject.spawnGroupId, false); }} alt="pin" title={'' + gameobject.guid} style={{ width: '1%', minWidth: '11px', margin: 0, padding: 0, transform: 'translate(-50%, -50%)', position: 'absolute', top: (Math.abs((gameobject.x - gameObjects.top) / (gameObjects.bottom - gameObjects.top) * 100)) + '%', left: (100 - Math.abs((gameobject.y - gameObjects.left) / (gameObjects.right - gameObjects.left) * 100)) + '%' }} />
                         );
                     })
                 }

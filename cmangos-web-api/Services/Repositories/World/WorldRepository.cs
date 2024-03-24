@@ -23,17 +23,8 @@ namespace Services.Repositories.World
                 return null;
             decimal minZoneX = (decimal)areaEntry.Value.Bottom, minZoneY = (decimal)areaEntry.Value.Right;
             decimal maxZoneX = (decimal)areaEntry.Value.Top, maxZoneY = (decimal)areaEntry.Value.Left;
-            var query = _context.GameObjects.Where(p => p.id == entry && p.map == mapId && p.position_x > minZoneX && p.position_x < maxZoneX && p.position_y > minZoneY && p.position_y < maxZoneY);
-            Console.WriteLine(query.ToQueryString());
-            var gameobjects = await query.ToListAsync();
-            var gosWithSpawnGroup = new List<GameObjectWithSpawnGroup>();
-            foreach (var gameObject in gameobjects)
-                gosWithSpawnGroup.Add(new GameObjectWithSpawnGroup(gameObject));
-            {
-                var spawnGroupGos = await _context.Database.SqlQuery<GameObjectWithSpawnGroup>(
-                    $"SELECT gameobject.*, spawn_group.Id AS spawn_group_id FROM gameobject LEFT JOIN spawn_group_spawn ON gameobject.guid=spawn_group_spawn.Guid LEFT JOIN spawn_group ON spawn_group.Id=spawn_group_spawn.Id LEFT JOIN spawn_group_entry ON spawn_group_entry.Id=spawn_group.Id WHERE spawn_group_entry.entry={entry} AND gameobject.map={mapId} AND spawn_group.type=1 AND gameobject.Id=0").ToListAsync();
-                gosWithSpawnGroup.AddRange(spawnGroupGos);
-            }
+            var gosWithSpawnGroup  = await _context.Database.SqlQuery<GameObjectWithSpawnGroup>(
+                    $"SELECT gameobject.*, spawn_group.Id AS spawn_group_id FROM gameobject LEFT JOIN spawn_group_spawn ON gameobject.guid=spawn_group_spawn.Guid LEFT JOIN spawn_group ON spawn_group.Id=spawn_group_spawn.Id LEFT JOIN spawn_group_entry ON spawn_group_entry.Id=spawn_group.Id WHERE (gameobject.id={entry} OR spawn_group_entry.entry={entry}) AND gameobject.map={mapId} AND (spawn_group.type IS null OR spawn_group.type=1) AND position_x > {minZoneX} && position_x < {maxZoneX} && position_y > {minZoneY} && position_y < {maxZoneY}").ToListAsync();
             return (gosWithSpawnGroup, (float)minZoneY, (float)maxZoneY, (float)minZoneX, (float)maxZoneX);
         }
     }

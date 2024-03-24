@@ -10,6 +10,11 @@
         public decimal position_z { get; set; }
         public int spawn_group_id { get; set; }
 
+        public GameObjectWithSpawnGroup()
+        {
+
+        }
+
         public GameObjectWithSpawnGroup(GameObject go)
         {
             guid = go.guid;

@@ -9,3 +9,7 @@ docker build -f Dockerfile.linux -t killerwife/cmangos-web-api:latest-linux .
 docker build -f Dockerfile.windows -t killerwife/cmangos-web-api:latest-windows .
 
 docker run -d -p 7191:80 killerwife/cmangos-web-fe:latest
+
+Environment variables:
+
+Consult docker compose corresponding to given OS

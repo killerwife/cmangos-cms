@@ -100,6 +100,7 @@ export default function ChangePassword() {
             <div className={'inputContainer'}>
                 <input
                     value={newPassword}
+                    type='password'
                     placeholder="New password"
                     onChange={(ev) => setNewPassword(ev.target.value)}
                     className={'inputBox'}
@@ -110,6 +111,7 @@ export default function ChangePassword() {
             <div className={'inputContainer'}>
                 <input
                     value={newPassword2}
+                    type='password'
                     placeholder="New password again"
                     onChange={(ev) => setNewPassword2(ev.target.value)}
                     className={'inputBox'}

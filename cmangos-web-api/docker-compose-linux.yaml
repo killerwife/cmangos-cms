@@ -2,10 +2,10 @@ version: "3"
 services:
 
   cmangos-web-api:
-    image: cmangos-web-api:latest-linux
+    image: killerwife/cmangos-web-api:latest-linux
     restart: always
     ports:
-      - "7080:80"
+      - "7191:8080"
       - "7443:443"
     environment:
       - "ASPNETCORE_URLS=https://+;http://+"
@@ -13,9 +13,9 @@ services:
       - "ASPNETCORE_Kestrel__Certificates__Default__Path=/app/cmangos-web-api.pfx"
       - "ASPNETCORE_Kestrel__Certificates__Default__Password=TODO"
       - "ASPNETCORE_ENVIRONMENT=development"
-      - ConnectionStrings:Realmd="server=TODO; database=tbcrealmd; user=mangos; password=mangos"
-      - ConnectionStrings:Cms="server=TODO; database=tbccms; user=mangos; password=mangos"
-      - ConnectionStrings:World="server=TODO; database=tbcmangos; user=mangos; password=mangos"
+      - "ConnectionStrings:Realmd=server=host.docker.internal,3306; database=tbcrealmd; user=mangos; password=mangos"
+      - "ConnectionStrings:Cms=server=host.docker.internal,3306; database=tbccms; user=mangos; password=mangos"
+      - "ConnectionStrings:World=server=host.docker.internal,3306; database=tbcmangos; user=mangos; password=mangos"
       - AuthConfig:JwtPrivate="TODO PEM PRIVATE"
       - AuthConfig:JwtPublic="TODO PEM PUBLIC"
       - WebsiteConfig:VerifyEmailUrl="TODO_PUBLIC_URI/emailVerifiedSuccess"
@@ -28,7 +28,8 @@ services:
       - EmailConfig:Password=""
       - EmailConfig:SenderEmail=""
       - EmailConfig:SenderAlias=""
-      - DbcConfig:DirectoryPath="WOTLK_DBC_DIRECTORY_PATH"
+      - DbcConfig:DirectoryPath=/opt/wotlk/dbc/
     volumes:
       - "./cmangos-web-api/cmangos-web-api.pfx:/app/cmangos-web-api.pfx"
       - "./cmangos-web-api/logs/:/app/logs/"
+      - "C:/maps/wotlk/dbc:/opt/wotlk/dbc"

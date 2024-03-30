@@ -13,6 +13,7 @@ using cmangos_web_api.Auth;
 using Configs;
 using Services.Repositories.World;
 using DBFileReaderLib;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -77,6 +78,12 @@ builder.Services.AddScoped<IUserProvider, UserProvider>();
 builder.Services.AddScoped<IWorldRepository, WorldRepository>();
 builder.Services.AddSingleton<DBCRepository>();
 
+if (builder.Configuration.GetValue<string>("AllowForwarding") == "true")
+    builder.Services.Configure<ForwardedHeadersOptions>(options =>
+    {
+        options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    });
+
 var app = builder.Build();
 
 using (var serviceScope = app.Services.GetService<IServiceScopeFactory>()?.CreateScope()!)
@@ -84,8 +91,11 @@ using (var serviceScope = app.Services.GetService<IServiceScopeFactory>()?.Creat
     serviceScope.ServiceProvider.GetRequiredService<CmsDbContext>().Database.Migrate();
 }
 
+if (builder.Configuration.GetValue<bool>("AllowForwarding") == true)
+    app.UseForwardedHeaders();
+
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("AllowSwagger") == true)
 {
     app.UseSwagger();
     app.UseSwaggerUI();

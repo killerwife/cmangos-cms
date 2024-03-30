@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using Data.Dto.User;
 using static System.Net.Mime.MediaTypeNames;
 using System.Net.NetworkInformation;
+using System.Security.Principal;
 
 namespace Services.Services
 {
@@ -390,6 +391,8 @@ namespace Services.Services
             var user = await _accountRepository.FindByEmail(email);
             if (user == null)
                 return PasswordRecoveryTokenResult.NotFound;
+
+            await _accountRepository.CreateExtIfNotExists(user.id);
 
             PasswordRecoveryTokenResult result;
             Guid g;

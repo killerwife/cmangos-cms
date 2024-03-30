@@ -1,3 +1,7 @@
+Generation of PEM keys:
+openssl genpkey -out rsakey.pem -algorithm RSA -pkeyopt rsa_keygen_bits:2048
+openssl rsa -in rsakey.pem -pubout > rsakey-pub.pem
+
 For development:
 
 run cmangos-web-api.sln in Visual Studio 2022

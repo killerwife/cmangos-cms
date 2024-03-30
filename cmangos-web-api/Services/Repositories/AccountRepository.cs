@@ -182,7 +182,7 @@ namespace Services.Repositories
                 return PasswordRecoveryTokenResult.Collision;
 
             var ext = await GetExt(user.id);
-            if (ext!.PasswordRecoverySent > DateTime.UtcNow.AddMinutes(-2))
+            if (ext!.PasswordRecoverySent != null && ext!.PasswordRecoverySent > DateTime.UtcNow.AddMinutes(-2))
                 return PasswordRecoveryTokenResult.TooSoon;
 
             ext.PasswordRecoverySent = DateTime.UtcNow;

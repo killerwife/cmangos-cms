@@ -14,6 +14,7 @@ using Configs;
 using Services.Repositories.World;
 using DBFileReaderLib;
 using Microsoft.AspNetCore.HttpOverrides;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,6 +83,17 @@ if (builder.Configuration.GetValue<string>("AllowForwarding") == "true")
     builder.Services.Configure<ForwardedHeadersOptions>(options =>
     {
         options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+        options.RequireHeaderSymmetry = false;
+        options.ForwardLimit = null;
+        if (builder.Configuration.GetValue<string>("IgnoreProxyCheck") == "true")
+        {
+            options.KnownNetworks.Clear();
+            options.KnownProxies.Clear();
+        }
+        else
+        {
+            options.KnownProxies.Add(IPAddress.Parse(builder.Configuration.GetValue<string>("KnownProxy")));
+        }
     });
 
 var app = builder.Build();

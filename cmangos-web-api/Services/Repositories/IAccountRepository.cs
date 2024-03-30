@@ -9,6 +9,7 @@ namespace cmangos_web_api.Repositories
         Collision = 1,
         TooSoon = 2,
         NotFound = 3,
+        FailedSend = 4,
     }
 
     public interface IAccountRepository

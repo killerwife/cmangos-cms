@@ -386,11 +386,11 @@ namespace Services.Services
             return emailResult;
         }
 
-        public async Task<PasswordRecoveryTokenResult> ForgotPassword(string email, string url)
+        public async Task<(PasswordRecoveryTokenResult, IActionResult?)> ForgotPassword(string email, string url)
         {
             var user = await _accountRepository.FindByEmail(email);
             if (user == null)
-                return PasswordRecoveryTokenResult.NotFound;
+                return (PasswordRecoveryTokenResult.NotFound, null);
 
             await _accountRepository.CreateExtIfNotExists(user.id);
 
@@ -403,10 +403,10 @@ namespace Services.Services
             }
             while (result == PasswordRecoveryTokenResult.Collision);
             if (result == PasswordRecoveryTokenResult.TooSoon)
-                return result;
+                return (result, null);
 
             var emailResult = await _emailService.SendToken(user!.username, user.email!, g.ToString(), url, "en-GB", Operation.SendPasswordRecovery);
-            return PasswordRecoveryTokenResult.Success;
+            return (emailResult == null ? PasswordRecoveryTokenResult.Success : PasswordRecoveryTokenResult.FailedSend, emailResult);
         }
 
         public async Task<bool> ChangePassword(string password, string newPassword)

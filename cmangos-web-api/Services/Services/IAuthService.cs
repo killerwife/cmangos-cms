@@ -24,7 +24,7 @@ namespace Services.Services
         Task<IActionResult?> CreateAccount(string username, string password, string email, string url);
         Task<IActionResult?> ResendValidationEmail(string url);
 
-        Task<PasswordRecoveryTokenResult> ForgotPassword(string email, string url);
+        Task<(PasswordRecoveryTokenResult, IActionResult?)> ForgotPassword(string email, string url);
         Task<bool> ChangePassword(string password, string newPassword);
         Task<bool> PasswordRecovery(string newPassword, string token);
         Task<UserInfoDto> GetUserInfo();

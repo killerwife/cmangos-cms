@@ -175,7 +175,9 @@ namespace cmangos_web_api.Controllers
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDtoo forgotPassword)
         {
             var result = await _authService.ForgotPassword(forgotPassword.Email, $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}");
-            return result == Repositories.PasswordRecoveryTokenResult.Success ? Ok() : BadRequest();
+            if (result.Item2 != null)
+                return result.Item2;
+            return result.Item1 == Repositories.PasswordRecoveryTokenResult.Success ? Ok() : BadRequest();
         }
 
         /// <summary>

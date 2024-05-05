@@ -73,7 +73,7 @@ export default function RecoverPassword() {
                 </div>
                 <br />
                 <div className={'inputContainer'}>
-                    <input className={'inputButton'} type="button" onClick={onButtonClick} value={'Log in'} />
+                    <input className={'inputButton'} type="button" onClick={onButtonClick} value={'Request password recovery'} />
                 </div>
             </div>
         </main>

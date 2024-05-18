@@ -46,5 +46,16 @@ namespace cmangos_web_api.Controllers
             }
             return Ok(result);
         }
+
+        /// <summary>
+        /// Returns creature xyz for zone with given entry and its movement
+        /// </summary>
+        /// <response code="200">Gameobject information</response>
+        [HttpGet("creature/{zone}/{guid}")]
+        public async Task<ActionResult<CreatureWithMovementDto>> GetCreatureMovement([Required][FromRoute] int guid, [Required][FromRoute] int zone)
+        {
+            var result = await _worldRepository.GetCreatureWithMovement(zone, guid);
+            return result != null ? Ok(result) : BadRequest();
+        }
     }
 }

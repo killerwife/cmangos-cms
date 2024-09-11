@@ -12,9 +12,13 @@ export interface plainLoginResult {
     errors: any // list of strings
 }
 
+export interface loginErrrors {
+
+}
+
 const authRequest = (callback: Function, failureCallback: Function, username: string, password: string, token: string, cookies: any, setCookie: any) => {
-    const parseError = (r: plainLoginResult) => {
-        return r.errors.join(', ');
+    const parseError = (r: [string]) => {
+        return r.join(', ');
     }
 
     const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
@@ -28,7 +32,7 @@ const authRequest = (callback: Function, failureCallback: Function, username: st
     })
         .then(async (response) => {
             if (response.status == 400) {
-                failureCallback(parseError((await response.json()) as plainLoginResult))
+                failureCallback(parseError((await response.json()) as [string]))
                 throw new Error('Failed to login');
             }
             return await response.json()
@@ -38,6 +42,9 @@ const authRequest = (callback: Function, failureCallback: Function, username: st
                 setCookie('refresh-token', r.refreshToken, { secure: true, sameSite: 'none' })
                 callback(r)
             })
+        .catch((error) => {
+
+        })
 }
 
 export default function Login() {

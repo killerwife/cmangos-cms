@@ -7,7 +7,7 @@ namespace Data.Model.World
     {
         public int Id { get; set; }
         public int Guid { get; set; }
-        public byte Slot { get; set; }
+        public byte SlotId { get; set; }
         public uint Chance { get; set; }
     }
 }

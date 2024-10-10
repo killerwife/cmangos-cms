@@ -32,17 +32,21 @@ namespace Services.Repositories
             base.OnModelCreating(builder);
             builder.Entity<Creature>(x => x.ToTable("creature"));
             builder.Entity<CreatureMovement>(x => x.ToTable("creature_movement"));
+            builder.Entity<WaypointPath>(x => x.ToTable("waypoint_path"));
             builder.Entity<GameObject>(x => x.ToTable("gameobject"));
             builder.Entity<SpawnGroup>(x => x.ToTable("spawn_group"));
             builder.Entity<SpawnGroupEntry>(x => x.ToTable("spawn_group_entry"));
             builder.Entity<SpawnGroupSpawn>(x => x.ToTable("spawn_group_spawn"));
+            builder.Entity<SpawnGroupFormation>(x => x.ToTable("spawn_group_formation"));
         }
 
         public DbSet<Creature> Creatures { get; set; }
         public DbSet<CreatureMovement> CreatureMovements { get; set; }
+        public DbSet<WaypointPath> WaypointPaths { get; set; }
         public DbSet<GameObject> GameObjects { get; set; }
         public DbSet<SpawnGroup> SpawnGroups { get; set; }
         public DbSet<SpawnGroupEntry> SpawnGroupEntries { get; set; }
         public DbSet<SpawnGroupSpawn> SpawnGroupSpawns { get; set; }
+        public DbSet<SpawnGroupFormation> SpawnGroupFormations { get; set; }
     }
 }

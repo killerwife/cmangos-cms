@@ -58,11 +58,7 @@ namespace Services.Repositories.World
                                 Z = waypoint.PositionZ,
                             });
                     }
-                    else
-                        return null;
                 }
-                else
-                    return null;
             }
             else
             {

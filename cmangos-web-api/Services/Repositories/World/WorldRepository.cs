@@ -43,21 +43,35 @@ namespace Services.Repositories.World
             var creatureMovement = _context.CreatureMovements.Where(p => p.Id == guid).ToList();
             if (creatureMovement == null || creatureMovement.Count == 0) // TODO: Add loading of path from template
             {
-                var spawn = _context.SpawnGroupSpawns.Where(p => p.Guid == guid).SingleOrDefault();
-                if (spawn != null)
+                var templateMovement = _context.CreatureMovementTemplates.Where(p => p.Entry == creature.id && p.PathId == 0).ToList();
+                if (templateMovement == null || templateMovement.Count == 0)
                 {
-                    var formation = _context.SpawnGroupFormations.Where(p => p.Id == spawn.Id).SingleOrDefault();
-                    if (formation != null)
+                    var spawn = _context.SpawnGroupSpawns.Where(p => p.Guid == guid).SingleOrDefault();
+                    if (spawn != null)
                     {
-                        var waypoints = _context.WaypointPaths.Where(p => p.PathId == formation.PathId).ToList();
-                        foreach (var waypoint in waypoints)
-                            movement.Add(new CreatureMovementDto
-                            {
-                                X = waypoint.PositionX,
-                                Y = waypoint.PositionY,
-                                Z = waypoint.PositionZ,
-                            });
+                        var formation = _context.SpawnGroupFormations.Where(p => p.Id == spawn.Id).SingleOrDefault();
+                        if (formation != null)
+                        {
+                            var waypoints = _context.WaypointPaths.Where(p => p.PathId == formation.PathId).ToList();
+                            foreach (var waypoint in waypoints)
+                                movement.Add(new CreatureMovementDto
+                                {
+                                    X = waypoint.PositionX,
+                                    Y = waypoint.PositionY,
+                                    Z = waypoint.PositionZ,
+                                });
+                        }
                     }
+                }
+                else
+                {
+                    foreach (var waypoint in templateMovement)
+                        movement.Add(new CreatureMovementDto
+                        {
+                            X = waypoint.PositionX,
+                            Y = waypoint.PositionY,
+                            Z = waypoint.PositionZ,
+                        });
                 }
             }
             else

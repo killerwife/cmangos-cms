@@ -8,7 +8,7 @@
         public decimal position_x { get; set; }
         public decimal position_y { get; set; }
         public decimal position_z { get; set; }
-        public int spawn_group_id { get; set; }
+        public int? spawn_group_id { get; set; }
 
         public GameObjectWithSpawnGroup()
         {

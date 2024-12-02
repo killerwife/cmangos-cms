@@ -15,6 +15,7 @@ using Services.Repositories.World;
 using DBFileReaderLib;
 using Microsoft.AspNetCore.HttpOverrides;
 using System.Net;
+using Services.Repositories.Cms;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -77,6 +78,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserProvider, UserProvider>();
 builder.Services.AddScoped<IWorldRepository, WorldRepository>();
+builder.Services.AddScoped<IEntityExt, EntityExt>();
 builder.Services.AddSingleton<DBCRepository>();
 
 if (builder.Configuration.GetValue<string>("AllowForwarding") == "true")

@@ -3,13 +3,21 @@
 import { useSearchParams } from 'next/navigation'
 import { useState, useEffect, MouseEventHandler } from 'react';
 import { env } from 'next-runtime-env';
+import Link from 'next/link'
+import { text } from 'node:stream/consumers';
 
 export interface gameobject {
     x: number,
     y: number,
     z: number,
     guid: number,
-    spawnGroupId: number
+    spawnGroupId: number,
+    hasDuplicate: boolean
+}
+
+export interface entityZone {
+    zoneId: number,
+    name: string
 }
 
 export interface gameobjectList {
@@ -18,7 +26,9 @@ export interface gameobjectList {
     left: number
     right: number
     bottom: number
-    top: number
+    top: number,
+    name: string,
+    zones: entityZone[]
 }
 
 export default function ZoneDisplay() {
@@ -31,30 +41,34 @@ export default function ZoneDisplay() {
     const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
     const [selectedGroupId, setSelectedGroupId] = useState<number>(-1);
 
-    useEffect(() => {
-        const loadGos = async () => {
-            let gameobjects = await fetch(NEXT_PUBLIC_API + '/world/gameobject/' + map + '/' + zone + '/' + entry, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+    const loadGos = async () => {
+        let gameobjects = await fetch(NEXT_PUBLIC_API + '/world/gameobject/' + map + '/' + zone + '/' + entry, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(async (response) => {
+                if (response.status == 400) {
+                    throw new Error('Failed to get gameobject data');
+                }
+                return await response.json()
             })
-                .then(async (response) => {
-                    if (response.status == 400) {
-                        throw new Error('Failed to get gameobject data');
-                    }
-                    return await response.json()
-                })
-                .then((r: gameobjectList) => {
-                    return r
-                });
+            .then((r: gameobjectList) => {
+                return r
+            });
 
-            setGameObjects(gameobjects);
-            setIsLoading(false);
-        }
+        setGameObjects(gameobjects);
+        setIsLoading(false);
+    }
 
+    useEffect(() => {
         loadGos();
     }, [])
+
+    useEffect(() => {
+        loadGos();
+    }, [zone])
 
     const onPointHover = (event: React.MouseEvent<HTMLImageElement, MouseEvent>, spawnGroupId: number, apply: boolean) => {
         if (apply && spawnGroupId !== 0)
@@ -72,13 +86,20 @@ export default function ZoneDisplay() {
 
     return (
         <div>
-            <h1>Map: {map} Zone: {zone} Object: {entry} Count: {gameObjects.count} </h1>
+            <h1>Map: {map} Zone: {zone} Entry: {entry} Object: '{gameObjects.name}' Count: {gameObjects.count} </h1>
+            <div style={{ textDecorationLine: 'underline' }}>
+                {
+                    gameObjects.zones.map(otherZone => {
+                        return <Link href={"gameobject?map=" + map + "&zone=" + otherZone.zoneId + "&entry=" + entry} style={{ marginRight: 10, color: (otherZone.zoneId.toString() == zone ? 'white' : 'grey') }}>{otherZone.name}</Link>
+                    })
+                }
+            </div>
             <div style={{ position: 'relative', top: 0, left: 0, margin: 0, display: 'inline-block' }}>
                 <img src={"/" + zone + ".jpg"} alt="pin" style={{ display:'block', position: 'relative', top: 0, left: 0, margin: 0, padding: 0, objectFit: 'contain', height: '100%', width: '100%', maxHeight:"100vh" }}></img>
                 {
                     gameObjects.items.map(gameobject => {
                         return (
-                            <img src={selectedGroupId === gameobject.spawnGroupId ? "/pin-blue.png" : "/pin-yellow.png"} key={gameobject.guid} className={'map-point-img, ' + gameobject.spawnGroupId} onMouseOver={(e) => { onPointHover(e, gameobject.spawnGroupId, true); }} onMouseOut={(e) => { onPointHover(e, gameobject.spawnGroupId, false); }} alt="pin" title={'' + gameobject.guid} style={{ width: '1%', minWidth: '11px', margin: 0, padding: 0, transform: 'translate(-50%, -50%)', position: 'absolute', top: (Math.abs((gameobject.x - gameObjects.top) / (gameObjects.bottom - gameObjects.top) * 100)) + '%', left: (100 - Math.abs((gameobject.y - gameObjects.left) / (gameObjects.right - gameObjects.left) * 100)) + '%' }} />
+                            <img src={selectedGroupId === gameobject.spawnGroupId ? "/pin-blue.png" : (gameobject.hasDuplicate === true ? "/pin-red.png" : "/pin-yellow.png")} key={gameobject.guid} className={'map-point-img, ' + gameobject.spawnGroupId} onMouseOver={(e) => { onPointHover(e, gameobject.spawnGroupId, true); }} onMouseOut={(e) => { onPointHover(e, gameobject.spawnGroupId, false); }} alt="pin" title={'' + gameobject.guid} style={{ width: '1%', minWidth: '11px', margin: 0, padding: 0, transform: 'translate(-50%, -50%)', position: 'absolute', top: (Math.abs((gameobject.x - gameObjects.top) / (gameObjects.bottom - gameObjects.top) * 100)) + '%', left: (100 - Math.abs((gameobject.y - gameObjects.left) / (gameObjects.right - gameObjects.left) * 100)) + '%' }} />
                         );
                     })
                 }

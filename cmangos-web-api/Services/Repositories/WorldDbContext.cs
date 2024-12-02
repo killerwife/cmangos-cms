@@ -34,6 +34,7 @@ namespace Services.Repositories
             builder.Entity<CreatureMovement>(x => x.ToTable("creature_movement"));
             builder.Entity<CreatureMovementTemplate>(x => x.ToTable("creature_movement_template"));
             builder.Entity<WaypointPath>(x => x.ToTable("waypoint_path"));
+            builder.Entity<GameObjectTemplate>(x => x.ToTable("gameobject_template"));
             builder.Entity<GameObject>(x => x.ToTable("gameobject"));
             builder.Entity<SpawnGroup>(x => x.ToTable("spawn_group"));
             builder.Entity<SpawnGroupEntry>(x => x.ToTable("spawn_group_entry"));
@@ -45,6 +46,7 @@ namespace Services.Repositories
         public DbSet<CreatureMovement> CreatureMovements { get; set; }
         public DbSet<CreatureMovementTemplate> CreatureMovementTemplates { get; set; }
         public DbSet<WaypointPath> WaypointPaths { get; set; }
+        public DbSet<GameObjectTemplate> GameObjectTemplates { get; set; }
         public DbSet<GameObject> GameObjects { get; set; }
         public DbSet<SpawnGroup> SpawnGroups { get; set; }
         public DbSet<SpawnGroupEntry> SpawnGroupEntries { get; set; }

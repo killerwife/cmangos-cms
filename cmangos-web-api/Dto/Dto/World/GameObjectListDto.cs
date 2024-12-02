@@ -8,5 +8,7 @@
         public float Right { get; set; }
         public float Bottom { get; set; }
         public float Top { get; set; }
+        public string? Name { get; set; }
+        public List<EntityZone> Zones { get; set; } = new();
     }
 }

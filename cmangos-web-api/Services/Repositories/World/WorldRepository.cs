@@ -100,5 +100,10 @@ namespace Services.Repositories.World
                 Left = areaEntry.Value.Left
             };
         }
+
+        public async Task<string?> GetEntryName(uint entry)
+        {
+            return (await _context.GameObjectTemplates.Where(p => p.Entry == entry).SingleOrDefaultAsync())?.Name;
+        }
     }
 }

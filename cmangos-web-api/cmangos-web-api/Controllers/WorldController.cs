@@ -53,6 +53,8 @@ namespace cmangos_web_api.Controllers
             result.Top = data.Value.Item5;
             foreach (var gameObject in data.Value.Item1)
             {
+                var duplicates = data.Value.Item1.Where(p => p.guid != gameObject.guid && FloatComparison(p.position_x, gameObject.position_x, precision)
+                        && FloatComparison(p.position_y, gameObject.position_y, precision) && FloatComparison(p.position_z, gameObject.position_z, precision)).Select(p => p.guid.ToString());
                 result.Items.Add(new GameObjectDto
                 {
                     X = (float)gameObject.position_x,
@@ -60,8 +62,8 @@ namespace cmangos_web_api.Controllers
                     Z = (float)gameObject.position_z,
                     Guid = gameObject.guid,
                     SpawnGroupId = gameObject.spawn_group_id,
-                    HasDuplicate = data.Value.Item1.Any(p => p.guid != gameObject.guid && FloatComparison(p.position_x, gameObject.position_x, precision)
-                        && FloatComparison(p.position_y, gameObject.position_y, precision) && FloatComparison(p.position_z, gameObject.position_z, precision))
+                    HasDuplicate = duplicates.Count() > 0,
+                    Duplicates = string.Join(' ', duplicates)
                 });
             }
             return Ok(result);

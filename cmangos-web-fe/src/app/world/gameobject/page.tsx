@@ -12,7 +12,8 @@ export interface gameobject {
     z: number,
     guid: number,
     spawnGroupId: number,
-    hasDuplicate: boolean
+    hasDuplicate: boolean,
+    duplicates: string
 }
 
 export interface entityZone {
@@ -99,7 +100,7 @@ export default function ZoneDisplay() {
                 {
                     gameObjects.items.map(gameobject => {
                         return (
-                            <img src={selectedGroupId === gameobject.spawnGroupId ? "/pin-blue.png" : (gameobject.hasDuplicate === true ? "/pin-red.png" : "/pin-yellow.png")} key={gameobject.guid} className={'map-point-img, ' + gameobject.spawnGroupId} onMouseOver={(e) => { onPointHover(e, gameobject.spawnGroupId, true); }} onMouseOut={(e) => { onPointHover(e, gameobject.spawnGroupId, false); }} alt="pin" title={'' + gameobject.guid} style={{ width: '1%', minWidth: '11px', margin: 0, padding: 0, transform: 'translate(-50%, -50%)', position: 'absolute', top: (Math.abs((gameobject.x - gameObjects.top) / (gameObjects.bottom - gameObjects.top) * 100)) + '%', left: (100 - Math.abs((gameobject.y - gameObjects.left) / (gameObjects.right - gameObjects.left) * 100)) + '%' }} />
+                            <img src={selectedGroupId === gameobject.spawnGroupId ? "/pin-blue.png" : (gameobject.hasDuplicate === true ? "/pin-red.png" : "/pin-yellow.png")} key={gameobject.guid} className={'map-point-img, ' + gameobject.spawnGroupId} onMouseOver={(e) => { onPointHover(e, gameobject.spawnGroupId, true); }} onMouseOut={(e) => { onPointHover(e, gameobject.spawnGroupId, false); }} alt="pin" title={'' + gameobject.guid + ' - ' + gameobject.duplicates} style={{ width: '1%', minWidth: '11px', margin: 0, padding: 0, transform: 'translate(-50%, -50%)', position: 'absolute', top: (Math.abs((gameobject.x - gameObjects.top) / (gameObjects.bottom - gameObjects.top) * 100)) + '%', left: (100 - Math.abs((gameobject.y - gameObjects.left) / (gameObjects.right - gameObjects.left) * 100)) + '%' }} />
                         );
                     })
                 }

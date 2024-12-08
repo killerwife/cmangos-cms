@@ -8,5 +8,6 @@
         public uint Guid { get; set; }
         public int? SpawnGroupId { get; set; }
         public bool HasDuplicate { get; set; }
+        public string Duplicates { get; set; } = string.Empty;
     }
 }

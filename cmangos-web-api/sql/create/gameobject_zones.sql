@@ -1,6 +1,11 @@
 truncate gameobject_zone;
 
 -- herbs
+-- dreamfoil
+INSERT INTO gameobject_zone(Entry, ZoneId) VALUES
+(176584,3483),
+(176584,3521);
+
 -- golden sansam
 INSERT INTO gameobject_zone(Entry, ZoneId) VALUES
 (176583,3483),
@@ -47,6 +52,7 @@ INSERT INTO gameobject_zone(Entry, ZoneId) VALUES
 
 -- dreaming glory - zangarmarsh
 INSERT INTO gameobject_zone(Entry, ZoneId) VALUES
+(183045,3519),
 (183045,3521);
 
 -- ragveil

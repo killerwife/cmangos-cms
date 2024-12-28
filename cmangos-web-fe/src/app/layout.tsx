@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "../components/Navbar";
 import { PublicEnvScript } from 'next-runtime-env';
+import { StyledEngineProvider } from '@mui/material/styles';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +24,9 @@ export default function RootLayout({
           </head>
           <body className={inter.className}>
               <Navbar></Navbar>
-              {children}
+              <StyledEngineProvider injectFirst>
+                  {children}
+              </StyledEngineProvider>
           </body>
       </html>
   );

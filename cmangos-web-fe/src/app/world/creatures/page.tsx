@@ -3,9 +3,9 @@
 import { useSearchParams } from 'next/navigation'
 import { useState, useEffect, MouseEventHandler } from 'react';
 import { env } from 'next-runtime-env';
-import Link from 'next/link'
-import { text } from 'node:stream/consumers';
 import { useRouter } from 'next/navigation'
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 
 export interface creature {
     x: number,
@@ -18,7 +18,8 @@ export interface creature {
 export interface entityZone {
     mapId: number,
     zoneId: number,
-    name: string
+    name: string,
+    label: string
 }
 
 export interface creatureList {
@@ -43,6 +44,7 @@ export default function ZoneDisplay() {
     const [selectedGroupId, setSelectedGroupId] = useState<number>(-1);
     const offset = 0;
     const router = useRouter();
+    const [value, setValue] = useState<entityZone | null>();
 
     const loadGos = async () => {
         let creatures = await fetch(NEXT_PUBLIC_API + '/world/creatures/' + map + '/' + zone + '/' + entry, {
@@ -62,6 +64,15 @@ export default function ZoneDisplay() {
             });
 
         setCreatures(creatures);
+
+        for (let zoneElement of creatures.zones)
+        {
+            if (zoneElement.zoneId.toString() === zone) {
+                setValue(zoneElement);
+                break;
+            }
+        }
+
         setIsLoading(false);
     }
 
@@ -102,11 +113,21 @@ export default function ZoneDisplay() {
         <div>
             <h1>Map: {map} Zone: {zone} Entry: {entry} Object: '{creatures.name}' Count: {creatures.count} </h1>
             <div style={{ textDecorationLine: 'underline' }}>
-                {
-                    creatures.zones.map(otherZone => {
-                        return <Link href={"creatures?map=" + otherZone.mapId + "&zone=" + otherZone.zoneId + "&entry=" + entry} style={{ marginRight: 10, color: (otherZone.zoneId.toString() == zone ? 'white' : 'grey') }}>{otherZone.name}</Link>
-                    })
-                }
+                <Autocomplete<entityZone>
+                    disablePortal
+                    value={value}
+                    getOptionLabel={(option) => option.name}
+                    onChange={(event, newValuel) => {
+                        if (newValuel !== null)
+                            router.push("creatures?map=" + newValuel.mapId + "&zone=" + newValuel.zoneId + "&entry=" + entry);
+
+                        setValue(newValuel);
+                    }}
+                    style={{ color: "blue", outlineColor: "lightblue" }}
+                    options={creatures.zones}
+                    sx={{ width: 300 }}
+                    renderInput={(params) => <TextField {...params} label="Zones" />}
+                />
             </div>
             <div style={{ position: 'relative', top: 0, left: 0, margin: 0, display: 'inline-block' }}>
                 <img src={"/" + zone + ".jpg"} alt="pin" style={{ display:'block', position: 'relative', top: 0, left: 0, margin: 0, padding: 0, objectFit: 'contain', height: '100%', width: '100%', maxHeight:"100vh" }}></img>

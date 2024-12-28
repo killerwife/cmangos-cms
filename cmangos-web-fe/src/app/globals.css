@@ -40,3 +40,7 @@ body {
 .map-point-img:hover {
     background: #0000ff;
 }
+
+.MuiAutocomplete-input {
+    color: #FFFFFF;
+}

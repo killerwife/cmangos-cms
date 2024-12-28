@@ -30,15 +30,15 @@ namespace cmangos_web_api.Controllers
         /// Returns gameobject xyz for zone with given entry
         /// </summary>
         /// <response code="200">Gameobject information</response>
-        [HttpGet("gameobject/{mapId}/{zone}/{entry}")]
-        public async Task<ActionResult<GameObjectListDto>> GetUserInfo([Required][FromRoute] int mapId, [Required][FromRoute] int zone, [Required][FromRoute] uint entry)
+        [HttpGet("gameobjects/{mapId}/{zone}/{entry}")]
+        public async Task<ActionResult<GameObjectListDto>> GetGameObjects([Required][FromRoute] int mapId, [Required][FromRoute] int zone, [Required][FromRoute] uint entry)
         {
             var data = await _worldRepository.GetGameObjectsForZoneAndEntry(mapId, zone, entry);
             if (data == null)
                 return BadRequest();
             var precision = 0.02m;
             var result = new GameObjectListDto();
-            result.Name = await _worldRepository.GetEntryName(entry);
+            result.Name = await _worldRepository.GetGameObjectEntryName(entry);
             var zones = _entityExt.GetGameObjectZones(entry);
             foreach (var zoneId in zones)
                 result.Zones.Add(new EntityZone
@@ -78,6 +78,44 @@ namespace cmangos_web_api.Controllers
         {
             var result = await _worldRepository.GetCreatureWithMovement(zone, guid);
             return result != null ? Ok(result) : BadRequest();
+        }
+
+        /// <summary>
+        /// Returns creature xyz for zone with given entry
+        /// </summary>
+        /// <response code="200">Gameobject information</response>
+        [HttpGet("creatures/{mapId}/{zone}/{entry}")]
+        public async Task<ActionResult<CreatureListDto>> GetCreatures([Required][FromRoute] int mapId, [Required][FromRoute] int zone, [Required][FromRoute] uint entry)
+        {
+            var data = await _worldRepository.GetCreaturesForZoneAndEntry(mapId, zone, entry);
+            if (data == null)
+                return BadRequest();
+            var result = new CreatureListDto();
+            result.Name = await _worldRepository.GetCreatureEntryName(entry);
+            var zones = _entityExt.GetGameObjectZones(entry);
+            foreach (var zoneId in zones)
+                result.Zones.Add(new EntityZone
+                {
+                    ZoneId = zoneId,
+                    Name = ((Zone)zoneId).ToString()
+                });
+            result.Count = data.Value.Item1.Count;
+            result.Left = data.Value.Item2;
+            result.Right = data.Value.Item3;
+            result.Bottom = data.Value.Item4;
+            result.Top = data.Value.Item5;
+            foreach (var creature in data.Value.Item1)
+            {
+                result.Items.Add(new CreatureDto
+                {
+                    X = (float)creature.position_x,
+                    Y = (float)creature.position_y,
+                    Z = (float)creature.position_z,
+                    Guid = creature.guid,
+                    SpawnGroupId = creature.spawn_group_id,
+                });
+            }
+            return Ok(result);
         }
     }
 }

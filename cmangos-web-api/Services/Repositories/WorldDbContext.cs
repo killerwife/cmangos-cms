@@ -30,6 +30,7 @@ namespace Services.Repositories
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.Entity<CreatureTemplate>(x => x.ToTable("creature_template"));
             builder.Entity<Creature>(x => x.ToTable("creature"));
             builder.Entity<CreatureMovement>(x => x.ToTable("creature_movement"));
             builder.Entity<CreatureMovementTemplate>(x => x.ToTable("creature_movement_template"));
@@ -41,7 +42,7 @@ namespace Services.Repositories
             builder.Entity<SpawnGroupSpawn>(x => x.ToTable("spawn_group_spawn"));
             builder.Entity<SpawnGroupFormation>(x => x.ToTable("spawn_group_formation"));
         }
-
+        public DbSet<CreatureTemplate> CreatureTemplates { get; set; }
         public DbSet<Creature> Creatures { get; set; }
         public DbSet<CreatureMovement> CreatureMovements { get; set; }
         public DbSet<CreatureMovementTemplate> CreatureMovementTemplates { get; set; }

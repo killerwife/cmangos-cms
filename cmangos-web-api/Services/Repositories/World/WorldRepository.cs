@@ -29,6 +29,18 @@ namespace Services.Repositories.World
             return (gosWithSpawnGroup, (float)minZoneY, (float)maxZoneY, (float)minZoneX, (float)maxZoneX);
         }
 
+        public async Task<(List<CreatureWithSpawnGroup>, float, float, float, float)?> GetCreaturesForZoneAndEntry(int mapId, int zoneId, uint entry)
+        {
+            var areaEntry = _dbcRepository.AreaTable.Where(p => p.Value.Area == zoneId).SingleOrDefault();
+            if (areaEntry.Equals(default(KeyValuePair<int, WorldMapArea>)))
+                return null;
+            decimal minZoneX = (decimal)areaEntry.Value.Bottom, minZoneY = (decimal)areaEntry.Value.Left;
+            decimal maxZoneX = (decimal)areaEntry.Value.Top, maxZoneY = (decimal)areaEntry.Value.Right;
+            var gosWithSpawnGroup = await _context.Database.SqlQuery<CreatureWithSpawnGroup>(
+                    $"SELECT creature.*, spawn_group.Id AS spawn_group_id FROM creature LEFT JOIN spawn_group_spawn ON creature.guid=spawn_group_spawn.Guid LEFT JOIN spawn_group ON spawn_group.Id=spawn_group_spawn.Id LEFT JOIN spawn_group_entry ON spawn_group_entry.Id=spawn_group.Id LEFT JOIN creature_spawn_entry ON creature.guid=creature_spawn_entry.guid WHERE (creature.id={entry} OR spawn_group_entry.entry={entry} OR creature_spawn_entry.entry={entry}) AND creature.map={mapId} AND (spawn_group.type IS null OR spawn_group.type=0) AND position_x > {minZoneX} && position_x < {maxZoneX} && position_y > {minZoneY} && position_y < {maxZoneY}").ToListAsync();
+            return (gosWithSpawnGroup, (float)minZoneY, (float)maxZoneY, (float)minZoneX, (float)maxZoneX);
+        }
+
         public async Task<CreatureWithMovementDto?> GetCreatureWithMovement(int zoneId, int guid)
         {
             var areaEntry = _dbcRepository.AreaTable.Where(p => p.Value.Area == zoneId).SingleOrDefault();
@@ -101,9 +113,14 @@ namespace Services.Repositories.World
             };
         }
 
-        public async Task<string?> GetEntryName(uint entry)
+        public async Task<string?> GetGameObjectEntryName(uint entry)
         {
             return (await _context.GameObjectTemplates.Where(p => p.Entry == entry).SingleOrDefaultAsync())?.Name;
+        }
+
+        public async Task<string?> GetCreatureEntryName(uint entry)
+        {
+            return (await _context.CreatureTemplates.Where(p => p.Entry == entry).SingleOrDefaultAsync())?.Name;
         }
     }
 }

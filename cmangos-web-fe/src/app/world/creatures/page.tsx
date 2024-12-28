@@ -5,15 +5,14 @@ import { useState, useEffect, MouseEventHandler } from 'react';
 import { env } from 'next-runtime-env';
 import Link from 'next/link'
 import { text } from 'node:stream/consumers';
+import { useRouter } from 'next/navigation'
 
-export interface gameobject {
+export interface creature {
     x: number,
     y: number,
     z: number,
     guid: number,
-    spawnGroupId: number,
-    hasDuplicate: boolean,
-    duplicates: string
+    spawnGroupId: number
 }
 
 export interface entityZone {
@@ -21,9 +20,9 @@ export interface entityZone {
     name: string
 }
 
-export interface gameobjectList {
+export interface creatureList {
     count: number
-    items: gameobject[]
+    items: creature[]
     left: number
     right: number
     bottom: number
@@ -37,14 +36,15 @@ export default function ZoneDisplay() {
     const zone = searchParams.get('zone');
     const entry = searchParams.get('entry');
     const map = searchParams.get('map');
-    const [gameObjects, setGameObjects] = useState<gameobjectList>({} as gameobjectList);
+    const [creatures, setCreatures] = useState<creatureList>({} as creatureList);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
     const [selectedGroupId, setSelectedGroupId] = useState<number>(-1);
     const offset = 0;
+    const router = useRouter();
 
     const loadGos = async () => {
-        let gameobjects = await fetch(NEXT_PUBLIC_API + '/world/gameobjects/' + map + '/' + zone + '/' + entry, {
+        let creatures = await fetch(NEXT_PUBLIC_API + '/world/creatures/' + map + '/' + zone + '/' + entry, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -52,15 +52,15 @@ export default function ZoneDisplay() {
         })
             .then(async (response) => {
                 if (response.status == 400) {
-                    throw new Error('Failed to get gameobject data');
+                    throw new Error('Failed to get creatures data');
                 }
                 return await response.json()
             })
-            .then((r: gameobjectList) => {
+            .then((r: creatureList) => {
                 return r
             });
 
-        setGameObjects(gameobjects);
+        setCreatures(creatures);
         setIsLoading(false);
     }
 
@@ -74,6 +74,14 @@ export default function ZoneDisplay() {
 
         loadGos();
     }, [zone])
+
+    const onClickCreature = (guid: number, event: React.MouseEvent<HTMLImageElement, MouseEvent>) =>
+    {
+        if (event.ctrlKey)
+            router.push("creature?zone=" + zone + "&guid=" + guid);
+        else
+            navigator.clipboard.writeText((guid - offset).toString()); 
+    };
 
     const onPointHover = (event: React.MouseEvent<HTMLImageElement, MouseEvent>, spawnGroupId: number, apply: boolean) => {
         if (apply && spawnGroupId !== 0)
@@ -91,20 +99,20 @@ export default function ZoneDisplay() {
 
     return (
         <div>
-            <h1>Map: {map} Zone: {zone} Entry: {entry} Object: '{gameObjects.name}' Count: {gameObjects.count} </h1>
+            <h1>Map: {map} Zone: {zone} Entry: {entry} Object: '{creatures.name}' Count: {creatures.count} </h1>
             <div style={{ textDecorationLine: 'underline' }}>
                 {
-                    gameObjects.zones.map(otherZone => {
-                        return <Link href={"gameobject?map=" + map + "&zone=" + otherZone.zoneId + "&entry=" + entry} style={{ marginRight: 10, color: (otherZone.zoneId.toString() == zone ? 'white' : 'grey') }}>{otherZone.name}</Link>
+                    creatures.zones.map(otherZone => {
+                        return <Link href={"creature?map=" + map + "&zone=" + otherZone.zoneId + "&entry=" + entry} style={{ marginRight: 10, color: (otherZone.zoneId.toString() == zone ? 'white' : 'grey') }}>{otherZone.name}</Link>
                     })
                 }
             </div>
             <div style={{ position: 'relative', top: 0, left: 0, margin: 0, display: 'inline-block' }}>
                 <img src={"/" + zone + ".jpg"} alt="pin" style={{ display:'block', position: 'relative', top: 0, left: 0, margin: 0, padding: 0, objectFit: 'contain', height: '100%', width: '100%', maxHeight:"100vh" }}></img>
                 {
-                    gameObjects.items.map(gameobject => {
+                    creatures.items.map(creature => {
                         return (
-                            <img src={selectedGroupId === gameobject.spawnGroupId ? "/pin-blue.png" : (gameobject.hasDuplicate === true ? "/pin-red.png" : "/pin-yellow.png")} key={gameobject.guid} onClick={() => { navigator.clipboard.writeText((gameobject.guid - offset).toString()) }} className={'map-point-img, ' + gameobject.spawnGroupId} onMouseOver={(e) => { onPointHover(e, gameobject.spawnGroupId, true); }} onMouseOut={(e) => { onPointHover(e, gameobject.spawnGroupId, false); }} alt="pin" title={'' + gameobject.guid + (gameobject.hasDuplicate ? ' - ' : '') + gameobject.duplicates} style={{ width: '1%', minWidth: '11px', margin: 0, padding: 0, transform: 'translate(-50%, -50%)', position: 'absolute', top: (Math.abs((gameobject.x - gameObjects.top) / (gameObjects.bottom - gameObjects.top) * 100)) + '%', left: (100 - Math.abs((gameobject.y - gameObjects.left) / (gameObjects.right - gameObjects.left) * 100)) + '%' }} />
+                            <img src={selectedGroupId === creature.spawnGroupId ? "/pin-blue.png" : "/pin-yellow.png"} key={creature.guid} onClick={(event) => { onClickCreature(creature.guid, event) } } className={'map-point-img, ' + creature.spawnGroupId} onMouseOver={(e) => { onPointHover(e, creature.spawnGroupId, true); }} onMouseOut={(e) => { onPointHover(e, creature.spawnGroupId, false); }} alt="pin" title={'' + creature.guid} style={{ width: '1%', minWidth: '11px', margin: 0, padding: 0, transform: 'translate(-50%, -50%)', position: 'absolute', top: (Math.abs((creature.x - creatures.top) / (creatures.bottom - creatures.top) * 100)) + '%', left: (100 - Math.abs((creature.y - creatures.left) / (creatures.right - creatures.left) * 100)) + '%' }} />
                         );
                     })
                 }

@@ -9,6 +9,8 @@ export interface creatureWithMovement {
     y: number,
     z: number,
     guid: number,
+    entry: number,
+    name: string,
     map: number,
     movement: creatureMovement[],
 
@@ -74,7 +76,7 @@ export default function ZoneDisplay() {
 
     return (
         <div>
-            <h1>Map: {creature.map} Zone: {zone} Object: {guid} </h1>
+            <h1>Zone: {zone} Entry: {creature.entry} Guid: '{guid}' Object: '{creature.name}' </h1>
             <div style={{ position: 'relative', top: 0, left: 0, margin: 0, display: 'inline-block' }}>
                 <img src={"/" + zone + ".jpg"} alt="pin" style={{ display:'block', position: 'relative', top: 0, left: 0, margin: 0, padding: 0, objectFit: 'contain', height: '100%', width: '100%', maxHeight:"100vh" }}></img>
 

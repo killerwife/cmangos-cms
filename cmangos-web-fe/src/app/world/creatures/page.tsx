@@ -16,6 +16,7 @@ export interface creature {
 }
 
 export interface entityZone {
+    mapId: number,
     zoneId: number,
     name: string
 }
@@ -103,7 +104,7 @@ export default function ZoneDisplay() {
             <div style={{ textDecorationLine: 'underline' }}>
                 {
                     creatures.zones.map(otherZone => {
-                        return <Link href={"creature?map=" + map + "&zone=" + otherZone.zoneId + "&entry=" + entry} style={{ marginRight: 10, color: (otherZone.zoneId.toString() == zone ? 'white' : 'grey') }}>{otherZone.name}</Link>
+                        return <Link href={"creatures?map=" + otherZone.mapId + "&zone=" + otherZone.zoneId + "&entry=" + entry} style={{ marginRight: 10, color: (otherZone.zoneId.toString() == zone ? 'white' : 'grey') }}>{otherZone.name}</Link>
                     })
                 }
             </div>

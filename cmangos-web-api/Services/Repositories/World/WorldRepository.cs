@@ -53,7 +53,7 @@ namespace Services.Repositories.World
 
             var movement = new List<CreatureMovementDto>();
             var creatureMovement = _context.CreatureMovements.Where(p => p.Id == guid).ToList();
-            if (creatureMovement == null || creatureMovement.Count == 0) // TODO: Add loading of path from template
+            if (creatureMovement == null || creatureMovement.Count == 0)
             {
                 var templateMovement = _context.CreatureMovementTemplates.Where(p => p.Entry == creature.id && p.PathId == 0).ToList();
                 if (templateMovement == null || templateMovement.Count == 0)
@@ -97,12 +97,16 @@ namespace Services.Repositories.World
                     });
             }
 
+            var name = await GetCreatureEntryName(creature.id);
+
             return new CreatureWithMovementDto
             {
                 Guid = creature.guid,
                 X = (float)creature.position_x,
                 Y = (float)creature.position_y,
                 Z = (float)creature.position_z,
+                Entry = creature.id,
+                Name = name!,
                 Map = creature.map,
                 Movement = movement,
 

@@ -3,6 +3,7 @@ using Data.Dto.World;
 using Data.Enum;
 using Data.Model.World;
 using Microsoft.AspNetCore.Mvc;
+using Services.Repositories;
 using Services.Repositories.Cms;
 using Services.Repositories.World;
 using System.ComponentModel.DataAnnotations;
@@ -14,11 +15,13 @@ namespace cmangos_web_api.Controllers
     {
         private IWorldRepository _worldRepository;
         private IEntityExt _entityExt;
+        private DBCRepository _dbcRepository;
 
-        public WorldController(IWorldRepository worldRepository, IEntityExt entityExt)
+        public WorldController(IWorldRepository worldRepository, IEntityExt entityExt, DBCRepository dbcRepository)
         {
             _worldRepository = worldRepository;
             _entityExt = entityExt;
+            _dbcRepository = dbcRepository;
         }
 
         private static bool FloatComparison(decimal x, decimal y, decimal precision)
@@ -91,14 +94,19 @@ namespace cmangos_web_api.Controllers
             if (data == null)
                 return BadRequest();
             var result = new CreatureListDto();
-            result.Name = await _worldRepository.GetCreatureEntryName(entry);
-            var zones = _entityExt.GetGameObjectZones(entry);
-            foreach (var zoneId in zones)
+            var mapIds = new List<uint>()
+            {
+                0,1,530,571
+            };
+            var zones = _dbcRepository.AreaTable.Where(p => p.Value.Area != 0 && mapIds.Contains(p.Value.Map));
+            foreach (var zoneData in zones)
                 result.Zones.Add(new EntityZone
                 {
-                    ZoneId = zoneId,
-                    Name = ((Zone)zoneId).ToString()
+                    MapId = zoneData.Value.Map,
+                    ZoneId = zoneData.Value.Area,
+                    Name = zoneData.Value.Name,
                 });
+            result.Name = await _worldRepository.GetCreatureEntryName(entry);
             result.Count = data.Value.Item1.Count;
             result.Left = data.Value.Item2;
             result.Right = data.Value.Item3;

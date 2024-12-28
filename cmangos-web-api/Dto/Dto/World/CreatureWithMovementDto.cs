@@ -14,6 +14,8 @@
         public float Z { get; set; }
         public uint Guid { get; set; }
         public uint Map { get; set; }
+        public uint Entry { get; set; }
+        public string Name { get; set; } = string.Empty;
         public List<CreatureMovementDto> Movement { get; set; } = new();
 
         public float Left { get; set; }

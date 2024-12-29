@@ -1,0 +1,43 @@
+version: "3"
+services:
+  api:
+    image: killerwife/cmangos-web-api:latest-linux
+    restart: always
+    ports:
+      - "7191:8080"
+      - "7443:8443"
+    environment:
+      - "ASPNETCORE_ENVIRONMENT=development"
+      - "ASPNETCORE_HTTP_PORTS=8080"
+      - "ASPNETCORE_HTTPS_PORTS=8443"
+      - "ASPNETCORE_Kestrel__Certificates__Default__Path=/app/cmangos-web-api.pfx"
+      - "ASPNETCORE_Kestrel__Certificates__Default__Password=crypticpassword"
+      - "ConnectionStrings:Realmd=server=host.docker.internal,3306; database=tbcrealmd; user=mangos; password=mangos"
+      - "ConnectionStrings:Cms=server=host.docker.internal,3306; database=tbccms; user=mangos; password=mangos"
+      - "ConnectionStrings:World=server=host.docker.internal,3306; database=tbcmangos; user=mangos; password=mangos"
+      - AuthConfig:JwtPrivate="TODO PEM PRIVATE"
+      - AuthConfig:JwtPublic="TODO PEM PUBLIC"
+      - WebsiteConfig:VerifyEmailUrl="TODO_PUBLIC_URI/emailVerifiedSuccess"
+      - WebsiteConfig:PasswordRecoveryUrl="TODO_PUBLIC_URI/forgotpassword/form"
+      - WebsiteConfig:ReCaptchaSecret="PRIVATE PART OF RECAPTCHA KEYS"
+      - EmailConfig:Host=""
+      - EmailConfig:Port=""
+      - EmailConfig:RequireSsl=""
+      - EmailConfig:Email=""
+      - EmailConfig:Password=""
+      - EmailConfig:SenderEmail=""
+      - EmailConfig:SenderAlias=""
+      - DbcConfig:DirectoryPath=/opt/wotlk/dbc/
+    volumes:
+      - "./aspnetapp.pfx:/app/cmangos-web-api.pfx"
+      - "./cmangos-web-api/logs/:/app/logs/"
+      - "C:/maps/wotlk/dbc:/opt/wotlk/dbc"
+
+  web:
+      image: killerwife/cmangos-web-fe:latest
+      restart: always
+      ports:
+        - "3000:3000"
+        - "3443:3443"
+      environment:
+        - "NEXT_PUBLIC_API=https://localhost:7443"

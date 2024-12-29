@@ -91,12 +91,12 @@ export default function ZoneDisplay() {
 
     return (
         <div>
-            <h1>Map: {map} Zone: {zone} Entry: {entry} Object: '{gameObjects.name}' Count: {gameObjects.count} <Link href={"/world/search/gameobjects"} style={{ marginRight: 10, color: 'white', textDecoration: 'underline' }}>Back</Link> </h1>
+            <h1>Map: {map} Zone: {zone} Entry: {entry} Object: &apos{gameObjects.name}&apos Count: {gameObjects.count} <Link href={"/world/search/gameobjects"} style={{ marginRight: 10, color: 'white', textDecoration: 'underline' }}>Back</Link> </h1>
             <div style={{ textDecorationLine: 'underline' }}>
                 {
                     gameObjects.zones.map((otherZone, index) => {
                         return (
-                            <Link href={"gameobjects?map=" + map + "&zone=" + otherZone.zoneId + "&entry=" + entry} style={{ marginRight: 10, color: (otherZone.zoneId.toString() == zone ? 'white' : 'grey') }}>{index % 10 == 0 && index != 0 ? (<br />) : "" + otherZone.name}</Link>
+                            <Link key={otherZone.zoneId} href={"gameobjects?map=" + map + "&zone=" + otherZone.zoneId + "&entry=" + entry} style={{ marginRight: 10, color: (otherZone.zoneId.toString() == zone ? 'white' : 'grey') }}>{index % 10 == 0 && index != 0 ? (<br />) : "" + otherZone.name}</Link>
                         );
                     })
                 }

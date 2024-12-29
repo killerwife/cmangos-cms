@@ -10,5 +10,7 @@ namespace Services.Repositories.World
         Task<string?> GetGameObjectEntryName(uint entry);
         Task<string?> GetCreatureEntryName(uint entry);
         Task<(List<CreatureWithSpawnGroup>, float, float, float, float)?> GetCreaturesForZoneAndEntry(int mapId, int zoneId, uint entry);
+        Task<List<CreaturePredictData>> GetCreaturePredictions(string partial);
+        Task<List<CreaturePredictData>> GetGameObjectPredictions(string partial);
     }
 }

@@ -42,13 +42,30 @@ namespace cmangos_web_api.Controllers
             var precision = 0.02m;
             var result = new GameObjectListDto();
             result.Name = await _worldRepository.GetGameObjectEntryName(entry);
-            var zones = _entityExt.GetGameObjectZones(entry);
-            foreach (var zoneId in zones)
-                result.Zones.Add(new EntityZone
+            {
+                var zones = _entityExt.GetGameObjectZones(entry);
+                foreach (var zoneId in zones)
+                    result.Zones.Add(new EntityZone
+                    {
+                        ZoneId = zoneId,
+                        Name = ((Zone)zoneId).ToString()
+                    });
+            }
+            if (result.Zones.Count == 0)
+            {
+                var mapIds = new List<uint>()
                 {
-                    ZoneId = zoneId,
-                    Name = ((Zone)zoneId).ToString()
-                });
+                    0,1,530,571
+                };
+                var zones = _dbcRepository.AreaTable.Where(p => p.Value.Area != 0 && mapIds.Contains(p.Value.Map));
+                foreach (var zoneData in zones)
+                    result.Zones.Add(new EntityZone
+                    {
+                        MapId = zoneData.Value.Map,
+                        ZoneId = zoneData.Value.Area,
+                        Name = zoneData.Value.Name,
+                    });
+            }
             result.Count = data.Value.Item1.Count;
             result.Left = data.Value.Item2;
             result.Right = data.Value.Item3;
@@ -124,6 +141,66 @@ namespace cmangos_web_api.Controllers
                 });
             }
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Returns creature xyz for zone with given entry
+        /// </summary>
+        /// <response code="200">Gameobject information</response>
+        [HttpPost("gameobjects/predict")]
+        public async Task<ActionResult<List<CreaturePredictResponseDto>>> PostGameObjectsPredictions([FromBody] CreaturePredictRequestDto predictDto)
+        {
+            var results = await _worldRepository.GetGameObjectPredictions(predictDto.Name);
+            var response = new List<CreaturePredictResponseDto>();
+            foreach (var result in results)
+            {
+                if (result.Map == null)
+                    continue;
+
+                var zoneIdData = _dbcRepository.AreaTable.Where(p => p.Value.Area != 0 && p.Value.Map == result.Map && p.Value.Top > (float)result.Position_x && p.Value.Bottom <= (float)result.Position_x
+                                && p.Value.Left <= (float)result.Position_y && p.Value.Right > (float)result.Position_y).FirstOrDefault();
+                uint zoneId = 0;
+                if (zoneIdData.Value != null)
+                    zoneId = zoneIdData.Value.Area;
+                response.Add(new CreaturePredictResponseDto
+                {
+                    Entry = result.Entry,
+                    Map = result.Map.Value,
+                    Name = result.Name,
+                    Zone = zoneId
+                });
+            }
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Returns creature xyz for zone with given entry
+        /// </summary>
+        /// <response code="200">Creature information</response>
+        [HttpPost("creatures/predict")]
+        public async Task<ActionResult<List<CreaturePredictResponseDto>>> PostCreaturePredictions([FromBody] CreaturePredictRequestDto predictDto)
+        {
+            var results = await _worldRepository.GetCreaturePredictions(predictDto.Name);
+            var response = new List<CreaturePredictResponseDto>();
+            foreach (var result in results)
+            {
+                if (result.Map == null)
+                    continue;
+
+                var zoneIdData = _dbcRepository.AreaTable.Where(p => p.Value.Area != 0 && p.Value.Map == result.Map && p.Value.Top > (float)result.Position_x && p.Value.Bottom <= (float)result.Position_x
+                                && p.Value.Left <= (float)result.Position_y && p.Value.Right > (float)result.Position_y).FirstOrDefault();
+                uint zoneId = 0;
+                if (zoneIdData.Value != null)
+                    zoneId = zoneIdData.Value.Area;
+                response.Add(new CreaturePredictResponseDto
+                {
+                    Entry = result.Entry,
+                    Map = result.Map.Value,
+                    Name = result.Name,
+                    Zone = zoneId
+                });
+            }
+            return Ok(response);
         }
     }
 }

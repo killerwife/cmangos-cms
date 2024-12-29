@@ -6,6 +6,7 @@ import { env } from 'next-runtime-env';
 import { useRouter } from 'next/navigation'
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
+import Link from 'next/link'
 
 export interface creature {
     x: number,
@@ -111,7 +112,7 @@ export default function ZoneDisplay() {
 
     return (
         <div>
-            <h1>Map: {map} Zone: {zone} Entry: {entry} Object: '{creatures.name}' Count: {creatures.count} </h1>
+            <h1>Map: {map} Zone: {zone} Entry: {entry} Object: '{creatures.name}' Count: {creatures.count} <Link href={"/world/search/creatures"} style={{ marginRight: 10, color: 'white', textDecoration: 'underline' }}>Back</Link> </h1>
             <div style={{ textDecorationLine: 'underline' }}>
                 <Autocomplete<entityZone>
                     disablePortal

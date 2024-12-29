@@ -44,3 +44,7 @@ body {
 .MuiAutocomplete-input {
     color: #FFFFFF;
 }
+
+.MuiOutlinedInput-root {
+    border: 1px, solid, #2196f3;
+}

@@ -19,7 +19,7 @@ namespace Services.Repositories.World
 
         public async Task<(List<GameObjectWithSpawnGroup>, float, float, float, float)?> GetGameObjectsForZoneAndEntry(int mapId, int zoneId, uint entry)
         {
-            var areaEntry = _dbcRepository.AreaTable.Where(p => p.Value.Area == zoneId).SingleOrDefault();
+            var areaEntry = _dbcRepository.AreaTable.Where(p => p.Value.Area == zoneId && mapId == p.Value.Map).SingleOrDefault();
             if (areaEntry.Equals(default(KeyValuePair<int, WorldMapArea>)))
                 return null;
             decimal minZoneX = (decimal)areaEntry.Value.Bottom, minZoneY = (decimal)areaEntry.Value.Left;
@@ -31,7 +31,7 @@ namespace Services.Repositories.World
 
         public async Task<(List<CreatureWithSpawnGroup>, float, float, float, float)?> GetCreaturesForZoneAndEntry(int mapId, int zoneId, uint entry)
         {
-            var areaEntry = _dbcRepository.AreaTable.Where(p => p.Value.Area == zoneId).SingleOrDefault();
+            var areaEntry = _dbcRepository.AreaTable.Where(p => p.Value.Area == zoneId && mapId == p.Value.Map).SingleOrDefault();
             if (areaEntry.Equals(default(KeyValuePair<int, WorldMapArea>)))
                 return null;
             decimal minZoneX = (decimal)areaEntry.Value.Bottom, minZoneY = (decimal)areaEntry.Value.Left;
@@ -125,6 +125,40 @@ namespace Services.Repositories.World
         public async Task<string?> GetCreatureEntryName(uint entry)
         {
             return (await _context.CreatureTemplates.Where(p => p.Entry == entry).SingleOrDefaultAsync())?.Name;
+        }
+
+        public async Task<List<CreaturePredictData>> GetGameObjectPredictions(string partial)
+        {
+            var mapIds = new List<uint>()
+            {
+                0,1,530,571
+            };
+            var result = _context.GameObjectTemplates.Where(p => p.Name.Contains(partial)).Select(p => new CreaturePredictData
+            {
+                Entry = p.Entry,
+                Name = p.Name,
+                Map = _context.GameObjects.Where(q => q.id == p.Entry && mapIds.Contains(q.map)).FirstOrDefault()!.map,
+                Position_x = _context.GameObjects.Where(q => q.id == p.Entry && mapIds.Contains(q.map)).FirstOrDefault()!.position_x,
+                Position_y = _context.GameObjects.Where(q => q.id == p.Entry && mapIds.Contains(q.map)).FirstOrDefault()!.position_y
+            });
+            return await result.ToListAsync();
+        }
+
+        public async Task<List<CreaturePredictData>> GetCreaturePredictions(string partial)
+        {
+            var mapIds = new List<uint>()
+            {
+                0,1,530,571
+            };
+            var result = _context.CreatureTemplates.Where(p => p.Name.Contains(partial)).Select(p => new CreaturePredictData
+            {
+                Entry = p.Entry,
+                Name = p.Name,
+                Map = _context.Creatures.Where(q => q.id == p.Entry && mapIds.Contains(q.map)).FirstOrDefault()!.map,
+                Position_x = _context.Creatures.Where(q => q.id == p.Entry && mapIds.Contains(q.map)).FirstOrDefault()!.position_x,
+                Position_y = _context.Creatures.Where(q => q.id == p.Entry && mapIds.Contains(q.map)).FirstOrDefault()!.position_y
+            });
+            return await result.ToListAsync();
         }
     }
 }

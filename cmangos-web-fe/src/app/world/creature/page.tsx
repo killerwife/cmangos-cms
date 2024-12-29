@@ -77,7 +77,7 @@ export default function ZoneDisplay() {
 
     return (
         <div>
-            <h1>Zone: {zone} Entry: {creature.entry} Guid: '{guid}' Object: '{creature.name}' return <Link href={"creatures?map=" + creature.map + "&zone=" + zone + "&entry=" + creature.entry} style={{ marginRight: 10, color: 'white', textDecoration: 'underline' }}>Back</Link> </h1>
+            <h1>Zone: {zone} Entry: {creature.entry} Guid: '{guid}' Object: '{creature.name}' <Link href={"creatures?map=" + creature.map + "&zone=" + zone + "&entry=" + creature.entry} style={{ marginRight: 10, color: 'white', textDecoration: 'underline' }}>Back</Link> </h1>
             <div style={{ position: 'relative', top: 0, left: 0, margin: 0, display: 'inline-block' }}>
                 <img src={"/" + zone + ".jpg"} alt="pin" style={{ display:'block', position: 'relative', top: 0, left: 0, margin: 0, padding: 0, objectFit: 'contain', height: '100%', width: '100%', maxHeight:"100vh" }}></img>
 

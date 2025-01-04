@@ -63,9 +63,13 @@ export default function Register() {
             return
         }
 
-        await recaptcha.current?.executeAsync();
+        var recaptchaResult = await recaptcha.current!.executeAsync();
+        if (recaptchaResult == null) {
+            setRegistrationError('Recaptcha fail')
+            return
+        }
 
-        onRegisterClick(username, email, password, recaptcha.current!.getValue())
+        onRegisterClick(username, email, password, recaptchaResult)
     }
 
     return (

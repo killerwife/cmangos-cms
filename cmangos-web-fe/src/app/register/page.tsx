@@ -42,7 +42,7 @@ export default function Register() {
     const { registrationError, setRegistrationError, onRegisterClick } = RegisterQuery();
     const siteKey = env('NEXT_PUBLIC_RECAPTCHA_SITE_KEY')
 
-    const onButtonClick = () => {
+    const onButtonClick = async () => {
         if ('' === username) {
             setUsernameError('Please enter your username')
             return
@@ -62,6 +62,8 @@ export default function Register() {
             setPasswordError('Please enter an email')
             return
         }
+
+        await recaptcha.current?.executeAsync();
 
         onRegisterClick(username, email, password, recaptcha.current!.getValue())
     }

@@ -21,7 +21,10 @@ namespace Services.Repositories
         {
             var connectionString = Configuration.GetConnectionString("World");
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 35));
-            options.UseMySql(connectionString, serverVersion)
+            options.UseMySql(connectionString, serverVersion, options => options.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: System.TimeSpan.FromSeconds(30),
+                    errorNumbersToAdd: null))
                 .LogTo(Console.WriteLine, LogLevel.Information)
                 .EnableSensitiveDataLogging()
                 .EnableDetailedErrors();

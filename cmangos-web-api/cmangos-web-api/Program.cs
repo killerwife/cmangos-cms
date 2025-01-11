@@ -69,7 +69,10 @@ builder.Services.AddScoped<ClaimsPrincipal>(s => s.GetService<IHttpContextAccess
 builder.Services.AddDbContext<RealmdDbContext>();
 builder.Services.AddDbContext<WorldDbContext>();
 var connectionStringCms = builder.Configuration.GetValue<string>("ConnectionStrings:Cms");
-builder.Services.AddDbContext<CmsDbContext>(options => options.UseMySql(connectionStringCms, ServerVersion.AutoDetect(connectionStringCms))
+builder.Services.AddDbContext<CmsDbContext>(options => options.UseMySql(connectionStringCms, ServerVersion.AutoDetect(connectionStringCms), options => options.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: System.TimeSpan.FromSeconds(30),
+                    errorNumbersToAdd: null))
                 .LogTo(Console.WriteLine, LogLevel.Information)
                 .EnableSensitiveDataLogging()
                 .EnableDetailedErrors());

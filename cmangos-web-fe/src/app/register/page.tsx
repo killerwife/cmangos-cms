@@ -28,6 +28,10 @@ const RegisterQuery = () => {
                 setRegistrationError('Recaptcha failed')
                 throw new Error('Failed to login');
             }
+            if (response.status == 500) {
+                setRegistrationError('Server error')
+                throw new Error('Failed to login');
+            }
             router.push('/emailVerification')
         })
     }

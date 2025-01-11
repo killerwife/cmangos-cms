@@ -20,7 +20,10 @@ namespace Services.Repositories
         {
             var connectionString = Configuration.GetConnectionString("Realmd");
             var serverVersion = new MySqlServerVersion(ServerVersion.AutoDetect(connectionString));
-            options.UseMySql(connectionString, serverVersion)
+            options.UseMySql(connectionString, serverVersion, options => options.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: System.TimeSpan.FromSeconds(30),
+                    errorNumbersToAdd: null))
                 .LogTo(Console.WriteLine, LogLevel.Information)
                 .EnableSensitiveDataLogging()
                 .EnableDetailedErrors();

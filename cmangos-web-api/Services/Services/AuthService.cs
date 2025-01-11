@@ -364,11 +364,17 @@ namespace Services.Services
                 s = saltInteger.ToString("X"),
                 v = verifierInteger.ToString("X")
             };
+            int i = 0;
             Account? newAccount;
             do
             {
+                if (i == 10)
+                {
+                    return new BadRequestObjectResult("Too many guid attempts");
+                }
                 g = Guid.NewGuid();
                 newAccount = await _accountRepository.Create(accountDraft, email, g.ToString());
+                ++i;
             }
             while (newAccount == null);
 

@@ -128,7 +128,7 @@ namespace Services.Repositories
 
         public async Task<Account?> Create(Account account, string email, string confirmationToken)
         {
-            if (_cmsContext.AccountsExt.Where(p => p.PendingEmailToken == confirmationToken).SingleOrDefault() != null)
+            if ((await _cmsContext.AccountsExt.Where(p => p.PendingEmailToken == confirmationToken).SingleOrDefaultAsync()) != null)
                 return null;
 
             _dbContext.Add(account);
@@ -173,7 +173,7 @@ namespace Services.Repositories
 
         public async Task<Account?> FindByEmail(string email)
         {
-            return _dbContext.Accounts.Where(p => p.email == email).SingleOrDefault();
+            return await _dbContext.Accounts.Where(p => p.email == email).SingleOrDefaultAsync();
         }
 
         public async Task<PasswordRecoveryTokenResult> SetPasswordRecoveryToken(Account user, string token)

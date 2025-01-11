@@ -112,7 +112,7 @@ export default function ZoneDisplay() {
 
     return (
         <div>
-            <h1>Map: {map} Zone: {zone} Entry: {entry} Object: &apos{creatures.name}&apos Count: {creatures.count} <Link href={"/world/search/creatures"} style={{ marginRight: 10, color: 'white', textDecoration: 'underline' }}>Back</Link> </h1>
+            <h1>Map: {map} Zone: {zone} Entry: {entry} Object: &apos;{creatures.name}&apos; Count: {creatures.count} <Link href={"/world/search/creatures"} style={{ marginRight: 10, color: 'white', textDecoration: 'underline' }}>Back</Link> </h1>
             <div style={{ textDecorationLine: 'underline' }}>
                 <Autocomplete<entityZone>
                     disablePortal

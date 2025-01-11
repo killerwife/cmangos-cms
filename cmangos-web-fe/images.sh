@@ -52,6 +52,7 @@ curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/267.jpg > public/2
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/1497.jpg > public/1497.jpg
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/1519.jpg > public/1519.jpg
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/1537.jpg > public/1537.jpg
+curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/4080.jpg > public/4080.jpg
 
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/2839.jpg > public/2839.jpg
 

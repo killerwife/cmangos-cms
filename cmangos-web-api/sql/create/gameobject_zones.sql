@@ -103,7 +103,8 @@ INSERT INTO gameobject_zone(Entry, ZoneId) VALUES
 (181556,3520),
 (181556,3521),
 (181556,3522),
-(181556,3523);
+(181556,3523),
+(181556,4080);
 
 -- nethercite-deposit
 INSERT INTO gameobject_zone(Entry, ZoneId) VALUES

@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "../components/Navbar";
 import { PublicEnvScript } from 'next-runtime-env';
 import { StyledEngineProvider } from '@mui/material/styles';
+import { ReCaptchaProvider } from "next-recaptcha-v3";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,9 +25,11 @@ export default function RootLayout({
           </head>
           <body className={inter.className}>
               <Navbar></Navbar>
-              <StyledEngineProvider injectFirst>
-                  {children}
-              </StyledEngineProvider>
+              <ReCaptchaProvider>
+                <StyledEngineProvider injectFirst>
+                    {children}
+                  </StyledEngineProvider>
+              </ReCaptchaProvider>
           </body>
       </html>
   );

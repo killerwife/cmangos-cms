@@ -1,9 +1,9 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { env } from 'next-runtime-env';
-import { ReCAPTCHA } from 'react-google-recaptcha';
+import { useReCaptcha } from "next-recaptcha-v3";
 import React from 'react';
 
 const RegisterQuery = () => {
@@ -24,6 +24,10 @@ const RegisterQuery = () => {
                 setRegistrationError('Account with that username already exists')
                 throw new Error('Failed to login');
             }
+            if (response.status == 401) {
+                setRegistrationError('Recaptcha failed')
+                throw new Error('Failed to login');
+            }
             router.push('/emailVerification')
         })
     }
@@ -32,7 +36,7 @@ const RegisterQuery = () => {
 }
 
 export default function Register() {
-    const recaptcha = useRef<ReCAPTCHA>(null)
+    const { executeRecaptcha } = useReCaptcha();
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -42,88 +46,86 @@ export default function Register() {
     const { registrationError, setRegistrationError, onRegisterClick } = RegisterQuery();
     const siteKey = env('NEXT_PUBLIC_RECAPTCHA_SITE_KEY')
 
-    const onButtonClick = async () => {
+    const onButtonClick = async (e: any) => {
+        e.preventDefault();
         if ('' === username) {
-            setUsernameError('Please enter your username')
-            return
+            setUsernameError('Please enter your username');
+            return;
         }
 
         if ('' === password) {
-            setPasswordError('Please enter a password')
-            return
+            setPasswordError('Please enter a password');
+            return;
         }
 
         if (password !== password2) {
-            setPasswordError('Passwords do not match')
-            return
+            setPasswordError('Passwords do not match');
+            return;
         }
 
         if ('' === email) {
-            setPasswordError('Please enter an email')
-            return
+            setPasswordError('Please enter an email');
+            return;
         }
 
-        var recaptchaResult = await recaptcha.current!.executeAsync();
-        if (recaptchaResult == null) {
-            setRegistrationError('Recaptcha fail')
-            return
-        }
+        const token = await executeRecaptcha("form_submit");
 
-        onRegisterClick(username, email, password, recaptchaResult)
+        onRegisterClick(username, email, password, token);
     }
 
     return (
         <main>
             <div className={'mainContainer'}>
                 <div className={'titleContainer'}>
-                    <div>Login</div>
+                <div>Login</div>
                 </div>
-                <br />
-                <label className="errorLabel">{registrationError}</label>
-                <div className={'inputContainer'}>
-                    <input
-                        value={username}
-                        placeholder="Enter username"
-                        onChange={(ev) => setUsername(ev.target.value)}
-                        className={'inputBox'}
-                    />
-                    <label className="errorLabel">{usernameError}</label>
-                </div>
-                <br />
-                <div className={'inputContainer'}>
-                    <input
-                        value={email}
-                        placeholder="Enter email"
-                        onChange={(ev) => setEmail(ev.target.value)}
-                        className={'inputBox'}
-                    />
-                </div>
-                <br />
-                <div className={'inputContainer'}>
-                    <input
-                        value={password}
-                        type='password'
-                        placeholder="Enter password"
-                        onChange={(ev) => setPassword(ev.target.value)}
-                        className={'inputBox'}
-                    />
-                </div>
-                <br />
-                <div className={'inputContainer'}>
-                    <input
-                        value={password2}
-                        type='password'
-                        placeholder="Enter password again"
-                        onChange={(ev) => setPassword2(ev.target.value)}
-                        className={'inputBox'}
-                    />
-                    <label className="errorLabel">{passwordError}</label>
-                </div>
-                <br />
-                <ReCAPTCHA ref={recaptcha} sitekey={siteKey === undefined ? "" : siteKey} />
-                <div className={'inputContainer'}>
-                    <input className={'inputButton'} type="button" onClick={onButtonClick} value={'Register'} />
-                </div>
+                <form onSubmit={onButtonClick }>
+                    <br />
+                    <label className="errorLabel">{registrationError}</label>
+                    <div className={'inputContainer'}>
+                        <input
+                            value={username}
+                            placeholder="Enter username"
+                            onChange={(ev) => setUsername(ev.target.value)}
+                            className={'inputBox'}
+                        />
+                        <label className="errorLabel">{usernameError}</label>
+                    </div>
+                    <br />
+                    <div className={'inputContainer'}>
+                        <input
+                            value={email}
+                            placeholder="Enter email"
+                            onChange={(ev) => setEmail(ev.target.value)}
+                            className={'inputBox'}
+                        />
+                    </div>
+                    <br />
+                    <div className={'inputContainer'}>
+                        <input
+                            value={password}
+                            type='password'
+                            placeholder="Enter password"
+                            onChange={(ev) => setPassword(ev.target.value)}
+                            className={'inputBox'}
+                        />
+                    </div>
+                    <br />
+                    <div className={'inputContainer'}>
+                        <input
+                            value={password2}
+                            type='password'
+                            placeholder="Enter password again"
+                            onChange={(ev) => setPassword2(ev.target.value)}
+                            className={'inputBox'}
+                        />
+                        <label className="errorLabel">{passwordError}</label>
+                    </div>
+                    <br />
+                    <div className={'inputContainer'}>
+                        <button className={'inputButton'} type="submit" > Register</button>
+                    </div>
+                </form>
             </div>
         </main>
     );

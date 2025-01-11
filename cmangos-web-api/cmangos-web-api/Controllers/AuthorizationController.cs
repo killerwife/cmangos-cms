@@ -129,9 +129,9 @@ namespace cmangos_web_api.Controllers
         {
             if (!string.IsNullOrEmpty(_websiteOptions.CurrentValue.ReCaptchaSecret))
             {
-                var success = ReCaptchaHelper.ReCaptchaPassed(register.ReCaptchaResponse);
+                var success = ReCaptchaHelper.ReCaptchaPassed(register.ReCaptchaResponse, _websiteOptions.CurrentValue.ReCaptchaSecret);
                 if (success == false)
-                    return BadRequest("Recaptcha failed");
+                    return Unauthorized("Recaptcha failed");
             }
             IActionResult? result = await _authService.CreateAccount(register.Username, register.Password, register.Email, $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}");
             return result == null ? Ok() : result;

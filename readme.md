@@ -19,7 +19,7 @@ cmangos-web-api/cmangos-web-api/cmangos-web-api.csproj
 
 Generate HTTPS Certificate:  
 Using dotnet:  
-dotnet dev-certs https -ep aspnetapp.pfx -p crypticpassword  
+dotnet dev-certs https -ep aspnetapp.pfx -p crypticpassword --trust
 Using OpenSSL:  
 TBD  
 

@@ -148,8 +148,8 @@ namespace cmangos_web_api.Controllers
         {
             bool result = await _authService.VerifyEmail(token);
             if (result == true)
-                Redirect(_websiteOptions.CurrentValue.VerifyEmailUrl);
-            return result ? Ok() : BadRequest();
+                return Redirect(_websiteOptions.CurrentValue.VerifyEmailUrl);
+            return BadRequest();
         }
 
         /// <summary>

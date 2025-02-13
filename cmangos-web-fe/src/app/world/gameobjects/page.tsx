@@ -17,6 +17,7 @@ export interface gameobject {
 }
 
 export interface entityZone {
+    mapId: number,
     zoneId: number,
     name: string
 }
@@ -96,7 +97,7 @@ export default function ZoneDisplay() {
                 {
                     gameObjects.zones.map((otherZone, index) => {
                         return (
-                            <Link key={otherZone.zoneId} href={"gameobjects?map=" + map + "&zone=" + otherZone.zoneId + "&entry=" + entry} style={{ marginRight: 10, color: (otherZone.zoneId.toString() == zone ? 'white' : 'grey') }}>{index % 10 == 0 && index != 0 ? (<br />) : "" + otherZone.name}</Link>
+                            <Link key={otherZone.zoneId} href={"gameobjects?map=" + otherZone.mapId + "&zone=" + otherZone.zoneId + "&entry=" + entry} style={{ marginRight: 10, color: (otherZone.zoneId.toString() == zone ? 'white' : 'grey') }}>{index % 10 == 0 && index != 0 ? (<br />) : "" + otherZone.name}</Link>
                         );
                     })
                 }

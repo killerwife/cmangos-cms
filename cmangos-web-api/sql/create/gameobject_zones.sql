@@ -1,6 +1,13 @@
 truncate gameobject_zone;
 
 -- herbs
+-- black lotus
+INSERT INTO gameobject_zone(Entry, ZoneId) VALUES
+(176589,46),
+(176589,139),
+(176589,618),
+(176589,1377);
+
 -- dreamfoil
 INSERT INTO gameobject_zone(Entry, ZoneId) VALUES
 (176584,3483),

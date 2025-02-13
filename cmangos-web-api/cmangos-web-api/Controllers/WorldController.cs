@@ -44,9 +44,11 @@ namespace cmangos_web_api.Controllers
             result.Name = await _worldRepository.GetGameObjectEntryName(entry);
             {
                 var zones = _entityExt.GetGameObjectZones(entry);
+                var zonesLookup = _dbcRepository.AreaTable.Where(p => zones.Contains(p.Value.Area));
                 foreach (var zoneId in zones)
                     result.Zones.Add(new EntityZone
                     {
+                        MapId = zonesLookup.Single(p => p.Value.Area == zoneId).Value.Map,
                         ZoneId = zoneId,
                         Name = ((Zone)zoneId).ToString()
                     });

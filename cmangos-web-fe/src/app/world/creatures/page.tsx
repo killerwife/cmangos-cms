@@ -19,8 +19,7 @@ export interface creature {
 export interface entityZone {
     mapId: number,
     zoneId: number,
-    name: string,
-    label: string
+    name: string
 }
 
 export interface creatureList {

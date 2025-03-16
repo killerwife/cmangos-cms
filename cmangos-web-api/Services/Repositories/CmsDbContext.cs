@@ -15,7 +15,7 @@ namespace Services.Repositories
         {
             base.OnModelCreating(builder);
             builder.Entity<AccountExtension>(x => x.ToTable("account_ext"));
-            builder.Entity<GameObjectZone>(x => x.ToTable("gameobject_zone"));
+            builder.Entity<GameObjectCmsZone>(x => x.ToTable("gameobject_zone"));
             builder.Entity<RefreshToken>(x => x.ToTable("refresh_token"));
         }
 
@@ -23,6 +23,6 @@ namespace Services.Repositories
         public DbSet<AccountExtension> AccountsExt { get; set; }
         public DbSet<RefreshToken> RefreshToken { get; set; }
 
-        public DbSet<GameObjectZone> GameObjectZones { get; set; }
+        public DbSet<GameObjectCmsZone> GameObjectZones { get; set; }
     }
 }

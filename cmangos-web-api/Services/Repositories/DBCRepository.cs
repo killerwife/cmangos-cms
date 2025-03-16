@@ -16,11 +16,13 @@ namespace Services.Repositories
             _dbcOptions = dbcOptions;
         }
 
-        public Storage<WorldMapArea> AreaTable { get; set; }
+        public Storage<WorldMapArea> WorldMapArea { get; set; }
+        public Storage<AreaTable> Areas { get; set; }
 
         public void Load()
         {
-            AreaTable = new Storage<WorldMapArea>(_dbcOptions.CurrentValue.DirectoryPath + "WorldMapArea.dbc");
+            WorldMapArea = new Storage<WorldMapArea>(_dbcOptions.CurrentValue.DirectoryPath + "WorldMapArea.dbc");
+            Areas = new Storage<AreaTable>(_dbcOptions.CurrentValue.DirectoryPath + "AreaTable.dbc");
         }
     }
 }

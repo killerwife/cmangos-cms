@@ -43,15 +43,23 @@ namespace cmangos_web_api.Controllers
             var result = new GameObjectListDto();
             result.Name = await _worldRepository.GetGameObjectEntryName(entry);
             {
-                var zones = _entityExt.GetGameObjectZones(entry);
-                var zonesLookup = _dbcRepository.AreaTable.Where(p => zones.Contains(p.Value.Area));
+                var zones = await _worldRepository.GetGameObjectZones(entry);
+                var zonesLookup = _dbcRepository.WorldMapArea.Where(p => zones.Contains(p.Value.Area));
                 foreach (var zoneId in zones)
+                {
+                    if (zoneId == 0)
+                        continue;
+                    var zoneRes = zonesLookup.SingleOrDefault(p => p.Value.Area == zoneId);
+                    if (zoneRes.Value == null)
+                        continue;
+                    var name = _dbcRepository.Areas.SingleOrDefault(p => p.Value.ID == zoneId).Value.area_name;
                     result.Zones.Add(new EntityZone
                     {
-                        MapId = zonesLookup.Single(p => p.Value.Area == zoneId).Value.Map,
+                        MapId = zoneRes.Value.Map,
                         ZoneId = zoneId,
-                        Name = ((Zone)zoneId).ToString()
+                        Name = name
                     });
+                }
             }
             if (result.Zones.Count == 0)
             {
@@ -59,7 +67,7 @@ namespace cmangos_web_api.Controllers
                 {
                     0,1,530,571
                 };
-                var zones = _dbcRepository.AreaTable.Where(p => p.Value.Area != 0 && mapIds.Contains(p.Value.Map));
+                var zones = _dbcRepository.WorldMapArea.Where(p => p.Value.Area != 0 && mapIds.Contains(p.Value.Map));
                 foreach (var zoneData in zones)
                     result.Zones.Add(new EntityZone
                     {
@@ -117,14 +125,36 @@ namespace cmangos_web_api.Controllers
             {
                 0,1,530,571
             };
-            var zones = _dbcRepository.AreaTable.Where(p => p.Value.Area != 0 && mapIds.Contains(p.Value.Map));
-            foreach (var zoneData in zones)
-                result.Zones.Add(new EntityZone
+            {
+                var zones = await _worldRepository.GetCreatureZones(entry);
+                var zonesLookup = _dbcRepository.WorldMapArea.Where(p => zones.Contains(p.Value.Area));
+                foreach (var zoneId in zones)
                 {
-                    MapId = zoneData.Value.Map,
-                    ZoneId = zoneData.Value.Area,
-                    Name = zoneData.Value.Name,
-                });
+                    if (zoneId == 0)
+                        continue;
+                    var zoneRes = zonesLookup.SingleOrDefault(p => p.Value.Area == zoneId);
+                    if (zoneRes.Value == null)
+                        continue;
+                    var name = _dbcRepository.Areas.SingleOrDefault(p => p.Value.ID == zoneId).Value.area_name;
+                    result.Zones.Add(new EntityZone
+                    {
+                        MapId = zoneRes.Value.Map,
+                        ZoneId = zoneId,
+                        Name = name
+                    });
+                }
+            }
+            if (result.Zones.Count() == 0)
+            {
+                var zones = _dbcRepository.WorldMapArea.Where(p => p.Value.Area != 0 && mapIds.Contains(p.Value.Map));
+                foreach (var zoneData in zones)
+                    result.Zones.Add(new EntityZone
+                    {
+                        MapId = zoneData.Value.Map,
+                        ZoneId = zoneData.Value.Area,
+                        Name = zoneData.Value.Name,
+                    });
+            }
             result.Name = await _worldRepository.GetCreatureEntryName(entry);
             result.Count = data.Value.Item1.Count;
             result.Left = data.Value.Item2;
@@ -159,7 +189,7 @@ namespace cmangos_web_api.Controllers
                 if (result.Map == null)
                     continue;
 
-                var zoneIdData = _dbcRepository.AreaTable.Where(p => p.Value.Area != 0 && p.Value.Map == result.Map && p.Value.Top > (float)result.Position_x && p.Value.Bottom <= (float)result.Position_x
+                var zoneIdData = _dbcRepository.WorldMapArea.Where(p => p.Value.Area != 0 && p.Value.Map == result.Map && p.Value.Top > (float)result.Position_x && p.Value.Bottom <= (float)result.Position_x
                                 && p.Value.Left <= (float)result.Position_y && p.Value.Right > (float)result.Position_y).FirstOrDefault();
                 uint zoneId = 0;
                 if (zoneIdData.Value != null)
@@ -189,7 +219,7 @@ namespace cmangos_web_api.Controllers
                 if (result.Map == null)
                     continue;
 
-                var zoneIdData = _dbcRepository.AreaTable.Where(p => p.Value.Area != 0 && p.Value.Map == result.Map && p.Value.Top > (float)result.Position_x && p.Value.Bottom <= (float)result.Position_x
+                var zoneIdData = _dbcRepository.WorldMapArea.Where(p => p.Value.Area != 0 && p.Value.Map == result.Map && p.Value.Top > (float)result.Position_x && p.Value.Bottom <= (float)result.Position_x
                                 && p.Value.Left <= (float)result.Position_y && p.Value.Right > (float)result.Position_y).FirstOrDefault();
                 uint zoneId = 0;
                 if (zoneIdData.Value != null)

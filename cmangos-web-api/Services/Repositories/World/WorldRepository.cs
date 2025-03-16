@@ -19,7 +19,7 @@ namespace Services.Repositories.World
 
         public async Task<(List<GameObjectWithSpawnGroup>, float, float, float, float)?> GetGameObjectsForZoneAndEntry(int mapId, int zoneId, uint entry)
         {
-            var areaEntry = _dbcRepository.AreaTable.Where(p => p.Value.Area == zoneId && mapId == p.Value.Map).SingleOrDefault();
+            var areaEntry = _dbcRepository.WorldMapArea.Where(p => p.Value.Area == zoneId && mapId == p.Value.Map).SingleOrDefault();
             if (areaEntry.Equals(default(KeyValuePair<int, WorldMapArea>)))
                 return null;
             decimal minZoneX = (decimal)areaEntry.Value.Bottom, minZoneY = (decimal)areaEntry.Value.Left;
@@ -31,7 +31,7 @@ namespace Services.Repositories.World
 
         public async Task<(List<CreatureWithSpawnGroup>, float, float, float, float)?> GetCreaturesForZoneAndEntry(int mapId, int zoneId, uint entry)
         {
-            var areaEntry = _dbcRepository.AreaTable.Where(p => p.Value.Area == zoneId && mapId == p.Value.Map).SingleOrDefault();
+            var areaEntry = _dbcRepository.WorldMapArea.Where(p => p.Value.Area == zoneId && mapId == p.Value.Map).SingleOrDefault();
             if (areaEntry.Equals(default(KeyValuePair<int, WorldMapArea>)))
                 return null;
             decimal minZoneX = (decimal)areaEntry.Value.Bottom, minZoneY = (decimal)areaEntry.Value.Left;
@@ -43,7 +43,7 @@ namespace Services.Repositories.World
 
         public async Task<CreatureWithMovementDto?> GetCreatureWithMovement(int zoneId, int guid)
         {
-            var areaEntry = _dbcRepository.AreaTable.Where(p => p.Value.Area == zoneId).SingleOrDefault();
+            var areaEntry = _dbcRepository.WorldMapArea.Where(p => p.Value.Area == zoneId).SingleOrDefault();
             if (areaEntry.Equals(default(KeyValuePair<int, WorldMapArea>)))
                 return null;
 
@@ -159,6 +159,16 @@ namespace Services.Repositories.World
                 Position_y = _context.Creatures.Where(q => q.id == p.Entry && mapIds.Contains(q.map)).FirstOrDefault()!.position_y
             });
             return await result.ToListAsync();
+        }
+
+        public async Task<List<uint>> GetGameObjectZones(uint entry)
+        {
+            return await _context.GameObjects.Where(p => p.id == entry).Join(_context.GameObjectZones, p => p.guid, q => q.Guid, (p, q) => q.ZoneId).Distinct().ToListAsync();
+        }
+
+        public async Task<List<uint>> GetCreatureZones(uint entry)
+        {
+            return await _context.Creatures.Where(p => p.id == entry).Join(_context.CreatureZones, p => p.guid, q => q.Guid, (p, q) => q.ZoneId).Distinct().ToListAsync();
         }
     }
 }

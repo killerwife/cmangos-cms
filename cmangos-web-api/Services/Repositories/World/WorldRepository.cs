@@ -163,12 +163,12 @@ namespace Services.Repositories.World
 
         public async Task<List<uint>> GetGameObjectZones(uint entry)
         {
-            return await _context.GameObjects.Where(p => p.id == entry).Join(_context.GameObjectZones, p => p.guid, q => q.Guid, (p, q) => q.ZoneId).Distinct().ToListAsync();
+            return await _context.Database.SqlQuery<uint>($"SELECT DISTINCT gameobject_zone.zoneId FROM gameobject LEFT JOIN gameobject_zone ON gameobject_zone.guid=gameobject.guid LEFT JOIN spawn_group_spawn ON gameobject.guid=spawn_group_spawn.Guid LEFT JOIN spawn_group ON spawn_group.Id=spawn_group_spawn.Id LEFT JOIN spawn_group_entry ON spawn_group_entry.Id=spawn_group.Id LEFT JOIN gameobject_spawn_entry ON gameobject.guid=gameobject_spawn_entry.guid WHERE (gameobject.id={entry} OR spawn_group_entry.entry={entry} OR gameobject_spawn_entry.entry={entry}) AND (spawn_group.type IS null OR spawn_group.type=1) AND zoneId IS NOT NULL").ToListAsync();
         }
 
         public async Task<List<uint>> GetCreatureZones(uint entry)
         {
-            return await _context.Creatures.Where(p => p.id == entry).Join(_context.CreatureZones, p => p.guid, q => q.Guid, (p, q) => q.ZoneId).Distinct().ToListAsync();
+            return await _context.Database.SqlQuery<uint>($"SELECT DISTINCT creature_zone.zoneId FROM creature LEFT JOIN creature_zone ON creature_zone.guid=creature.guid LEFT JOIN spawn_group_spawn ON creature.guid=spawn_group_spawn.Guid LEFT JOIN spawn_group ON spawn_group.Id=spawn_group_spawn.Id LEFT JOIN spawn_group_entry ON spawn_group_entry.Id=spawn_group.Id LEFT JOIN creature_spawn_entry ON creature.guid=creature_spawn_entry.guid WHERE (creature.id={entry} OR spawn_group_entry.entry={entry} OR creature_spawn_entry.entry={entry}) AND (spawn_group.type IS null OR spawn_group.type=0) AND zoneId IS NOT NULL").ToListAsync();
         }
     }
 }

@@ -83,6 +83,22 @@ export default function ZoneDisplay() {
             setSelectedGroupId(-1);
     }
 
+    const onGameObjectClick = async (guid: number, duplicates: string, event: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
+        if (event.shiftKey) {
+            if (event.ctrlKey) {
+                navigator.clipboard.writeText((await navigator.clipboard.readText()) + ',' + (duplicates).toString())
+            } else {
+                navigator.clipboard.writeText((duplicates).toString())
+            }
+        } else {
+            if (event.ctrlKey) {
+                navigator.clipboard.writeText((await navigator.clipboard.readText()) + ',' + (guid - offset).toString())
+            } else {
+                navigator.clipboard.writeText((guid - offset).toString())
+            }
+        }
+    }
+
     if (isLoading) {
         return (
             <div style={{ backgroundImage: "url(/" + zone + ".jpg)", backgroundSize: 'auto', backgroundRepeat: "no-repeat" }}>
@@ -107,7 +123,7 @@ export default function ZoneDisplay() {
                 {
                     gameObjects.items.map(gameobject => {
                         return (
-                            <img src={selectedGroupId === gameobject.spawnGroupId ? "/pin-blue.png" : (gameobject.hasDuplicate === true ? "/pin-red.png" : "/pin-yellow.png")} key={gameobject.guid} onClick={() => { navigator.clipboard.writeText((gameobject.guid - offset).toString()) }} className={'map-point-img, ' + gameobject.spawnGroupId} onMouseOver={(e) => { onPointHover(e, gameobject.spawnGroupId, true); }} onMouseOut={(e) => { onPointHover(e, gameobject.spawnGroupId, false); }} alt="pin" title={'' + gameobject.guid + (gameobject.hasDuplicate ? ' - ' : '') + gameobject.duplicates} style={{ width: '1%', minWidth: '11px', margin: 0, padding: 0, transform: 'translate(-50%, -50%)', position: 'absolute', top: (Math.abs((gameobject.x - gameObjects.top) / (gameObjects.bottom - gameObjects.top) * 100)) + '%', left: (100 - Math.abs((gameobject.y - gameObjects.left) / (gameObjects.right - gameObjects.left) * 100)) + '%' }} />
+                            <img src={selectedGroupId === gameobject.spawnGroupId ? "/pin-blue.png" : (gameobject.hasDuplicate === true ? "/pin-red.png" : "/pin-yellow.png")} key={gameobject.guid} onClick={(event) => { onGameObjectClick(gameobject.guid, gameobject.duplicates, event) }} className={'map-point-img, ' + gameobject.spawnGroupId} onMouseOver={(e) => { onPointHover(e, gameobject.spawnGroupId, true); }} onMouseOut={(e) => { onPointHover(e, gameobject.spawnGroupId, false); }} alt="pin" title={'' + gameobject.guid + (gameobject.hasDuplicate ? ' - ' : '') + gameobject.duplicates} style={{ width: '1%', minWidth: '11px', margin: 0, padding: 0, transform: 'translate(-50%, -50%)', position: 'absolute', top: (Math.abs((gameobject.x - gameObjects.top) / (gameObjects.bottom - gameObjects.top) * 100)) + '%', left: (100 - Math.abs((gameobject.y - gameObjects.left) / (gameObjects.right - gameObjects.left) * 100)) + '%' }} />
                         );
                     })
                 }

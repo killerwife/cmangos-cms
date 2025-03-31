@@ -84,7 +84,7 @@ namespace cmangos_web_api.Controllers
             foreach (var gameObject in data.Value.Item1)
             {
                 var duplicates = data.Value.Item1.Where(p => p.guid != gameObject.guid && FloatComparison(p.position_x, gameObject.position_x, precision)
-                        && FloatComparison(p.position_y, gameObject.position_y, precision) && FloatComparison(p.position_z, gameObject.position_z, precision)).Select(p => p.guid.ToString());
+                        && FloatComparison(p.position_y, gameObject.position_y, precision) && FloatComparison(p.position_z, gameObject.position_z, precision)).Select(p => p.guid.ToString()).Distinct();
                 result.Items.Add(new GameObjectDto
                 {
                     X = (float)gameObject.position_x,

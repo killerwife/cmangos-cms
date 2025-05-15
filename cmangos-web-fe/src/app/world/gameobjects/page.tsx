@@ -42,7 +42,7 @@ export default function ZoneDisplay() {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
     const [selectedGroupId, setSelectedGroupId] = useState<number>(-1);
-    const offset = 0;
+    const offset = 144000;
 
     const loadGos = async () => {
         let gameobjects = await fetch(NEXT_PUBLIC_API + '/world/gameobjects/' + map + '/' + zone + '/' + entry, {
@@ -61,6 +61,7 @@ export default function ZoneDisplay() {
                 return r
             });
 
+        document.title = gameobjects.name + "(" + entry + ") - GO";
         setGameObjects(gameobjects);
         setIsLoading(false);
     }
@@ -92,9 +93,9 @@ export default function ZoneDisplay() {
             }
         } else {
             if (event.ctrlKey) {
-                navigator.clipboard.writeText((await navigator.clipboard.readText()) + ',' + (guid - offset).toString())
+                navigator.clipboard.writeText((await navigator.clipboard.readText()) + ',' + (offset > 0 ? "@GGUID+" : "") + (guid - offset).toString())
             } else {
-                navigator.clipboard.writeText((guid - offset).toString())
+                navigator.clipboard.writeText((offset > 0 ? "@GGUID+" : "") + (guid - offset).toString())
             }
         }
     }

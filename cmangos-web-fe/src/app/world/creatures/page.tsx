@@ -63,6 +63,7 @@ export default function ZoneDisplay() {
                 return r
             });
 
+        document.title = creatures.name + "(" + entry + ") - Creatures";
         setCreatures(creatures);
 
         for (let zoneElement of creatures.zones)

@@ -6,6 +6,7 @@ import { env } from 'next-runtime-env';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import Link from 'next/link'
+import type { Metadata } from "next";
 
 export interface searchResult {
     name: string,

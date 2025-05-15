@@ -39,7 +39,7 @@ namespace cmangos_web_api.Controllers
             var data = await _worldRepository.GetGameObjectsForZoneAndEntry(mapId, zone, entry);
             if (data == null)
                 return BadRequest();
-            var precision = 0.02m;
+            var precision = 0.2M;
             var result = new GameObjectListDto();
             result.Name = await _worldRepository.GetGameObjectEntryName(entry);
             {
@@ -85,6 +85,10 @@ namespace cmangos_web_api.Controllers
             {
                 var duplicates = data.Value.Item1.Where(p => p.guid != gameObject.guid && FloatComparison(p.position_x, gameObject.position_x, precision)
                         && FloatComparison(p.position_y, gameObject.position_y, precision) && FloatComparison(p.position_z, gameObject.position_z, precision)).Select(p => p.guid.ToString()).Distinct();
+
+                if (result.Items.Any(p => p.SpawnGroupId == gameObject.spawn_group_id && p.Guid == gameObject.guid))
+                    continue;
+                
                 result.Items.Add(new GameObjectDto
                 {
                     X = (float)gameObject.position_x,

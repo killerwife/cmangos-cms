@@ -54,6 +54,7 @@ export default function ZoneDisplay() {
                     return r
                 });
 
+            document.title = creatureWithMovement.name + "(" + guid + ") - Creature";
             setCreature(creatureWithMovement);
             setIsLoading(false);
         }

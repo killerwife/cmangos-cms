@@ -42,7 +42,7 @@ export default function ZoneDisplay() {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
     const [selectedGroupId, setSelectedGroupId] = useState<number>(-1);
-    const offset = 144000;
+    const offset = 427000;
 
     const loadGos = async () => {
         let gameobjects = await fetch(NEXT_PUBLIC_API + '/world/gameobjects/' + map + '/' + zone + '/' + entry, {

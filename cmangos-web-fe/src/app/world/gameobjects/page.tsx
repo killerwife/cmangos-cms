@@ -114,8 +114,8 @@ export default function ZoneDisplay() {
                 {
                     gameObjects.zones.map((otherZone, index) => {
                         return (
-                            <span style={{ textDecorationLine: 'underline' }}>
-                                <Link key={otherZone.zoneId} href={"gameobjects?map=" + otherZone.mapId + "&zone=" + otherZone.zoneId + "&entry=" + entry} style={{ marginRight: 10, color: (otherZone.zoneId.toString() == zone ? 'white' : 'grey') }}>{otherZone.name}</Link>
+                            <span key={otherZone.zoneId} style={{ textDecorationLine: 'underline' }}>
+                                <Link href={"gameobjects?map=" + otherZone.mapId + "&zone=" + otherZone.zoneId + "&entry=" + entry} style={{ marginRight: 10, color: (otherZone.zoneId.toString() == zone ? 'white' : 'grey') }}>{otherZone.name}</Link>
                                 {(index > 0 && index % 10 == 0) ? <br></br> : ""}
                             </span>
                         );

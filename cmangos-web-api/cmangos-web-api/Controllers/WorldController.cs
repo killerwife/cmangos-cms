@@ -86,7 +86,7 @@ namespace cmangos_web_api.Controllers
                 var duplicates = data.Value.Item1.Where(p => p.guid != gameObject.guid && FloatComparison(p.position_x, gameObject.position_x, precision)
                         && FloatComparison(p.position_y, gameObject.position_y, precision) && FloatComparison(p.position_z, gameObject.position_z, precision)).Select(p => p.guid.ToString()).Distinct();
 
-                if (result.Items.Any(p => p.SpawnGroupId == gameObject.spawn_group_id && p.Guid == gameObject.guid))
+                if (result.Items.Any(p => p.Guid == gameObject.guid))
                     continue;
                 
                 result.Items.Add(new GameObjectDto

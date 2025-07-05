@@ -15,6 +15,7 @@ namespace Data.Model
         public DateTime joindate { get; set; } = DateTime.UtcNow;
         public string? token { get; set; } = string.Empty;
         public int locked { get; set; }
+        public uint expansion { get; set; }
 
         public List<string> GetRoles()
         {

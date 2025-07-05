@@ -361,6 +361,7 @@ namespace Services.Services
                 email = null,
                 username = username,
                 gmlevel = 0,
+                expansion = 2,
                 s = saltInteger.ToString("X"),
                 v = verifierInteger.ToString("X")
             };

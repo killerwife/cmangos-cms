@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation'
 import { useState, useEffect, MouseEventHandler } from 'react';
 import { env } from 'next-runtime-env';
 import Link from 'next/link'
-import { text } from 'node:stream/consumers';
+import { pickImageFilename } from '../../../components/PicPicker'
 
 export interface gameobject {
     x: number,
@@ -38,13 +38,16 @@ export default function ZoneDisplay() {
     const zone = searchParams.get('zone');
     const entry = searchParams.get('entry');
     const map = searchParams.get('map');
+    const [picId, setPicId] = useState<number>(0);
     const [gameObjects, setGameObjects] = useState<gameobjectList>({} as gameobjectList);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
     const [selectedGroupId, setSelectedGroupId] = useState<number>(-1);
-    const offset = 427000;
+    const offset = 152000;
 
     const loadGos = async () => {
+        setPicId(pickImageFilename(Number(map), Number(zone)));
+
         let gameobjects = await fetch(NEXT_PUBLIC_API + '/world/gameobjects/' + map + '/' + zone + '/' + entry, {
             method: 'GET',
             headers: {
@@ -102,7 +105,7 @@ export default function ZoneDisplay() {
 
     if (isLoading) {
         return (
-            <div style={{ backgroundImage: "url(/" + zone + ".jpg)", backgroundSize: 'auto', backgroundRepeat: "no-repeat" }}>
+            <div style={{ backgroundImage: "url(/" + picId.toString() + ".jpg)", backgroundSize: 'auto', backgroundRepeat: "no-repeat" }}>
             </div>
         )
     }    
@@ -123,7 +126,7 @@ export default function ZoneDisplay() {
                 }
             </div>
             <div style={{ position: 'relative', top: 0, left: 0, margin: 0, display: 'inline-block' }}>
-                <img src={"/" + zone + ".jpg"} alt="pin" style={{ display:'block', position: 'relative', top: 0, left: 0, margin: 0, padding: 0, objectFit: 'contain', height: '100%', width: '100%', maxHeight:"100vh" }}></img>
+                <img src={"/" + picId.toString() + ".jpg"} alt="pin" style={{ display:'block', position: 'relative', top: 0, left: 0, margin: 0, padding: 0, objectFit: 'contain', height: '100%', width: '100%', maxHeight:"100vh" }}></img>
                 {
                     gameObjects.items.map(gameobject => {
                         return (

@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import Link from 'next/link'
+import { pickImageFilename } from '../../../components/PicPicker'
 
 export interface creature {
     x: number,
@@ -38,6 +39,7 @@ export default function ZoneDisplay() {
     const zone = searchParams.get('zone');
     const entry = searchParams.get('entry');
     const map = searchParams.get('map');
+    const [picId, setPicId] = useState<number>(0);
     const [creatures, setCreatures] = useState<creatureList>({} as creatureList);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
@@ -47,6 +49,8 @@ export default function ZoneDisplay() {
     const [value, setValue] = useState<entityZone | null>();
 
     const loadGos = async () => {
+        setPicId(pickImageFilename(Number(map), Number(zone)));        
+
         let creatures = await fetch(NEXT_PUBLIC_API + '/world/creatures/' + map + '/' + zone + '/' + entry, {
             method: 'GET',
             headers: {
@@ -91,7 +95,7 @@ export default function ZoneDisplay() {
     const onClickCreature = (guid: number, event: React.MouseEvent<HTMLImageElement, MouseEvent>) =>
     {
         if (event.ctrlKey)
-            router.push("creature?zone=" + zone + "&guid=" + guid);
+            router.push("creature?zone=" + zone + "&guid=" + guid + "&map=" + map);
         else
             navigator.clipboard.writeText((guid - offset).toString()); 
     };
@@ -105,7 +109,7 @@ export default function ZoneDisplay() {
 
     if (isLoading) {
         return (
-            <div style={{ backgroundImage: "url(/" + zone + ".jpg)", backgroundSize: 'auto', backgroundRepeat: "no-repeat" }}>
+            <div style={{ backgroundImage: "url(/" + picId.toString() + ".jpg)", backgroundSize: 'auto', backgroundRepeat: "no-repeat" }}>
             </div>
         )
     }    
@@ -131,7 +135,7 @@ export default function ZoneDisplay() {
                 />
             </div>
             <div style={{ position: 'relative', top: 0, left: 0, margin: 0, display: 'inline-block' }}>
-                <img src={"/" + zone + ".jpg"} alt="pin" style={{ display:'block', position: 'relative', top: 0, left: 0, margin: 0, padding: 0, objectFit: 'contain', height: '100%', width: '100%', maxHeight:"100vh" }}></img>
+                <img src={"/" + picId.toString() + ".jpg"} alt="pin" style={{ display:'block', position: 'relative', top: 0, left: 0, margin: 0, padding: 0, objectFit: 'contain', height: '100%', width: '100%', maxHeight:"100vh" }}></img>
                 {
                     creatures.items.map(creature => {
                         return (

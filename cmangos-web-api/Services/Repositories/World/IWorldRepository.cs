@@ -5,7 +5,7 @@ namespace Services.Repositories.World
 {
     public interface IWorldRepository
     {
-        Task<CreatureWithMovementDto?> GetCreatureWithMovement(int zoneId, int guid);
+        Task<CreatureWithMovementDto?> GetCreatureWithMovement(int mapId, int zoneId, int guid);
         Task<(List<GameObjectWithSpawnGroup>, float, float, float, float)?> GetGameObjectsForZoneAndEntry(int mapId, int zoneId, uint entry);
         Task<string?> GetGameObjectEntryName(uint entry);
         Task<string?> GetCreatureEntryName(uint entry);

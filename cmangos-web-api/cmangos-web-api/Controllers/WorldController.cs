@@ -1,4 +1,5 @@
-﻿using Data.Dto.User;
+﻿using Common;
+using Data.Dto.User;
 using Data.Dto.World;
 using Data.Enum;
 using Data.Model.World;
@@ -63,10 +64,7 @@ namespace cmangos_web_api.Controllers
             }
             if (result.Zones.Count == 0)
             {
-                var mapIds = new List<uint>()
-                {
-                    0,1,530,571
-                };
+                var mapIds = WorldConstants.SupportedMaps;
                 var zones = _dbcRepository.WorldMapArea.Where(p => p.Value.Area != 0 && mapIds.Contains(p.Value.Map));
                 foreach (var zoneData in zones)
                     result.Zones.Add(new EntityZone
@@ -125,10 +123,7 @@ namespace cmangos_web_api.Controllers
             if (data == null)
                 return BadRequest();
             var result = new CreatureListDto();
-            var mapIds = new List<uint>()
-            {
-                0,1,530,571
-            };
+            var mapIds = WorldConstants.SupportedMaps;
             {
                 var zones = await _worldRepository.GetCreatureZones(entry);
                 var zonesLookup = _dbcRepository.WorldMapArea.Where(p => zones.Contains(p.Value.Area));

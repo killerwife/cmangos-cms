@@ -82,6 +82,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserProvider, UserProvider>();
 builder.Services.AddScoped<IWorldRepository, WorldRepository>();
 builder.Services.AddScoped<IEntityExt, EntityExt>();
+builder.Services.AddSingleton<IWorldMapRepository, WorldMapRepository>();
 builder.Services.AddSingleton<DBCRepository>();
 
 if (builder.Configuration.GetValue<string>("AllowForwarding") == "true")

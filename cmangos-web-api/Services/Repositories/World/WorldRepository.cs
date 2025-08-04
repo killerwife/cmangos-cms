@@ -1,4 +1,5 @@
-﻿using Data.Dto.World;
+﻿using Common;
+using Data.Dto.World;
 using Data.Enum;
 using Data.Model.DBC;
 using Data.Model.World;
@@ -9,34 +10,22 @@ namespace Services.Repositories.World
     public class WorldRepository : IWorldRepository
     {
         private WorldDbContext _context;
-        private DBCRepository _dbcRepository;
+        private IWorldMapRepository _worldMapRepository;
 
-        public WorldRepository(WorldDbContext context, DBCRepository dbcRepository)
+        public WorldRepository(WorldDbContext context, IWorldMapRepository worldMapRepository)
         {
             _context = context;
-            _dbcRepository = dbcRepository;
+            _worldMapRepository = worldMapRepository;
         }
 
         public async Task<(List<GameObjectWithSpawnGroup>, float, float, float, float)?> GetGameObjectsForZoneAndEntry(int mapId, int zoneId, uint entry)
         {
-            KeyValuePair<int, WorldMapArea> areaEntry;
-            if (zoneId == -1)
-            {
-                int worldMapId = 0;
-                switch (mapId)
-                {
-                    case 0: worldMapId = 14; break;
-                    case 1: worldMapId = 13; break;
-                }
-                areaEntry = _dbcRepository.WorldMapArea.Where(p => p.Key == worldMapId && mapId == p.Value.Map).SingleOrDefault();
-            }
-            else
-                areaEntry = _dbcRepository.WorldMapArea.Where(p => p.Value.Area == zoneId && mapId == p.Value.Map).SingleOrDefault();
-
-            if (areaEntry.Equals(default(KeyValuePair<int, WorldMapArea>)))
+            WorldMapArea? worldMapArea = _worldMapRepository.GetWorldMapArea(mapId, zoneId);
+            if (worldMapArea == null)
                 return null;
-            float minZoneX = areaEntry.Value.Bottom, minZoneY = areaEntry.Value.Left;
-            float maxZoneX = areaEntry.Value.Top, maxZoneY = areaEntry.Value.Right;
+
+            float minZoneX = worldMapArea.Bottom, minZoneY = worldMapArea.Left;
+            float maxZoneX = worldMapArea.Top, maxZoneY = worldMapArea.Right;
             var gosWithSpawnGroup  = await _context.Database.SqlQuery<GameObjectWithSpawnGroup>(
                     $"SELECT gameobject.*, spawn_group.Id AS spawn_group_id FROM gameobject LEFT JOIN spawn_group_spawn ON gameobject.guid=spawn_group_spawn.Guid LEFT JOIN spawn_group ON spawn_group.Id=spawn_group_spawn.Id LEFT JOIN spawn_group_entry ON spawn_group_entry.Id=spawn_group.Id LEFT JOIN gameobject_spawn_entry ON gameobject.guid=gameobject_spawn_entry.guid WHERE (gameobject.id={entry} OR spawn_group_entry.entry={entry} OR gameobject_spawn_entry.entry={entry}) AND gameobject.map={mapId} AND (spawn_group.type IS null OR spawn_group.type=1) AND position_x > {minZoneX} && position_x < {maxZoneX} && position_y > {minZoneY} && position_y < {maxZoneY} ORDER BY gameobject.guid").ToListAsync();
             return (gosWithSpawnGroup, (float)minZoneY, (float)maxZoneY, (float)minZoneX, (float)maxZoneX);
@@ -44,24 +33,12 @@ namespace Services.Repositories.World
 
         public async Task<(List<CreatureWithSpawnGroup>, float, float, float, float)?> GetCreaturesForZoneAndEntry(int mapId, int zoneId, uint entry)
         {
-            KeyValuePair<int, WorldMapArea> areaEntry;
-            if (zoneId == -1)
-            {
-                int worldMapId = 0;
-                switch (mapId)
-                {
-                    case 0: worldMapId = 14; break;
-                    case 1: worldMapId = 13; break;
-                }
-                areaEntry = _dbcRepository.WorldMapArea.Where(p => p.Key == worldMapId && mapId == p.Value.Map).SingleOrDefault();
-            }
-            else
-                areaEntry = _dbcRepository.WorldMapArea.Where(p => p.Value.Area == zoneId && mapId == p.Value.Map).SingleOrDefault();
-
-            if (areaEntry.Equals(default(KeyValuePair<int, WorldMapArea>)))
+            WorldMapArea? worldMapArea = _worldMapRepository.GetWorldMapArea(mapId, zoneId);
+            if (worldMapArea == null)
                 return null;
-            decimal minZoneX = (decimal)areaEntry.Value.Bottom, minZoneY = (decimal)areaEntry.Value.Left;
-            decimal maxZoneX = (decimal)areaEntry.Value.Top, maxZoneY = (decimal)areaEntry.Value.Right;
+
+            decimal minZoneX = (decimal)worldMapArea.Bottom, minZoneY = (decimal)worldMapArea.Left;
+            decimal maxZoneX = (decimal)worldMapArea.Top, maxZoneY = (decimal)worldMapArea.Right;
             var gosWithSpawnGroup = await _context.Database.SqlQuery<CreatureWithSpawnGroup>(
                     $"SELECT creature.*, spawn_group.Id AS spawn_group_id FROM creature LEFT JOIN spawn_group_spawn ON creature.guid=spawn_group_spawn.Guid LEFT JOIN spawn_group ON spawn_group.Id=spawn_group_spawn.Id LEFT JOIN spawn_group_entry ON spawn_group_entry.Id=spawn_group.Id LEFT JOIN creature_spawn_entry ON creature.guid=creature_spawn_entry.guid WHERE (creature.id={entry} OR spawn_group_entry.entry={entry} OR creature_spawn_entry.entry={entry}) AND creature.map={mapId} AND (spawn_group.type IS null OR spawn_group.type=0) AND position_x > {minZoneX} && position_x < {maxZoneX} && position_y > {minZoneY} && position_y < {maxZoneY}").ToListAsync();
             return (gosWithSpawnGroup, (float)minZoneY, (float)maxZoneY, (float)minZoneX, (float)maxZoneX);
@@ -69,21 +46,8 @@ namespace Services.Repositories.World
 
         public async Task<CreatureWithMovementDto?> GetCreatureWithMovement(int mapId, int zoneId, int guid)
         {
-            KeyValuePair<int, WorldMapArea> areaEntry;
-            if (zoneId == -1)
-            {
-                int worldMapId = 0;
-                switch (mapId)
-                {
-                    case 0: worldMapId = 14; break;
-                    case 1: worldMapId = 13; break;
-                }
-                areaEntry = _dbcRepository.WorldMapArea.Where(p => p.Key == worldMapId && mapId == p.Value.Map).SingleOrDefault();
-            }
-            else
-                areaEntry = _dbcRepository.WorldMapArea.Where(p => p.Value.Area == zoneId && mapId == p.Value.Map).SingleOrDefault();
-
-            if (areaEntry.Equals(default(KeyValuePair<int, WorldMapArea>)))
+            WorldMapArea? worldMapArea = _worldMapRepository.GetWorldMapArea(mapId, zoneId);
+            if (worldMapArea == null)
                 return null;
 
             var creature = _context.Creatures.Where(p => p.guid == guid).SingleOrDefault();
@@ -149,10 +113,10 @@ namespace Services.Repositories.World
                 Map = creature.map,
                 Movement = movement,
 
-                Bottom = areaEntry.Value.Bottom,
-                Top = areaEntry.Value.Top,
-                Right = areaEntry.Value.Right,
-                Left = areaEntry.Value.Left
+                Bottom = worldMapArea.Bottom,
+                Top = worldMapArea.Top,
+                Right = worldMapArea.Right,
+                Left = worldMapArea.Left
             };
         }
 
@@ -168,10 +132,7 @@ namespace Services.Repositories.World
 
         public async Task<List<CreaturePredictData>> GetGameObjectPredictions(string partial)
         {
-            var mapIds = new List<uint>()
-            {
-                0,1,530,571
-            };
+            var mapIds = WorldConstants.SupportedMaps;
             var result = _context.GameObjectTemplates.Where(p => p.Name.Contains(partial)).Select(p => new CreaturePredictData
             {
                 Entry = p.Entry,
@@ -185,10 +146,7 @@ namespace Services.Repositories.World
 
         public async Task<List<CreaturePredictData>> GetCreaturePredictions(string partial)
         {
-            var mapIds = new List<uint>()
-            {
-                0,1,530,571
-            };
+            var mapIds = WorldConstants.SupportedMaps;
             var result = _context.CreatureTemplates.Where(p => p.Name.Contains(partial)).Select(p => new CreaturePredictData
             {
                 Entry = p.Entry,

@@ -12,7 +12,7 @@ namespace Services.Repositories.World
         Task<(List<CreatureWithSpawnGroup>, float, float, float, float)?> GetCreaturesForZoneAndEntry(int mapId, int zoneId, uint entry);
         Task<List<CreaturePredictData>> GetCreaturePredictions(string partial);
         Task<List<CreaturePredictData>> GetGameObjectPredictions(string partial);
-        Task<List<uint>> GetGameObjectZones(uint entry);
-        Task<List<uint>> GetCreatureZones(uint entry);
+        Task<List<CreatureZoneAndMap>> GetGameObjectZones(uint entry);
+        Task<List<CreatureZoneAndMap>> GetCreatureZones(uint entry);
     }
 }

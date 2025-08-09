@@ -45,19 +45,15 @@ namespace cmangos_web_api.Controllers
             result.Name = await _worldRepository.GetGameObjectEntryName(entry);
             {
                 var zones = await _worldRepository.GetGameObjectZones(entry);
-                var zonesLookup = _dbcRepository.WorldMapArea.Where(p => zones.Contains(p.Value.Area));
-                foreach (var zoneId in zones)
+                foreach (var zoneItem in zones)
                 {
-                    if (zoneId == 0)
+                    if (zoneItem.ZoneId == 0)
                         continue;
-                    var zoneRes = zonesLookup.SingleOrDefault(p => p.Value.Area == zoneId);
-                    if (zoneRes.Value == null)
-                        continue;
-                    var name = _dbcRepository.Areas.SingleOrDefault(p => p.Value.ID == zoneId).Value.area_name;
+                    var name = _dbcRepository.Areas.SingleOrDefault(p => p.Value.ID == zoneItem.ZoneId).Value.area_name;
                     result.Zones.Add(new EntityZone
                     {
-                        MapId = zoneRes.Value.Map,
-                        ZoneId = zoneId,
+                        MapId = zoneItem.MapId,
+                        ZoneId = zoneItem.ZoneId,
                         Name = name
                     });
                 }
@@ -126,19 +122,15 @@ namespace cmangos_web_api.Controllers
             var mapIds = WorldConstants.SupportedMaps;
             {
                 var zones = await _worldRepository.GetCreatureZones(entry);
-                var zonesLookup = _dbcRepository.WorldMapArea.Where(p => zones.Contains(p.Value.Area));
-                foreach (var zoneId in zones)
+                foreach (var zoneItem in zones)
                 {
-                    if (zoneId == 0)
+                    if (zoneItem.ZoneId == 0)
                         continue;
-                    var zoneRes = zonesLookup.SingleOrDefault(p => p.Value.Area == zoneId);
-                    if (zoneRes.Value == null)
-                        continue;
-                    var name = _dbcRepository.Areas.SingleOrDefault(p => p.Value.ID == zoneId).Value.area_name;
+                    var name = _dbcRepository.Areas.SingleOrDefault(p => p.Value.ID == zoneItem.ZoneId).Value.area_name;
                     result.Zones.Add(new EntityZone
                     {
-                        MapId = zoneRes.Value.Map,
-                        ZoneId = zoneId,
+                        MapId = zoneItem.MapId,
+                        ZoneId = zoneItem.ZoneId,
                         Name = name
                     });
                 }
@@ -188,17 +180,12 @@ namespace cmangos_web_api.Controllers
                 if (result.Map == null)
                     continue;
 
-                var zoneIdData = _dbcRepository.WorldMapArea.Where(p => p.Value.Area != 0 && p.Value.Map == result.Map && p.Value.Top > (float)result.Position_x && p.Value.Bottom <= (float)result.Position_x
-                                && p.Value.Left <= (float)result.Position_y && p.Value.Right > (float)result.Position_y).FirstOrDefault();
-                uint zoneId = 0;
-                if (zoneIdData.Value != null)
-                    zoneId = zoneIdData.Value.Area;
                 response.Add(new CreaturePredictResponseDto
                 {
                     Entry = result.Entry,
                     Map = result.Map.Value,
                     Name = result.Name,
-                    Zone = zoneId
+                    Zone = result.ZoneId ?? 0
                 });
             }
             return Ok(response);
@@ -218,17 +205,12 @@ namespace cmangos_web_api.Controllers
                 if (result.Map == null)
                     continue;
 
-                var zoneIdData = _dbcRepository.WorldMapArea.Where(p => p.Value.Area != 0 && p.Value.Map == result.Map && p.Value.Top > (float)result.Position_x && p.Value.Bottom <= (float)result.Position_x
-                                && p.Value.Left <= (float)result.Position_y && p.Value.Right > (float)result.Position_y).FirstOrDefault();
-                uint zoneId = 0;
-                if (zoneIdData.Value != null)
-                    zoneId = zoneIdData.Value.Area;
                 response.Add(new CreaturePredictResponseDto
                 {
                     Entry = result.Entry,
                     Map = result.Map.Value,
                     Name = result.Name,
-                    Zone = zoneId
+                    Zone = result.ZoneId ?? 0
                 });
             }
             return Ok(response);

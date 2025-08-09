@@ -41,6 +41,14 @@ namespace Services.Repositories.World
                             Left = -665f,
                             Right = 254f,
                         };
+                    case 3845: // Tempest Keep
+                        return new WorldMapArea
+                        {
+                            Top = 950f,
+                            Bottom = -100f,
+                            Left = -787.5f,
+                            Right = 787.5f,
+                        };
                     default:
                         areaEntry = _dbcRepository.WorldMapArea.Where(p => p.Value.Area == zoneId && mapId == p.Value.Map).SingleOrDefault();
                         break;

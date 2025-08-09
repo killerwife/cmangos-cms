@@ -138,8 +138,7 @@ namespace Services.Repositories.World
                 Entry = p.Entry,
                 Name = p.Name,
                 Map = _context.GameObjects.Where(q => q.id == p.Entry && mapIds.Contains(q.map)).FirstOrDefault()!.map,
-                Position_x = _context.GameObjects.Where(q => q.id == p.Entry && mapIds.Contains(q.map)).FirstOrDefault()!.position_x,
-                Position_y = _context.GameObjects.Where(q => q.id == p.Entry && mapIds.Contains(q.map)).FirstOrDefault()!.position_y
+                ZoneId = _context.GameObjects.Where(q => q.id == p.Entry && mapIds.Contains(q.map)).Join(_context.GameObjectZones, x => x.guid, y => y.Guid, (x, y) => y.ZoneId).FirstOrDefault()!,
             });
             return await result.ToListAsync();
         }
@@ -152,20 +151,19 @@ namespace Services.Repositories.World
                 Entry = p.Entry,
                 Name = p.Name,
                 Map = _context.Creatures.Where(q => q.id == p.Entry && mapIds.Contains(q.map)).FirstOrDefault()!.map,
-                Position_x = _context.Creatures.Where(q => q.id == p.Entry && mapIds.Contains(q.map)).FirstOrDefault()!.position_x,
-                Position_y = _context.Creatures.Where(q => q.id == p.Entry && mapIds.Contains(q.map)).FirstOrDefault()!.position_y
+                ZoneId = _context.Creatures.Where(q => q.id == p.Entry && mapIds.Contains(q.map)).Join(_context.CreatureZones, x => x.guid, y => y.Guid, (x, y) => y.ZoneId).FirstOrDefault()!,
             });
             return await result.ToListAsync();
         }
 
-        public async Task<List<uint>> GetGameObjectZones(uint entry)
+        public async Task<List<CreatureZoneAndMap>> GetGameObjectZones(uint entry)
         {
-            return await _context.Database.SqlQuery<uint>($"SELECT DISTINCT gameobject_zone.zoneId FROM gameobject LEFT JOIN gameobject_zone ON gameobject_zone.guid=gameobject.guid LEFT JOIN spawn_group_spawn ON gameobject.guid=spawn_group_spawn.Guid LEFT JOIN spawn_group ON spawn_group.Id=spawn_group_spawn.Id LEFT JOIN spawn_group_entry ON spawn_group_entry.Id=spawn_group.Id LEFT JOIN gameobject_spawn_entry ON gameobject.guid=gameobject_spawn_entry.guid WHERE (gameobject.id={entry} OR spawn_group_entry.entry={entry} OR gameobject_spawn_entry.entry={entry}) AND (spawn_group.type IS null OR spawn_group.type=1) AND zoneId IS NOT NULL").ToListAsync();
+            return await _context.Database.SqlQuery<CreatureZoneAndMap>($"SELECT DISTINCT gameobject_zone.zoneId, gameobject.map FROM gameobject LEFT JOIN gameobject_zone ON gameobject_zone.guid=gameobject.guid LEFT JOIN spawn_group_spawn ON gameobject.guid=spawn_group_spawn.Guid LEFT JOIN spawn_group ON spawn_group.Id=spawn_group_spawn.Id LEFT JOIN spawn_group_entry ON spawn_group_entry.Id=spawn_group.Id LEFT JOIN gameobject_spawn_entry ON gameobject.guid=gameobject_spawn_entry.guid WHERE (gameobject.id={entry} OR spawn_group_entry.entry={entry} OR gameobject_spawn_entry.entry={entry}) AND (spawn_group.type IS null OR spawn_group.type=1) AND zoneId IS NOT NULL").ToListAsync();
         }
 
-        public async Task<List<uint>> GetCreatureZones(uint entry)
+        public async Task<List<CreatureZoneAndMap>> GetCreatureZones(uint entry)
         {
-            return await _context.Database.SqlQuery<uint>($"SELECT DISTINCT creature_zone.zoneId FROM creature LEFT JOIN creature_zone ON creature_zone.guid=creature.guid LEFT JOIN spawn_group_spawn ON creature.guid=spawn_group_spawn.Guid LEFT JOIN spawn_group ON spawn_group.Id=spawn_group_spawn.Id LEFT JOIN spawn_group_entry ON spawn_group_entry.Id=spawn_group.Id LEFT JOIN creature_spawn_entry ON creature.guid=creature_spawn_entry.guid WHERE (creature.id={entry} OR spawn_group_entry.entry={entry} OR creature_spawn_entry.entry={entry}) AND (spawn_group.type IS null OR spawn_group.type=0) AND zoneId IS NOT NULL").ToListAsync();
+            return await _context.Database.SqlQuery<CreatureZoneAndMap>($"SELECT DISTINCT creature_zone.zoneId, creature.map FROM creature LEFT JOIN creature_zone ON creature_zone.guid=creature.guid LEFT JOIN spawn_group_spawn ON creature.guid=spawn_group_spawn.Guid LEFT JOIN spawn_group ON spawn_group.Id=spawn_group_spawn.Id LEFT JOIN spawn_group_entry ON spawn_group_entry.Id=spawn_group.Id LEFT JOIN creature_spawn_entry ON creature.guid=creature_spawn_entry.guid WHERE (creature.id={entry} OR spawn_group_entry.entry={entry} OR creature_spawn_entry.entry={entry}) AND (spawn_group.type IS null OR spawn_group.type=0) AND zoneId IS NOT NULL").ToListAsync();
         }
     }
 }

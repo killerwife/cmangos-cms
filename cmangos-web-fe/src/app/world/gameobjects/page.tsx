@@ -41,14 +41,19 @@ export default function ZoneDisplay() {
     const [picId, setPicId] = useState<number>(0);
     const [gameObjects, setGameObjects] = useState<gameobjectList>({} as gameobjectList);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isMapView, setIsMapView] = useState<boolean>(false);
     const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
     const [selectedGroupId, setSelectedGroupId] = useState<number>(-1);
-    const offset = 152000;
+    const offset = 0;
 
     const loadGos = async () => {
-        setPicId(pickImageFilename(Number(map), Number(zone)));
+        let tempZone = zone;
+        if (isMapView)
+            tempZone = "-1";
 
-        let gameobjects = await fetch(NEXT_PUBLIC_API + '/world/gameobjects/' + map + '/' + zone + '/' + entry, {
+        setPicId(pickImageFilename(Number(map), Number(tempZone)));
+
+        let gameobjects = await fetch(NEXT_PUBLIC_API + '/world/gameobjects/' + map + '/' + tempZone + '/' + entry, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -78,13 +83,17 @@ export default function ZoneDisplay() {
             return;
 
         loadGos();
-    }, [zone])
+    }, [zone, isMapView])
 
     const onPointHover = (event: React.MouseEvent<HTMLImageElement, MouseEvent>, spawnGroupId: number, apply: boolean) => {
         if (apply && spawnGroupId !== 0)
             setSelectedGroupId(spawnGroupId);
         else
             setSelectedGroupId(-1);
+    }
+
+    const onMapViewClick = async () => {
+        setIsMapView(!isMapView);
     }
 
     const onGameObjectClick = async (guid: number, duplicates: string, event: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
@@ -112,7 +121,7 @@ export default function ZoneDisplay() {
 
     return (
         <div>
-            <h1>Map: {map} Zone: {zone} Entry: {entry} Object: &apos;{gameObjects.name}&apos; Count: {gameObjects.count} <Link href={"/world/search/gameobjects"} style={{ marginRight: 10, color: 'white', textDecoration: 'underline' }}>Back</Link> </h1>
+            <h1>Map: {map} Zone: {zone} Entry: {entry} Object: &apos;{gameObjects.name}&apos; Count: {gameObjects.count} <Link href={"/world/search/gameobjects"} style={{ marginRight: 10, color: 'white', textDecoration: 'underline' }}>Back</Link><button onClick={onMapViewClick} style={{ outlineStyle: 'solid' }} >{isMapView ? "Go to zone view" : "Go to map view"}</button> </h1>
             <div>
                 {
                     gameObjects.zones.map((otherZone, index) => {

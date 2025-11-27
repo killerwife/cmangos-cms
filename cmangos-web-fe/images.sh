@@ -1,6 +1,8 @@
+# world
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/-6.jpg > public/-6.jpg
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/-3.jpg > public/-3.jpg
-
+curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/-2.jpg > public/-2.png
+# outland
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/3483.jpg > public/3483.jpg
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/3521.jpg > public/3521.jpg
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/3519.jpg > public/3519.jpg
@@ -12,7 +14,7 @@ curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/3430.jpg > public/
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/3433.jpg > public/3433.jpg
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/3524.jpg > public/3524.jpg
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/3525.jpg > public/3525.jpg
-
+# kalimdor
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/141.jpg > public/141.jpg
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/14.jpg > public/14.jpg
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/15.jpg > public/15.jpg
@@ -33,7 +35,7 @@ curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/1377.jpg > public/
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/1637.jpg > public/1637.jpg
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/1638.jpg > public/1638.jpg
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/1657.jpg > public/1657.jpg
-
+# ek
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/1.jpg > public/1.jpg
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/3.jpg > public/3.jpg
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/4.jpg > public/4.jpg
@@ -60,9 +62,65 @@ curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/1497.jpg > public/
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/1519.jpg > public/1519.jpg
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/1537.jpg > public/1537.jpg
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/4080.jpg > public/4080.jpg
-
-curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/2839.jpg > public/2839.jpg
-
+# tbc instances
+curl https://wow.zamimg.com/images/wow/maps/enus/original/2366.jpg > public/2366.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/2367.jpg > public/2367.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3457-1.jpg > public/3457-1.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3457-2.jpg > public/3457-2.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3457-3.jpg > public/3457-3.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3457-4.jpg > public/3457-4.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3457-5.jpg > public/3457-5.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3457-6.jpg > public/3457-6.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3457-7.jpg > public/3457-7.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3457-8.jpg > public/3457-8.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3457-9.jpg > public/3457-9.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3457-10.jpg > public/3457-10.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3457-11.jpg > public/3457-11.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3457-12.jpg > public/3457-12.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3457-13.jpg > public/3457-13.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3457-14.jpg > public/3457-14.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3457-15.jpg > public/3457-15.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3457-16.jpg > public/3457-16.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3457-17.jpg > public/3457-17.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3562.jpg > public/3562.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3606.jpg > public/3606.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3607.jpg > public/3607.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3713.jpg > public/3713.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3714.jpg > public/3714.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3715-1.jpg > public/3715-1.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3715-2.jpg > public/3715-2.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3716.jpg > public/3716.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3717.jpg > public/3717.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3789.jpg > public/3789.jpg
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/3790.jpg > public/3790.jpg
-curl https://wow.zamimg.com/images/wow/maps/enus/original/3845-1.jpg > public/3845.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3790-1.jpg > public/3790-1.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3790-2.jpg > public/3790-2.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3791-1.jpg > public/3791-1.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3791-2.jpg > public/3791-2.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3792.jpg > public/3792.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3805.jpg > public/3805.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3836.jpg > public/3836.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3845.jpg > public/3845.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3847.jpg > public/3847.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3848-1.jpg > public/3848-1.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3848-2.jpg > public/3848-2.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3848-3.jpg > public/3848-3.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3849-1.jpg > public/3849-1.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3849-2.jpg > public/3849-2.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3923.jpg > public/3923.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3959.jpg > public/3959.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3959-1.jpg > public/3959-1.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3959-2.jpg > public/3959-2.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3959-3.jpg > public/3959-3.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3959-4.jpg > public/3959-4.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3959-5.jpg > public/3959-5.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3959-6.jpg > public/3959-6.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/3959-7.jpg > public/3959-7.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/4075.jpg > public/4075.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/4075-1.jpg > public/4075-1.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/4131-1.jpg > public/4131-1.jpg
+curl https://wow.zamimg.com/images/wow/maps/enus/original/4131-2.jpg > public/4131-2.jpg
+# vanilla instances
 
+# vanilla bgs
+https://wow.zamimg.com/images/wow/tbc/maps/enus/original/2597.jpg

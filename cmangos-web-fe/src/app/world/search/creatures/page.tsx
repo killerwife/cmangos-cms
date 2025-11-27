@@ -11,7 +11,8 @@ export interface searchResult {
     name: string,
     map: number,
     zone: number,
-    entry: number
+    entry: number,
+    index: number
 }
 
 export default function CreatureSearch() {
@@ -61,7 +62,7 @@ export default function CreatureSearch() {
                 filterOptions={(x) => x}
                 onChange={(event, newValue) => {
                     if (newValue !== null)
-                        router.push("/world/creatures?map=" + newValue.map + "&zone=" + newValue.zone + "&entry=" + newValue.entry);
+                        router.push("/world/creatures?map=" + newValue.map + "&zone=" + newValue.zone + "&entry=" + newValue.entry + "&index=" + newValue.index);
 
                     setValue(newValue);
                 }}

@@ -33,17 +33,18 @@ export default function ZoneDisplay() {
     const zone = searchParams.get('zone');
     const guid = searchParams.get('guid');
     const map = searchParams.get('map');
-    const [picId, setPicId] = useState<number>(0);
+    const index = searchParams.get('index');
+    const [picId, setPicId] = useState<string>("0");
     const [creature, setCreature] = useState<creatureWithMovement>({} as creatureWithMovement);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
     const [selectedGroupId, setSelectedGroupId] = useState<number>(-1);
 
     useEffect(() => {
-        setPicId(pickImageFilename(Number(map), Number(zone)));
+        setPicId(pickImageFilename(Number(map), Number(zone), Number(index)));
 
         const loadGos = async () => {
-            let creatureWithMovement = await fetch(NEXT_PUBLIC_API + '/world/creature/' + map + '/' + zone + '/' + guid, {
+            let creatureWithMovement = await fetch(NEXT_PUBLIC_API + '/world/creature/' + map + '/' + zone + '/' + guid + '/' + index, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

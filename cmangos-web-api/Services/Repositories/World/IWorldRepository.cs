@@ -5,11 +5,11 @@ namespace Services.Repositories.World
 {
     public interface IWorldRepository
     {
-        Task<CreatureWithMovementDto?> GetCreatureWithMovement(int mapId, int zoneId, int guid);
-        Task<(List<GameObjectWithSpawnGroup>, float, float, float, float)?> GetGameObjectsForZoneAndEntry(int mapId, int zoneId, uint entry);
+        Task<CreatureWithMovementDto?> GetCreatureWithMovement(int mapId, int zoneId, int guid, int index);
+        Task<(List<GameObjectWithSpawnGroup>, float, float, float, float)?> GetGameObjectsForZoneAndEntry(int mapId, int zoneId, uint entry, int index);
         Task<string?> GetGameObjectEntryName(uint entry);
         Task<string?> GetCreatureEntryName(uint entry);
-        Task<(List<CreatureWithSpawnGroup>, float, float, float, float)?> GetCreaturesForZoneAndEntry(int mapId, int zoneId, uint entry);
+        Task<(List<CreatureWithSpawnGroup>, float, float, float, float)?> GetCreaturesForZoneAndEntry(int mapId, int zoneId, uint entry, int index);
         Task<List<CreaturePredictData>> GetCreaturePredictions(string partial);
         Task<List<CreaturePredictData>> GetGameObjectPredictions(string partial);
         Task<List<CreatureZoneAndMap>> GetGameObjectZones(uint entry);

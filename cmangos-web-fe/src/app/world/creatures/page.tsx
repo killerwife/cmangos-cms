@@ -39,9 +39,11 @@ export default function ZoneDisplay() {
     const zone = searchParams.get('zone');
     const entry = searchParams.get('entry');
     const map = searchParams.get('map');
-    const [picId, setPicId] = useState<number>(0);
+    const index = searchParams.get('index');
+    const [picId, setPicId] = useState<string>("0");
     const [creatures, setCreatures] = useState<creatureList>({} as creatureList);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isMapView, setIsMapView] = useState<boolean>(false);
     const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
     const [selectedGroupId, setSelectedGroupId] = useState<number>(-1);
     const offset = 0;
@@ -49,9 +51,13 @@ export default function ZoneDisplay() {
     const [value, setValue] = useState<entityZone | null>();
 
     const loadGos = async () => {
-        setPicId(pickImageFilename(Number(map), Number(zone)));        
+        let tempZone = zone;
+        if (isMapView)
+            tempZone = "-1";
 
-        let creatures = await fetch(NEXT_PUBLIC_API + '/world/creatures/' + map + '/' + zone + '/' + entry, {
+        setPicId(pickImageFilename(Number(map), Number(tempZone), Number(index)));      
+
+        let creatures = await fetch(NEXT_PUBLIC_API + '/world/creatures/' + map + '/' + zone + '/' + entry + '/' + index, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -90,12 +96,12 @@ export default function ZoneDisplay() {
             return;
 
         loadGos();
-    }, [zone])
+    }, [zone, isMapView])
 
     const onClickCreature = (guid: number, event: React.MouseEvent<HTMLImageElement, MouseEvent>) =>
     {
         if (event.ctrlKey)
-            router.push("creature?zone=" + zone + "&guid=" + guid + "&map=" + map);
+            router.push("creature?zone=" + zone + "&guid=" + guid + "&map=" + map + '&index=' + index);
         else
             navigator.clipboard.writeText((guid - offset).toString()); 
     };
@@ -107,16 +113,20 @@ export default function ZoneDisplay() {
             setSelectedGroupId(-1);
     }
 
+    const onMapViewClick = async () => {
+        setIsMapView(!isMapView);
+    }
+
     if (isLoading) {
         return (
-            <div style={{ backgroundImage: "url(/" + picId.toString() + ".jpg)", backgroundSize: 'auto', backgroundRepeat: "no-repeat" }}>
+            <div style={{ backgroundImage: "url(/" + picId + ".jpg)", backgroundSize: 'auto', backgroundRepeat: "no-repeat" }}>
             </div>
         )
     }    
 
     return (
         <div>
-            <h1>Map: {map} Zone: {zone} Entry: {entry} Object: &apos;{creatures.name}&apos; Count: {creatures.count} <Link href={"/world/search/creatures"} style={{ marginRight: 10, color: 'white', textDecoration: 'underline' }}>Back</Link> </h1>
+            <h1>Map: {map} Zone: {zone} Entry: {entry} Object: &apos;{creatures.name}&apos; Count: {creatures.count} <Link href={"/world/search/creatures"} style={{ marginRight: 10, color: 'white', textDecoration: 'underline' }}>Back</Link><button onClick={onMapViewClick} style={{ outlineStyle: 'solid' }} >{isMapView ? "Go to zone view" : "Go to map view"}</button> </h1>
             <div style={{ textDecorationLine: 'underline' }}>
                 <Autocomplete<entityZone>
                     disablePortal
@@ -124,7 +134,7 @@ export default function ZoneDisplay() {
                     getOptionLabel={(option) => option.name}
                     onChange={(event, newValuel) => {
                         if (newValuel !== null)
-                            router.push("creatures?map=" + newValuel.mapId + "&zone=" + newValuel.zoneId + "&entry=" + entry);
+                            router.push("creatures?map=" + newValuel.mapId + "&zone=" + newValuel.zoneId + "&entry=" + entry + '&index=' + index);
 
                         setValue(newValuel);
                     }}
@@ -135,7 +145,7 @@ export default function ZoneDisplay() {
                 />
             </div>
             <div style={{ position: 'relative', top: 0, left: 0, margin: 0, display: 'inline-block' }}>
-                <img src={"/" + picId.toString() + ".jpg"} alt="pin" style={{ display:'block', position: 'relative', top: 0, left: 0, margin: 0, padding: 0, objectFit: 'contain', height: '100%', width: '100%', maxHeight:"100vh" }}></img>
+                <img src={"/" + picId + ".jpg"} alt="pin" style={{ display:'block', position: 'relative', top: 0, left: 0, margin: 0, padding: 0, objectFit: 'contain', height: '100%', width: '100%', maxHeight:"100vh" }}></img>
                 {
                     creatures.items.map(creature => {
                         return (

@@ -8,5 +8,6 @@ namespace Data.Model.World
         public uint Guid { get; set; }
         public uint ZoneId { get; set; }
         public uint AreaId { get; set; }
+        public int WmoGroupId { get; set; }
     }
 }

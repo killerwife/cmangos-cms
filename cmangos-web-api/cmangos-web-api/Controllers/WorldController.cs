@@ -15,14 +15,16 @@ namespace cmangos_web_api.Controllers
     public class WorldController : ControllerBase
     {
         private IWorldRepository _worldRepository;
+        private IWorldMapRepository _worldMapRepository;
         private IEntityExt _entityExt;
         private DBCRepository _dbcRepository;
 
-        public WorldController(IWorldRepository worldRepository, IEntityExt entityExt, DBCRepository dbcRepository)
+        public WorldController(IWorldRepository worldRepository, IEntityExt entityExt, DBCRepository dbcRepository, IWorldMapRepository worldMapRepository)
         {
             _worldRepository = worldRepository;
             _entityExt = entityExt;
             _dbcRepository = dbcRepository;
+            _worldMapRepository = worldMapRepository;
         }
 
         private static bool FloatComparison(decimal x, decimal y, decimal precision)
@@ -34,10 +36,10 @@ namespace cmangos_web_api.Controllers
         /// Returns gameobject xyz for zone with given entry
         /// </summary>
         /// <response code="200">Gameobject information</response>
-        [HttpGet("gameobjects/{mapId}/{zone}/{entry}")]
-        public async Task<ActionResult<GameObjectListDto>> GetGameObjects([Required][FromRoute] int mapId, [Required][FromRoute] int zone, [Required][FromRoute] uint entry)
+        [HttpGet("gameobjects/{mapId}/{zone}/{entry}/{index}")]
+        public async Task<ActionResult<GameObjectListDto>> GetGameObjects([Required][FromRoute] int mapId, [Required][FromRoute] int zone, [Required][FromRoute] uint entry, [Required][FromRoute] int index)
         {
-            var data = await _worldRepository.GetGameObjectsForZoneAndEntry(mapId, zone, entry);
+            var data = await _worldRepository.GetGameObjectsForZoneAndEntry(mapId, zone, entry, index);
             if (data == null)
                 return BadRequest();
             var precision = 0.2M;
@@ -101,10 +103,10 @@ namespace cmangos_web_api.Controllers
         /// Returns creature xyz for zone with given entry and its movement
         /// </summary>
         /// <response code="200">Gameobject information</response>
-        [HttpGet("creature/{mapId}/{zone}/{guid}")]
-        public async Task<ActionResult<CreatureWithMovementDto>> GetCreatureMovement([Required][FromRoute] int guid, [Required][FromRoute] int zone, [Required][FromRoute] int mapId)
+        [HttpGet("creature/{mapId}/{zone}/{guid}/{index}")]
+        public async Task<ActionResult<CreatureWithMovementDto>> GetCreatureMovement([Required][FromRoute] int guid, [Required][FromRoute] int zone, [Required][FromRoute] int mapId, [Required][FromRoute] int index)
         {
-            var result = await _worldRepository.GetCreatureWithMovement(mapId, zone, guid);
+            var result = await _worldRepository.GetCreatureWithMovement(mapId, zone, guid, index);
             return result != null ? Ok(result) : BadRequest();
         }
 
@@ -112,10 +114,10 @@ namespace cmangos_web_api.Controllers
         /// Returns creature xyz for zone with given entry
         /// </summary>
         /// <response code="200">Gameobject information</response>
-        [HttpGet("creatures/{mapId}/{zone}/{entry}")]
-        public async Task<ActionResult<CreatureListDto>> GetCreatures([Required][FromRoute] int mapId, [Required][FromRoute] int zone, [Required][FromRoute] uint entry)
+        [HttpGet("creatures/{mapId}/{zone}/{entry}/{index}")]
+        public async Task<ActionResult<CreatureListDto>> GetCreatures([Required][FromRoute] int mapId, [Required][FromRoute] int zone, [Required][FromRoute] uint entry, [Required][FromRoute] int index)
         {
-            var data = await _worldRepository.GetCreaturesForZoneAndEntry(mapId, zone, entry);
+            var data = await _worldRepository.GetCreaturesForZoneAndEntry(mapId, zone, entry, index);
             if (data == null)
                 return BadRequest();
             var result = new CreatureListDto();
@@ -210,7 +212,8 @@ namespace cmangos_web_api.Controllers
                     Entry = result.Entry,
                     Map = result.Map.Value,
                     Name = result.Name,
-                    Zone = result.ZoneId ?? 0
+                    Zone = result.ZoneId ?? 0,
+                    Index = _worldMapRepository.PickIndexForWmoGroupId(result.WmoGroupId ?? 0, (int)(result.ZoneId ?? 0))
                 });
             }
             return Ok(response);

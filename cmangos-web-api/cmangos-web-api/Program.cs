@@ -98,7 +98,7 @@ if (builder.Configuration.GetValue<string>("AllowForwarding") == "true")
         }
         else
         {
-            options.KnownProxies.Add(IPAddress.Parse(builder.Configuration.GetValue<string>("KnownProxy")));
+            options.KnownProxies.Add(IPAddress.Parse(builder.Configuration.GetValue<string>("KnownProxy")!));
         }
     });
 

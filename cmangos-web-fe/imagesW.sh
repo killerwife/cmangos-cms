@@ -1,3 +1,8 @@
+curl https://wow.zamimg.com/images/wow/wrath/maps/enus/original/-5.jpg > public/-5.png
+curl https://wow.zamimg.com/images/wow/wrath/maps/enus/original/-2.jpg > public/-2.png
+curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/-6.jpg > public/-6.jpg
+curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/-3.jpg > public/-3.jpg
+
 curl https://wow.zamimg.com/images/wow/wrath/maps/enus/original/3483.jpg > public/3483.jpg
 curl https://wow.zamimg.com/images/wow/wrath/maps/enus/original/3521.jpg > public/3521.jpg
 curl https://wow.zamimg.com/images/wow/wrath/maps/enus/original/3519.jpg > public/3519.jpg
@@ -67,3 +72,5 @@ curl https://wow.zamimg.com/images/wow/wrath/maps/enus/original/2817.jpg > publi
 curl https://wow.zamimg.com/images/wow/wrath/maps/enus/original/3537.jpg > public/3537.jpg
 curl https://wow.zamimg.com/images/wow/wrath/maps/enus/original/3711.jpg > public/3711.jpg
 curl https://wow.zamimg.com/images/wow/wrath/maps/enus/original/4197.jpg > public/4197.jpg
+
+curl https://wow.zamimg.com/images/wow/wrath/maps/enus/original/4298.jpg > public/4298.jpg

@@ -168,7 +168,7 @@ export default function ZoneDisplay() {
                         {
                             creatures.mapIndices.map(mapIndex => {
                                 return (
-                                    <MenuItem value={mapIndex}>{mapIndex.toString()}</MenuItem>
+                                    <MenuItem value={mapIndex} key={mapIndex}>{mapIndex.toString()}</MenuItem>
                                 );
                             })
                         }

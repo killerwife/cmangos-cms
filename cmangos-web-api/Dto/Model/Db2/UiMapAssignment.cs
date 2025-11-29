@@ -22,10 +22,10 @@ namespace Data.Model.Db2
             MapId = mapId;
             ZoneId = zoneId;
             Index = index;
-            MinX = mapArea.Left;
-            MinY = mapArea.Bottom;
-            MaxX = mapArea.Right;
-            MaxY = mapArea.Top;
+            MinX = mapArea.Bottom;
+            MinY = mapArea.Left;
+            MaxX = mapArea.Top;
+            MaxY = mapArea.Right;
             MaxZ = 1000000;
             MinZ = -1000000;
             WmoGroupId = new List<int>();

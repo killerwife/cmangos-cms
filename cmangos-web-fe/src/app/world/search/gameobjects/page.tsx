@@ -12,7 +12,8 @@ export interface searchResult {
     name: string,
     map: number,
     zone: number,
-    entry: number
+    entry: number,
+    index: number
 }
 
 export default function GameObjectSearch() {
@@ -66,7 +67,7 @@ export default function GameObjectSearch() {
                 filterOptions={(x) => x}
                 onChange={(event, newValue) => {
                     if (newValue !== null)
-                        router.push("/world/gameobjects?map=" + newValue.map + "&zone=" + newValue.zone + "&entry=" + newValue.entry);
+                        router.push("/world/gameobjects?map=" + newValue.map + "&zone=" + newValue.zone + "&entry=" + newValue.entry + "&index=" + newValue.index);
 
                     setValue(newValue);
                 }}

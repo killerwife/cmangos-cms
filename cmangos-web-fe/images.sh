@@ -123,4 +123,4 @@ curl https://wow.zamimg.com/images/wow/maps/enus/original/4131-2.jpg > public/41
 # vanilla instances
 
 # vanilla bgs
-https://wow.zamimg.com/images/wow/tbc/maps/enus/original/2597.jpg
+curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/2597.jpg > public/2597.jpg

@@ -77,6 +77,7 @@ namespace cmangos_web_api.Controllers
             result.Right = data.Value.Item3;
             result.Bottom = data.Value.Item4;
             result.Top = data.Value.Item5;
+            result.MapIndices = _worldMapRepository.GetIndicesForZone(zone);
             foreach (var gameObject in data.Value.Item1)
             {
                 var duplicates = data.Value.Item1.Where(p => p.guid != gameObject.guid && FloatComparison(p.position_x, gameObject.position_x, precision)
@@ -154,6 +155,7 @@ namespace cmangos_web_api.Controllers
             result.Right = data.Value.Item3;
             result.Bottom = data.Value.Item4;
             result.Top = data.Value.Item5;
+            result.MapIndices = _worldMapRepository.GetIndicesForZone(zone);
             foreach (var creature in data.Value.Item1)
             {
                 result.Items.Add(new CreatureDto

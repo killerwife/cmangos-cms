@@ -5,6 +5,11 @@ import { useState, useEffect, MouseEventHandler } from 'react';
 import { env } from 'next-runtime-env';
 import Link from 'next/link'
 import { pickImageFilename } from '../../../components/PicPicker'
+import { useRouter } from 'next/navigation'
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
 
 export interface gameobject {
     x: number,
@@ -30,7 +35,8 @@ export interface gameobjectList {
     bottom: number
     top: number,
     name: string,
-    zones: entityZone[]
+    zones: entityZone[],
+    mapIndices: number[]
 }
 
 export default function ZoneDisplay() {
@@ -38,22 +44,25 @@ export default function ZoneDisplay() {
     const zone = searchParams.get('zone');
     const entry = searchParams.get('entry');
     const map = searchParams.get('map');
-    const [picId, setPicId] = useState<number>(0);
+    const index = searchParams.get('index');
+    const [picId, setPicId] = useState<string>("0");
     const [gameObjects, setGameObjects] = useState<gameobjectList>({} as gameobjectList);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isMapView, setIsMapView] = useState<boolean>(false);
     const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
     const [selectedGroupId, setSelectedGroupId] = useState<number>(-1);
     const offset = 0;
+    const [value, setValue] = useState<number>(0);
+    const router = useRouter();
 
     const loadGos = async () => {
         let tempZone = zone;
         if (isMapView)
             tempZone = "-1";
 
-        setPicId(pickImageFilename(Number(map), Number(tempZone)));
+        setPicId(pickImageFilename(Number(map), Number(tempZone), Number(index)));
 
-        let gameobjects = await fetch(NEXT_PUBLIC_API + '/world/gameobjects/' + map + '/' + tempZone + '/' + entry, {
+        let gameobjects = await fetch(NEXT_PUBLIC_API + '/world/gameobjects/' + map + '/' + tempZone + '/' + entry + '/' + index, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -83,7 +92,7 @@ export default function ZoneDisplay() {
             return;
 
         loadGos();
-    }, [zone, isMapView])
+    }, [zone, isMapView, index])
 
     const onPointHover = (event: React.MouseEvent<HTMLImageElement, MouseEvent>, spawnGroupId: number, apply: boolean) => {
         if (apply && spawnGroupId !== 0)
@@ -122,6 +131,32 @@ export default function ZoneDisplay() {
     return (
         <div>
             <h1>Map: {map} Zone: {zone} Entry: {entry} Object: &apos;{gameObjects.name}&apos; Count: {gameObjects.count} <Link href={"/world/search/gameobjects"} style={{ marginRight: 10, color: 'white', textDecoration: 'underline' }}>Back</Link><button onClick={onMapViewClick} style={{ outlineStyle: 'solid' }} >{isMapView ? "Go to zone view" : "Go to map view"}</button> </h1>
+            <div style={{ textDecorationLine: 'underline' }}>
+                <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Map Indices</InputLabel>
+                    <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={value}
+                        label="Map Index"
+                        onChange={(event: SelectChangeEvent<Number>, child?) => {
+                            if (event.target.value !== null) {
+                                router.push("gameobjects?map=" + map + "&zone=" + zone + "&entry=" + entry + '&index=' + event.target.value);
+
+                                setValue(Number(event.target.value));
+                            }
+                        }}
+                    >
+                        {
+                            gameObjects.mapIndices.map(mapIndex => {
+                                return (
+                                    <MenuItem value={mapIndex}>{mapIndex.toString()}</MenuItem>
+                                );
+                            })
+                        }
+                    </Select>
+                </FormControl>
+            </div>
             <div>
                 {
                     gameObjects.zones.map((otherZone, index) => {

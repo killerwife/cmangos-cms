@@ -223,5 +223,12 @@ namespace Services.Repositories.World
 
             return 0;
         }
+
+        public List<int> GetIndicesForZone(int zoneId)
+        {
+            if (_uiMapAssignments.ContainsKey(zoneId))
+                return _uiMapAssignments[zoneId].Select(p => p.Value.Index).ToList();
+            return new List<int>();
+        }
     }
 }

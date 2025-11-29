@@ -8,6 +8,10 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import Link from 'next/link'
 import { pickImageFilename } from '../../../components/PicPicker'
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
 
 export interface creature {
     x: number,
@@ -31,7 +35,8 @@ export interface creatureList {
     bottom: number
     top: number,
     name: string,
-    zones: entityZone[]
+    zones: entityZone[],
+    mapIndices: number[]
 }
 
 export default function ZoneDisplay() {
@@ -49,6 +54,7 @@ export default function ZoneDisplay() {
     const offset = 0;
     const router = useRouter();
     const [value, setValue] = useState<entityZone | null>();
+    const [mapIndex, setMapIndex] = useState<number>(0);
 
     const loadGos = async () => {
         let tempZone = zone;
@@ -96,7 +102,7 @@ export default function ZoneDisplay() {
             return;
 
         loadGos();
-    }, [zone, isMapView])
+    }, [zone, isMapView, index])
 
     const onClickCreature = (guid: number, event: React.MouseEvent<HTMLImageElement, MouseEvent>) =>
     {
@@ -143,6 +149,31 @@ export default function ZoneDisplay() {
                     sx={{ width: 300 }}
                     renderInput={(params) => <TextField {...params} label="Zones" />}
                 />
+                <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Map Indices</InputLabel>
+                    <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={mapIndex}
+                        label="Map Index"
+                        sx={{ width: 300 }}
+                        onChange={(event: SelectChangeEvent<Number>, child?) => {
+                            if (event.target.value !== null) {
+                                router.push("creatures?map=" + map + "&zone=" + zone + "&entry=" + entry + '&index=' + event.target.value);
+
+                                setMapIndex(Number(event.target.value));
+                            }
+                        }}
+                    >
+                        {
+                            creatures.mapIndices.map(mapIndex => {
+                                return (
+                                    <MenuItem value={mapIndex}>{mapIndex.toString()}</MenuItem>
+                                );
+                            })
+                        }
+                    </Select>
+                </FormControl>
             </div>
             <div style={{ position: 'relative', top: 0, left: 0, margin: 0, display: 'inline-block' }}>
                 <img src={"/" + picId + ".jpg"} alt="pin" style={{ display:'block', position: 'relative', top: 0, left: 0, margin: 0, padding: 0, objectFit: 'contain', height: '100%', width: '100%', maxHeight:"100vh" }}></img>

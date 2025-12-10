@@ -146,24 +146,6 @@ namespace Services.Repositories.World
                 { 1, new UiMapAssignment(585, 4131, 1, -27.79583740234, -304.22601318359, -10000, 325.76013183594, 226.10800170898, 1000000, [23119,23120,23121,23125,23162,23171,23731,23732])},
                 { 2, new UiMapAssignment(585, 4131, 2, -27.79589080811, -304.22601318359, -3, 325.76010131836, 226.10800170898, 1000000, [23121,23122,23123,23167,23168,23169,23170,23171,23733,23734,26192])},
             };
-            foreach (var zoneMap in _uiMapAssignments)
-            {
-                foreach (var uiMap in zoneMap.Value)
-                {
-                    if (uiMap.Value.WmoGroupId.Count() == 0)
-                        continue;
-
-                    var firstWmoGroupId = uiMap.Value.WmoGroupId.First();
-                    if (firstWmoGroupId != 0)
-                    {
-                        var result = _dbcRepository.WmoAreas.Where(p => p.Value.WmoGroupId == firstWmoGroupId).FirstOrDefault();
-                        if (result.Equals(default(KeyValuePair<int, WorldMapArea>)))
-                            continue;
-
-                        uiMap.Value.WmoAreaOverride = result.Value.WmoAreaOverride;
-                    }
-                }
-            }
             foreach (var dungMap in _dbcRepository.DungeonMaps)
             {
                 int zoneId;
@@ -188,6 +170,27 @@ namespace Services.Repositories.World
                     continue;
 
                 _uiMapAssignments[zoneId].Add((int)dungMap.Value.Index, new UiMapAssignment((int)dungMap.Value.Map, zoneId, dungMap.Value.Index, dungMap.Value.Top, dungMap.Value.Right, -1000000, dungMap.Value.Bottom, dungMap.Value.Left, 1000000, wmoGroupIds));
+            }
+            foreach (var zoneMap in _uiMapAssignments)
+            {
+                foreach (var uiMap in zoneMap.Value)
+                {
+                    if (uiMap.Value.WmoGroupId.Count() == 0)
+                        continue;
+
+                    foreach (var wmoGroupId in uiMap.Value.WmoGroupId)
+                    {
+                        if (wmoGroupId != 0)
+                        {
+                            var result = _dbcRepository.WmoAreas.Where(p => p.Value.WmoGroupId == wmoGroupId).FirstOrDefault();
+                            if (result.Equals(default(KeyValuePair<int, WorldMapArea>)))
+                                continue;
+
+                            uiMap.Value.WmoAreaOverride = result.Value.WmoAreaOverride;
+                            break;
+                        }
+                    }
+                }
             }
         }
 

@@ -10,6 +10,6 @@
         public float Top { get; set; }
         public string? Name { get; set; }
         public List<EntityZone> Zones { get; set; } = new();
-        public List<int> MapIndices { get; set; } = new();
+        public List<MapIndices> MapIndices { get; set; } = new();
     }
 }

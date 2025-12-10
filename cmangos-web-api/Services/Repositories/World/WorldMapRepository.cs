@@ -1,4 +1,5 @@
-﻿using Data.Enum;
+﻿using Data.Dto.World;
+using Data.Enum;
 using Data.Model.Db2;
 using Data.Model.DBC;
 
@@ -145,6 +146,49 @@ namespace Services.Repositories.World
                 { 1, new UiMapAssignment(585, 4131, 1, -27.79583740234, -304.22601318359, -10000, 325.76013183594, 226.10800170898, 1000000, [23119,23120,23121,23125,23162,23171,23731,23732])},
                 { 2, new UiMapAssignment(585, 4131, 2, -27.79589080811, -304.22601318359, -3, 325.76010131836, 226.10800170898, 1000000, [23121,23122,23123,23167,23168,23169,23170,23171,23733,23734,26192])},
             };
+            foreach (var zoneMap in _uiMapAssignments)
+            {
+                foreach (var uiMap in zoneMap.Value)
+                {
+                    if (uiMap.Value.WmoGroupId.Count() == 0)
+                        continue;
+
+                    var firstWmoGroupId = uiMap.Value.WmoGroupId.First();
+                    if (firstWmoGroupId != 0)
+                    {
+                        var result = _dbcRepository.WmoAreas.Where(p => p.Value.WmoGroupId == firstWmoGroupId).FirstOrDefault();
+                        if (result.Equals(default(KeyValuePair<int, WorldMapArea>)))
+                            continue;
+
+                        uiMap.Value.WmoAreaOverride = result.Value.WmoAreaOverride;
+                    }
+                }
+            }
+            foreach (var dungMap in _dbcRepository.DungeonMaps)
+            {
+                int zoneId;
+                var worldMapAreaEntry = _dbcRepository.WorldMapArea.Where(p => p.Value.Map == dungMap.Value.Map && p.Value.Area == 0).FirstOrDefault();
+                if (worldMapAreaEntry.Equals(default(KeyValuePair<int, WorldMapArea>)))
+                {
+                    zoneId = (int)_dbcRepository.Areas.Where(p => p.Value.mapid == dungMap.Value.Map).Select(s => s.Value.zone == 0 ? (int)s.Value.ID : (int)s.Value.zone).First();
+                }
+                else
+                {
+                    zoneId = (int)worldMapAreaEntry.Value.Area;
+                }
+
+                if (!_uiMapAssignments.ContainsKey(zoneId))
+                {
+                    _uiMapAssignments.Add(zoneId, new());
+                }
+
+                var wmoGroupIds = _dbcRepository.DungeonMapChunks.Where(p => p.Value.DungeonMap == dungMap.Key).Select(p => (int)p.Value.WmoGroupId).ToList();
+
+                if (_uiMapAssignments[zoneId].ContainsKey((int)dungMap.Value.Index))
+                    continue;
+
+                _uiMapAssignments[zoneId].Add((int)dungMap.Value.Index, new UiMapAssignment((int)dungMap.Value.Map, zoneId, dungMap.Value.Index, dungMap.Value.Top, dungMap.Value.Right, -1000000, dungMap.Value.Bottom, dungMap.Value.Left, 1000000, wmoGroupIds));
+            }
         }
 
         public int PickIndexForXyz(float x, float y, float z, int zoneId)
@@ -183,7 +227,7 @@ namespace Services.Repositories.World
                 if (areaEntry.Equals(default(KeyValuePair<int, WorldMapArea>)))
                     return null;
 
-                return new UiMapAssignment(mapId, zoneId, index, areaEntry.Value);
+                return new UiMapAssignment(mapId, zoneId, (uint)index, areaEntry.Value);
             }
             else
             {
@@ -193,18 +237,17 @@ namespace Services.Repositories.World
                     {
                         return _uiMapAssignments[zoneId][index];
                     }
-                    else
-                        return _uiMapAssignments[zoneId].First().Value;
                 }
-                else
-                {
-                    areaEntry = _dbcRepository.WorldMapArea.Where(p => p.Value.Area == zoneId && mapId == p.Value.Map).SingleOrDefault();
-                }
+
+                if (index != 0) // worldmaparea is fallback for index 0
+                    return null;
+
+                areaEntry = _dbcRepository.WorldMapArea.Where(p => p.Value.Area == zoneId && mapId == p.Value.Map).SingleOrDefault();
 
                 if (areaEntry.Equals(default(KeyValuePair<int, WorldMapArea>)))
                     return null;
 
-                return new UiMapAssignment(mapId, zoneId, index, areaEntry.Value);
+                return new UiMapAssignment(mapId, zoneId, (uint)index, areaEntry.Value);
             }
         }
 
@@ -224,11 +267,15 @@ namespace Services.Repositories.World
             return 0;
         }
 
-        public List<int> GetIndicesForZone(int zoneId)
+        public List<MapIndices> GetIndicesForZone(int zoneId)
         {
             if (_uiMapAssignments.ContainsKey(zoneId))
-                return _uiMapAssignments[zoneId].Select(p => p.Value.Index).ToList();
-            return new List<int>();
+                return _uiMapAssignments[zoneId].Select(p => new MapIndices
+                {
+                    Index = (int)p.Value.Index,
+                    Name = p.Value.WmoAreaOverride
+                }).ToList();
+            return new List<MapIndices>();
         }
     }
 }

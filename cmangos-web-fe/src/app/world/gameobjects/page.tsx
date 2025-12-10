@@ -27,6 +27,11 @@ export interface entityZone {
     name: string
 }
 
+export interface MapIndex {
+    index: number,
+    name: string
+}
+
 export interface gameobjectList {
     count: number
     items: gameobject[]
@@ -36,7 +41,7 @@ export interface gameobjectList {
     top: number,
     name: string,
     zones: entityZone[],
-    mapIndices: number[]
+    mapIndices: MapIndex[]
 }
 
 export default function ZoneDisplay() {
@@ -54,6 +59,7 @@ export default function ZoneDisplay() {
     const offset = 0;
     const [value, setValue] = useState<number>(0);
     const router = useRouter();
+    const [pointWidth, setPointWidth] = useState<string>('1%');
 
     const loadGos = async () => {
         let tempZone = zone;
@@ -92,6 +98,8 @@ export default function ZoneDisplay() {
             return;
 
         loadGos();
+
+        setPointWidth(isMapView ? '0.25%' : '1%');
     }, [zone, isMapView, index])
 
     const onPointHover = (event: React.MouseEvent<HTMLImageElement, MouseEvent>, spawnGroupId: number, apply: boolean) => {
@@ -126,11 +134,13 @@ export default function ZoneDisplay() {
             <div style={{ backgroundImage: "url(/" + picId.toString() + ".jpg)", backgroundSize: 'auto', backgroundRepeat: "no-repeat" }}>
             </div>
         )
-    }    
+    }
 
-    return (
-        <div>
-            <h1>Map: {map} Zone: {zone} Entry: {entry} Object: &apos;{gameObjects.name}&apos; Count: {gameObjects.count} <Link href={"/world/search/gameobjects"} style={{ marginRight: 10, color: 'white', textDecoration: 'underline' }}>Back</Link><button onClick={onMapViewClick} style={{ outlineStyle: 'solid' }} >{isMapView ? "Go to zone view" : "Go to map view"}</button> </h1>
+    const gameobjectMapIndices = () => {
+        if (gameObjects.mapIndices.length == 0)
+            return (<div></div>);
+
+        return (
             <div style={{ textDecorationLine: 'underline' }}>
                 <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">Map Indices</InputLabel>
@@ -150,13 +160,22 @@ export default function ZoneDisplay() {
                         {
                             gameObjects.mapIndices.map(mapIndex => {
                                 return (
-                                    <MenuItem value={mapIndex} key={mapIndex}>{mapIndex.toString()}</MenuItem>
+                                    <MenuItem value={mapIndex.index} key={mapIndex.index}>{mapIndex.index.toString() + ' - ' + mapIndex.name}</MenuItem>
                                 );
                             })
                         }
                     </Select>
                 </FormControl>
             </div>
+        );
+    }
+
+    return (
+        <div>
+            <h1>Map: {map} Zone: {zone} Entry: {entry} Object: &apos;{gameObjects.name}&apos; Count: {gameObjects.count} <Link href={"/world/search/gameobjects"} style={{ marginRight: 10, color: 'white', textDecoration: 'underline' }}>Back</Link><button onClick={onMapViewClick} style={{ outlineStyle: 'solid' }} >{isMapView ? "Go to zone view" : "Go to map view"}</button> </h1>
+            {
+                gameobjectMapIndices()
+            }
             <div>
                 {
                     gameObjects.zones.map((otherZone, index) => {
@@ -170,11 +189,11 @@ export default function ZoneDisplay() {
                 }
             </div>
             <div style={{ position: 'relative', top: 0, left: 0, margin: 0, display: 'inline-block' }}>
-                <img src={"/" + picId.toString() + ".jpg"} alt="pin" style={{ display:'block', position: 'relative', top: 0, left: 0, margin: 0, padding: 0, objectFit: 'contain', height: '100%', width: '100%', maxHeight:"100vh" }}></img>
+                <img src={"/" + picId.toString() + ".jpg"} alt="pin" style={{ display: 'block', position: 'relative', top: 0, left: 0, margin: 0, padding: 0, maxWidth: `none` }}></img>
                 {
                     gameObjects.items.map(gameobject => {
                         return (
-                            <img src={selectedGroupId === gameobject.spawnGroupId ? "/pin-blue.png" : (gameobject.hasDuplicate === true ? "/pin-red.png" : "/pin-yellow.png")} key={gameobject.guid} onClick={(event) => { onGameObjectClick(gameobject.guid, gameobject.duplicates, event) }} className={'map-point-img, ' + gameobject.spawnGroupId} onMouseOver={(e) => { onPointHover(e, gameobject.spawnGroupId, true); }} onMouseOut={(e) => { onPointHover(e, gameobject.spawnGroupId, false); }} alt="pin" title={'' + gameobject.guid + (gameobject.hasDuplicate ? ' - ' : '') + gameobject.duplicates} style={{ width: '1%', minWidth: '11px', margin: 0, padding: 0, transform: 'translate(-50%, -50%)', position: 'absolute', top: (Math.abs((gameobject.x - gameObjects.top) / (gameObjects.bottom - gameObjects.top) * 100)) + '%', left: (100 - Math.abs((gameobject.y - gameObjects.left) / (gameObjects.right - gameObjects.left) * 100)) + '%' }} />
+                            <img src={selectedGroupId === gameobject.spawnGroupId ? "/pin-blue.png" : (gameobject.hasDuplicate === true ? "/pin-red.png" : "/pin-yellow.png")} key={gameobject.guid} onClick={(event) => { onGameObjectClick(gameobject.guid, gameobject.duplicates, event) }} className={'map-point-img, ' + gameobject.spawnGroupId} onMouseOver={(e) => { onPointHover(e, gameobject.spawnGroupId, true); }} onMouseOut={(e) => { onPointHover(e, gameobject.spawnGroupId, false); }} alt="pin" title={'' + gameobject.guid + (gameobject.hasDuplicate ? ' - ' : '') + gameobject.duplicates} style={{ width: pointWidth, minWidth: '4px', margin: 0, padding: 0, transform: 'translate(-50%, -50%)', position: 'absolute', top: (Math.abs((gameobject.x - gameObjects.top) / (gameObjects.bottom - gameObjects.top) * 100)) + '%', left: (100 - Math.abs((gameobject.y - gameObjects.left) / (gameObjects.right - gameObjects.left) * 100)) + '%' }} />
                         );
                     })
                 }

@@ -1,5 +1,11 @@
 ﻿namespace Data.Dto.World
 {
+    public class MapIndices
+    {
+        public int Index { get; set; }
+        public string Name { get; set; } = string.Empty;
+    }
+
     public class GameObjectListDto
     {
         public List<GameObjectDto> Items { get; set; } = new List<GameObjectDto>();
@@ -10,6 +16,6 @@
         public float Top { get; set; }
         public string? Name { get; set; }
         public List<EntityZone> Zones { get; set; } = new();
-        public List<int> MapIndices { get; set; } = new(); 
+        public List<MapIndices> MapIndices { get; set; } = new(); 
     }
 }

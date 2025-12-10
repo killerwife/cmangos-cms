@@ -1,4 +1,5 @@
-﻿using Data.Model.Db2;
+﻿using Data.Dto.World;
+using Data.Model.Db2;
 using Data.Model.DBC;
 
 namespace Services.Repositories.World
@@ -8,6 +9,6 @@ namespace Services.Repositories.World
         public UiMapAssignment? GetWorldMapArea(int mapId, int zoneId, int index);
         int PickIndexForXyz(float x, float y, float z, int zoneId);
         int PickIndexForWmoGroupId(int wmoGroupId, int zoneId);
-        List<int> GetIndicesForZone(int zoneId);
+        List<MapIndices> GetIndicesForZone(int zoneId);
     }
 }

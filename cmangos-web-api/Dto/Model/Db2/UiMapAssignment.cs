@@ -8,7 +8,7 @@ namespace Data.Model.Db2
     {
         public int MapId { get; set; }
         public int ZoneId { get; set; }
-        public int Index { get; set; }
+        public uint Index { get; set; }
         public double MinX { get; set; } // left
         public double MaxX { get; set; } // right
         public double MinY { get; set; } // bottom
@@ -16,8 +16,9 @@ namespace Data.Model.Db2
         public double MinZ { get; set; }
         public double MaxZ { get; set; }
         public List<int> WmoGroupId { get; set; }
+        public string WmoAreaOverride { get; set; } = string.Empty;
 
-        public UiMapAssignment(int mapId, int zoneId, int index, WorldMapArea mapArea)
+        public UiMapAssignment(int mapId, int zoneId, uint index, WorldMapArea mapArea)
         {
             MapId = mapId;
             ZoneId = zoneId;
@@ -31,7 +32,7 @@ namespace Data.Model.Db2
             WmoGroupId = new List<int>();
         }
 
-        public UiMapAssignment(int mapId, int zoneId, int index, double minX, double minY, double minZ, double maxX, double maxY, double maxZ, int wmoGroupId)
+        public UiMapAssignment(int mapId, int zoneId, uint index, double minX, double minY, double minZ, double maxX, double maxY, double maxZ, int wmoGroupId)
         {
             MapId = mapId;
             ZoneId = zoneId;
@@ -48,7 +49,7 @@ namespace Data.Model.Db2
             };
         }
 
-        public UiMapAssignment(int mapId, int zoneId, int index, double minX, double minY, double minZ, double maxX, double maxY, double maxZ, List<int> wmoGroupId)
+        public UiMapAssignment(int mapId, int zoneId, uint index, double minX, double minY, double minZ, double maxX, double maxY, double maxZ, List<int> wmoGroupId)
         {
             MapId = mapId;
             ZoneId = zoneId;

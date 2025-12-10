@@ -18,11 +18,17 @@ namespace Services.Repositories
 
         public Storage<WorldMapArea> WorldMapArea { get; set; }
         public Storage<AreaTable> Areas { get; set; }
+        public Storage<WmoAreaTable> WmoAreas { get; set; }
+        public Storage<DungeonMapChunk> DungeonMapChunks { get; set; }
+        public Storage<DungeonMap> DungeonMaps { get; set; }
 
         public void Load()
         {
             WorldMapArea = new Storage<WorldMapArea>(_dbcOptions.CurrentValue.DirectoryPath + "WorldMapArea.dbc");
             Areas = new Storage<AreaTable>(_dbcOptions.CurrentValue.DirectoryPath + "AreaTable.dbc");
+            WmoAreas = new Storage<WmoAreaTable>(_dbcOptions.CurrentValue.DirectoryPath + "WMOAreaTable.dbc");
+            DungeonMapChunks = new Storage<DungeonMapChunk>(_dbcOptions.CurrentValue.DirectoryPath + "DungeonMapChunk.dbc");
+            DungeonMaps = new Storage<DungeonMap>(_dbcOptions.CurrentValue.DirectoryPath + "DungeonMap.dbc");
         }
     }
 }

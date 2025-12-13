@@ -62,6 +62,14 @@ curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/1497.jpg > public/
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/1519.jpg > public/1519.jpg
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/1537.jpg > public/1537.jpg
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/4080.jpg > public/4080.jpg
+# vanilla instances
+curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/1583-1.jpg > public/1583-1.jpg
+curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/1583-2.jpg > public/1583-2.jpg
+curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/1583-3.jpg > public/1583-3.jpg
+curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/1583-4.jpg > public/1583-4.jpg
+curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/1583-5.jpg > public/1583-5.jpg
+curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/1583-6.jpg > public/1583-6.jpg
+curl https://static.wikia.nocookie.net/wowpedia/images/4/43/WorldMap-BlackrockSpire6.jpg > public/1583-7.jpg
 # tbc instances
 curl https://wow.zamimg.com/images/wow/maps/enus/original/2366.jpg > public/2366.jpg
 curl https://wow.zamimg.com/images/wow/maps/enus/original/2367.jpg > public/2367.jpg

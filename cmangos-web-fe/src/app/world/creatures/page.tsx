@@ -156,7 +156,11 @@ export default function ZoneDisplay() {
                         }
                     }}
                     renderValue={(value) => {
-                        return (<p style={{ color: "white" }}>{value.toString() + ' - ' + creatures.mapIndices[value].name}</p>)
+                        for (let i = 0; i < creatures.mapIndices.length; ++i) {
+                            if (creatures.mapIndices[i].index == value) {
+                                return (<p style={{ color: "white" }}>{value.toString() + ' - ' + creatures.mapIndices[i].name}</p>)
+                            }
+                        }
                     }}
                 >
                     {

@@ -63,6 +63,14 @@ curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/1519.jpg > public/
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/1537.jpg > public/1537.jpg
 curl https://wow.zamimg.com/images/wow/tbc/maps/enus/original/4080.jpg > public/4080.jpg
 # vanilla instances
+curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/209-1.jpg > public/209-1.jpg
+curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/209-2.jpg > public/209-2.jpg
+curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/209-3.jpg > public/209-3.jpg
+curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/209-4.jpg > public/209-4.jpg
+curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/209-5.jpg > public/209-5.jpg
+curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/209-6.jpg > public/209-6.jpg
+curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/209-7.jpg > public/209-7.jpg
+
 curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/1583-1.jpg > public/1583-1.jpg
 curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/1583-2.jpg > public/1583-2.jpg
 curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/1583-3.jpg > public/1583-3.jpg
@@ -70,6 +78,15 @@ curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/1583-4.jpg > publ
 curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/1583-5.jpg > public/1583-5.jpg
 curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/1583-6.jpg > public/1583-6.jpg
 curl https://static.wikia.nocookie.net/wowpedia/images/4/43/WorldMap-BlackrockSpire6.jpg > public/1583-7.jpg
+
+curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/2159-1.jpg > public/2159-1.jpg
+
+curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/3456-1.jpg > public/3456-1.jpg
+curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/3456-2.jpg > public/3456-2.jpg
+curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/3456-3.jpg > public/3456-3.jpg
+curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/3456-4.jpg > public/3456-4.jpg
+curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/3456-5.jpg > public/3456-5.jpg
+curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/3456-6.jpg > public/3456-6.jpg
 # tbc instances
 curl https://wow.zamimg.com/images/wow/maps/enus/original/2366.jpg > public/2366.jpg
 curl https://wow.zamimg.com/images/wow/maps/enus/original/2367.jpg > public/2367.jpg

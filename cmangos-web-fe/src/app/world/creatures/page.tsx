@@ -199,7 +199,7 @@ export default function ZoneDisplay() {
                 }
             </div>
             <div style={{ position: 'relative', top: 0, left: 0, margin: 0, display: 'inline-block' }}>
-                <img src={"/" + picId + ".jpg"} alt="pin" style={{ display:'block', position: 'relative', top: 0, left: 0, margin: 0, padding: 0, objectFit: 'contain', height: '100%', width: '100%', maxHeight:"100vh" }}></img>
+                <img src={"/" + picId + ".jpg"} alt="pin" style={{ display: 'block', position: 'relative', top: 0, left: 0, margin: 0, padding: 0, maxWidth: `none` }}></img>
                 {
                     creatures.items.map(creature => {
                         return (

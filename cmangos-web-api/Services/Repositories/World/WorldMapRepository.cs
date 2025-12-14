@@ -94,7 +94,7 @@ namespace Services.Repositories.World
             };
             _uiMapAssignments[1977] = new() // 1977 - Zul'Gurub
             {
-                { 0, new UiMapAssignment(309, 1977, 0, -12560.416015625, -2570.8332519531, -1000000, -11308.333007812, -693.75, 1000000, [0])}
+                { 0, new UiMapAssignment(309, 1977, 0, -12560.416015625, -2570.8332519531, -1000000, -11308.333007812, -693.75, 1000000, [0])} // TODO: Realign
             };
             _uiMapAssignments[2017] = new() // 2017 - Stratholme
             {

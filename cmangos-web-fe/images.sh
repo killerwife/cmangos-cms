@@ -113,7 +113,7 @@ curl https://static.wikia.nocookie.net/wowpedia/images/4/43/WorldMap-BlackrockSp
 curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/1584-1.jpg > public/1584-1.jpg
 curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/1584-2.jpg > public/1584-2.jpg
 
-curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/1977.jpg > public/1977.jpg
+curl https://wow.zamimg.com/images/wow/classic/maps/enus/original/1977.jpg > public/1977.jpg
 
 curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/2017-1.jpg > public/2017-1.jpg
 curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/2017-2.jpg > public/2017-2.jpg

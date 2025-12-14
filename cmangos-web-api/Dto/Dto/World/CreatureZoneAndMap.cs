@@ -8,5 +8,7 @@ namespace Data.Dto.World
         public uint ZoneId { get; set; }
         [Column("map")]
         public uint MapId { get; set; }
+        [Column("wmoGroupId")]
+        public int WmoGroupId { get; set; }
     }
 }

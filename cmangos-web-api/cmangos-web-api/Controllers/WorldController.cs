@@ -56,7 +56,8 @@ namespace cmangos_web_api.Controllers
                     {
                         MapId = zoneItem.MapId,
                         ZoneId = zoneItem.ZoneId,
-                        Name = name
+                        Name = name,
+                        Index = _worldMapRepository.PickIndexForWmoGroupId(zoneItem.WmoGroupId != 0 ? zoneItem.WmoGroupId : 0, (int)(zoneItem.ZoneId != 0 ? zoneItem.ZoneId : 0))
                     });
                 }
             }
@@ -134,7 +135,8 @@ namespace cmangos_web_api.Controllers
                     {
                         MapId = zoneItem.MapId,
                         ZoneId = zoneItem.ZoneId,
-                        Name = name
+                        Name = name,
+                        Index = _worldMapRepository.PickIndexForWmoGroupId(zoneItem.WmoGroupId != 0 ? zoneItem.WmoGroupId : 0, (int)(zoneItem.ZoneId != 0 ? zoneItem.ZoneId : 0))
                     });
                 }
             }
@@ -189,7 +191,8 @@ namespace cmangos_web_api.Controllers
                     Entry = result.Entry,
                     Map = result.Map.Value,
                     Name = result.Name,
-                    Zone = result.ZoneId ?? 0
+                    Zone = result.ZoneId ?? 0,
+                    Index = _worldMapRepository.PickIndexForWmoGroupId(result.WmoGroupId ?? 0, (int)(result.ZoneId ?? 0))
                 });
             }
             return Ok(response);

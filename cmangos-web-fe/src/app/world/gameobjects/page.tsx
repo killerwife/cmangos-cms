@@ -24,7 +24,8 @@ export interface gameobject {
 export interface entityZone {
     mapId: number,
     zoneId: number,
-    name: string
+    name: string,
+    index: number
 }
 
 export interface MapIndex {
@@ -56,7 +57,7 @@ export default function ZoneDisplay() {
     const [isMapView, setIsMapView] = useState<boolean>(false);
     const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
     const [selectedGroupId, setSelectedGroupId] = useState<number>(-1);
-    const offset = 0;
+    const offset = 405000;
     const [value, setValue] = useState<number>(0);
     const router = useRouter();
     const [pointWidth, setPointWidth] = useState<string>('1%');
@@ -141,7 +142,7 @@ export default function ZoneDisplay() {
             return (<div></div>);
 
         return (
-            <div style={{ textDecorationLine: 'underline' }}>
+            <div style={{ textDecorationLine: 'underline', maxWidth: '25vw' }}>
                 <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">Map Indices</InputLabel>
                     <Select
@@ -181,7 +182,7 @@ export default function ZoneDisplay() {
                     gameObjects.zones.map((otherZone, index) => {
                         return (
                             <span key={otherZone.zoneId} style={{ textDecorationLine: 'underline' }}>
-                                <Link href={"gameobjects?map=" + otherZone.mapId + "&zone=" + otherZone.zoneId + "&entry=" + entry} style={{ marginRight: 10, color: (otherZone.zoneId.toString() == zone ? 'white' : 'grey') }}>{otherZone.name}</Link>
+                                <Link href={"gameobjects?map=" + otherZone.mapId + "&zone=" + otherZone.zoneId + "&entry=" + entry + '&index=' + otherZone.index} style={{ marginRight: 10, color: (otherZone.zoneId.toString() == zone ? 'white' : 'grey') }}>{otherZone.name}</Link>
                                 {(index > 0 && index % 10 == 0) ? <br></br> : ""}
                             </span>
                         );

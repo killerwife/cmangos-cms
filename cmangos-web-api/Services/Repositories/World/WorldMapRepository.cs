@@ -401,14 +401,14 @@ namespace Services.Repositories.World
             }
         }
 
-        public int PickIndexForWmoGroupId(int wmoGroupId, int zoneId)
+        public uint PickIndexForWmoGroupId(int wmoGroupId, int zoneId)
         {
             if (_uiMapAssignments.ContainsKey(zoneId))
             {
                 foreach (var pair in _uiMapAssignments[zoneId])
                 {
                     if (pair.Value.WmoGroupId.Contains(wmoGroupId))
-                        return pair.Key;
+                        return (uint)pair.Key;
                 }
 
                 return 0;

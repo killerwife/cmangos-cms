@@ -6,6 +6,6 @@
         public uint Map { get; set; }
         public uint Zone { get; set; }
         public uint Entry { get; set; }
-        public int Index { get; set; }
+        public uint Index { get; set; }
     }
 }

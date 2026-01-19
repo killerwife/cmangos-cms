@@ -76,7 +76,7 @@ curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/491-1.jpg > publi
 
 curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/717-1.jpg > public/717-1.jpg
 
-curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/718-1.jpg > public/718-1.jpg
+curl https://static.wikia.nocookie.net/wowpedia/images/4/44/WorldMap-WailingCaverns-old.jpg > public/718-1.jpg
 
 curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/719-1.jpg > public/719-1.jpg
 curl https://wow.zamimg.com/images/wow/cata/maps/enus/original/719-2.jpg > public/719-2.jpg

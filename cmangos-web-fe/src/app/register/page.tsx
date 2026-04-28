@@ -72,7 +72,10 @@ export default function Register() {
             return;
         }
 
-        const token = await executeRecaptcha("form_submit");
+        let token: string | null = null;
+        if (siteKey != null && siteKey != "null" && siteKey !== undefined) {
+            token = await executeRecaptcha("form_submit");
+        }
 
         onRegisterClick(username, email, password, token);
     }

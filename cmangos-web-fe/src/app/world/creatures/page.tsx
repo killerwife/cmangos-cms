@@ -18,7 +18,8 @@ export interface creature {
     y: number,
     z: number,
     guid: number,
-    spawnGroupId: number
+    spawnGroupId: number,
+    waypointMovementType: boolean
 }
 
 export interface entityZone {
@@ -203,7 +204,7 @@ export default function ZoneDisplay() {
                 {
                     creatures.items.map(creature => {
                         return (
-                            <img src={selectedGroupId === creature.spawnGroupId ? "/pin-blue.png" : "/pin-yellow.png"} key={creature.guid} onClick={(event) => { onClickCreature(creature.guid, event) } } className={'map-point-img, ' + creature.spawnGroupId} onMouseOver={(e) => { onPointHover(e, creature.spawnGroupId, true); }} onMouseOut={(e) => { onPointHover(e, creature.spawnGroupId, false); }} alt="pin" title={'' + creature.guid} style={{ width: '1%', minWidth: '11px', margin: 0, padding: 0, transform: 'translate(-50%, -50%)', position: 'absolute', top: (Math.abs((creature.x - creatures.top) / (creatures.bottom - creatures.top) * 100)) + '%', left: (100 - Math.abs((creature.y - creatures.left) / (creatures.right - creatures.left) * 100)) + '%' }} />
+                            <img src={selectedGroupId === creature.spawnGroupId ? "/pin-blue.png" : (creature.waypointMovementType === true ? "/pin-orange.png" : "/pin-yellow.png")} key={creature.guid} onClick={(event) => { onClickCreature(creature.guid, event) } } className={'map-point-img, ' + creature.spawnGroupId} onMouseOver={(e) => { onPointHover(e, creature.spawnGroupId, true); }} onMouseOut={(e) => { onPointHover(e, creature.spawnGroupId, false); }} alt="pin" title={'' + creature.guid} style={{ width: '1%', minWidth: '11px', margin: 0, padding: 0, transform: 'translate(-50%, -50%)', position: 'absolute', top: (Math.abs((creature.x - creatures.top) / (creatures.bottom - creatures.top) * 100)) + '%', left: (100 - Math.abs((creature.y - creatures.left) / (creatures.right - creatures.left) * 100)) + '%' }} />
                         );
                     })
                 }

@@ -167,6 +167,7 @@ namespace cmangos_web_api.Controllers
                     Z = (float)creature.position_z,
                     Guid = creature.guid,
                     SpawnGroupId = creature.spawn_group_id,
+                    WaypointMovementType = creature.MovementType == 2 || creature.MovementType == 4 || (creature.formation_path_id != null && creature.formation_path_id != 0)
                 });
             }
             return Ok(result);

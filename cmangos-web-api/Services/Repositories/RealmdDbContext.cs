@@ -19,8 +19,7 @@ namespace Services.Repositories
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             var connectionString = Configuration.GetConnectionString("Realmd");
-            var serverVersion = new MySqlServerVersion(ServerVersion.AutoDetect(connectionString));
-            options.UseMySql(connectionString, serverVersion, options => options.EnableRetryOnFailure(
+            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), options => options.EnableRetryOnFailure(
                     maxRetryCount: 5,
                     maxRetryDelay: System.TimeSpan.FromSeconds(30),
                     errorNumbersToAdd: null))

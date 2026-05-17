@@ -4,21 +4,19 @@ import Link from "next/link";
 import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/navigation'
 import { env } from 'next-runtime-env';
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function Navbar() {
     const [cookies, setCookie, removeCookie] = useCookies(['access-token', 'refresh-token'])
-    const [initial, setInitial] = useState(true)
     const [loggedIn, setLoggedIn] = useState(false)
     const router = useRouter()
     const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
 
     useEffect(() => {
-        setInitial(false)
-        setLoggedIn(cookies['access-token'] != null)
-    }, [])
+        setLoggedIn(Boolean(cookies['access-token']))
+    }, [cookies])
 
-    const LogoutRequest = () => {
+    const LogoutRequest = useCallback(async() => {
         fetch(NEXT_PUBLIC_API + '/revoke/token', {
             method: 'POST',
             headers: {
@@ -38,15 +36,7 @@ export default function Navbar() {
                 removeCookie('refresh-token', { secure: true, sameSite: 'none' })
                 router.push('/')
             })
-    }
-
-    if (initial) {
-        return (
-            <span className="flex justify-between">
-                <h1 className="text-xl">Navigation Bar</h1>
-            </span>
-        );
-    }
+    }, [cookies, router]);
 
     if (loggedIn) {
         return (
@@ -60,7 +50,7 @@ export default function Navbar() {
                         <Link href="/account">Account</Link>
                     </li>
                     <li>
-                        <button onClick={() => { LogoutRequest(); }} >Log out</button>
+                        <button onClick={() => { LogoutRequest() }} >Log out</button>
                     </li>
                 </ul>
             </span>

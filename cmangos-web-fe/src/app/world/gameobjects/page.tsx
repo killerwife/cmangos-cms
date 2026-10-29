@@ -57,7 +57,7 @@ export default function ZoneDisplay() {
     const [isMapView, setIsMapView] = useState<boolean>(false);
     const NEXT_PUBLIC_API = env('NEXT_PUBLIC_API');
     const [selectedGroupId, setSelectedGroupId] = useState<number>(-1);
-    const offset = 405000;
+    const offset = 0;
     const [value, setValue] = useState<number>(0);
     const router = useRouter();
     const [pointWidth, setPointWidth] = useState<string>('1%');
@@ -117,9 +117,11 @@ export default function ZoneDisplay() {
     const onGameObjectClick = async (guid: number, duplicates: string, event: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
         if (event.shiftKey) {
             if (event.ctrlKey) {
-                navigator.clipboard.writeText((await navigator.clipboard.readText()) + ',' + (duplicates).toString())
+                let duplicateNum = parseInt(duplicates);
+                navigator.clipboard.writeText((await navigator.clipboard.readText()) + ',' + (offset > 0 ? "@GGUID+" : "") + (duplicateNum - offset).toString())
             } else {
-                navigator.clipboard.writeText((duplicates).toString())
+                let duplicateNum = parseInt(duplicates);
+                navigator.clipboard.writeText((offset > 0 ? "@GGUID+" : "") + (duplicateNum - offset).toString())
             }
         } else {
             if (event.ctrlKey) {

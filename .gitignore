@@ -586,3 +586,4 @@ FodyWeavers.xsd
 .sonarqube/*
 cmangos-web-api/cmangos-web-api/appsettings.Development.json
 cmangos-web-fe/.env
+cmangos-web-fe/.env-deploy
